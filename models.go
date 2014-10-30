@@ -15,11 +15,20 @@ type User struct {
 
 type CheckItem struct {
 	Id       int64  `json:"id" db:"id"`
-	Title    string `json:"title"`
-	Text     string `json:"text"`
-	Value    int    `json:"value"`
-	Parent   int    `json:"parent"`
-	Category int    `json:"category"`
+	Title    string `json:"title" db:"title" binding:"required"`
+	Text     string `json:"text" db:"text" binding:"required"`
+	Value    int64  `json:"value" db:"value" binding:"required"`
+	Parent   int64  `json:"parent" db:"parent" binding:"required"`
+	Category int64  `json:"category" db:"category" binding:"required"`
+}
+
+type EditCheckItem struct {
+	Id       int64  `json:"id" db:"id" binding:"required"`
+	Title    string `json:"title" db:"title"`
+	Text     string `json:"text" db:"text"`
+	Value    int64  `json:"value" db:"value"`
+	Parent   int64  `json:"parent" db:"parent"`
+	Category int64  `json:"category" db:"category"`
 }
 
 type Segment struct {
@@ -27,7 +36,7 @@ type Segment struct {
 	Title    string `json:"title" db:"title" binding:"required"`
 	SubTitle string `json:"subtitle" db:"subtitle" binding:"required"`
 	Body     string `json:"body" db:"body" binding:"required"`
-	Category int    `json:"category" db:"category" binding:"required"`
+	Category int64  `json:"category" db:"category" binding:"required"`
 }
 
 type EditSegment struct {
@@ -35,5 +44,5 @@ type EditSegment struct {
 	Title    string `json:"title" db:"title"`
 	SubTitle string `json:"subtitle" db:"subtitle"`
 	Body     string `json:"body" db:"body"`
-	Category int    `json:"category" db:"category"`
+	Category int64  `json:"category" db:"category"`
 }

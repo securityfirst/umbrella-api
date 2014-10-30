@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
 )
@@ -16,60 +14,6 @@ func getSegments(c *gin.Context) {
 		return
 	}
 	c.JSON(200, segments)
-}
-
-func addSegment(c *gin.Context) {
-	var json Segment
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	fmt.Println(json)
-	if c.EnsureBody(&json) {
-		segment := Segment{Title: json.Title, SubTitle: json.SubTitle, Body: json.Body, Category: json.Category}
-		err := dbmap.Insert(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, segment)
-		return
-	}
-	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
-}
-
-func editSegment(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	var json EditSegment
-	if c.EnsureBody(&json) {
-		segment, err := getSegmentById(c, dbmap, json.Id)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		if json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0 {
-			if json.Title != "" {
-				segment.Title = json.Title
-			}
-			if json.SubTitle != "" {
-				segment.SubTitle = json.SubTitle
-			}
-			if json.Body != "" {
-				segment.Body = json.Body
-			}
-			if json.Category != 0 {
-				segment.Category = json.Category
-			}
-			count, err := dbmap.Update(&segment)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-			} else if count < 1 {
-				c.JSON(500, gin.H{"error": "Could not update the resource"})
-			}
-			c.JSON(200, segment)
-			return
-		}
-	}
-	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
 func getSegment(c *gin.Context) {
@@ -87,6 +31,60 @@ func getSegment(c *gin.Context) {
 	} else {
 		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
 	}
+}
+
+func addSegment(c *gin.Context) {
+	var json Segment
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	if c.EnsureBody(&json) {
+		segment := Segment{Title: json.Title, SubTitle: json.SubTitle, Body: json.Body, Category: json.Category}
+		err := dbmap.Insert(&segment)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, segment)
+		return
+	}
+	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
+}
+
+func editSegment(c *gin.Context) {
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	var json EditSegment
+	segmentId := to.Int64(c.Params.ByName("id"))
+	if c.EnsureBody(&json) && segmentId != 0 {
+		segment, err := getSegmentById(c, dbmap, segmentId)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		if json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0 {
+			if json.Title != "" {
+				segment.Title = json.Title
+			}
+			if json.SubTitle != "" {
+				segment.SubTitle = json.SubTitle
+			}
+			if json.Body != "" {
+				segment.Body = json.Body
+			}
+			if json.Category != 0 {
+				segment.Category = to.Int64(json.Category)
+			}
+			count, err := dbmap.Update(&segment)
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+			} else if count < 1 {
+				c.JSON(500, gin.H{"error": "Could not update the resource"})
+			}
+			c.JSON(200, segment)
+			return
+		}
+	}
+	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
 func deleteSegment(c *gin.Context) {

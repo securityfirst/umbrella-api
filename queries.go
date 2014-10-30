@@ -16,6 +16,7 @@ func initDb() *gorp.DbMap {
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
 	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
+	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
 	return dbmap
 }
 
@@ -56,4 +57,14 @@ func getAllPublishedCheckItems(c *gin.Context, dbmap *gorp.DbMap) ([]CheckItem, 
 		"status": "published",
 	})
 	return checkItems, err
+}
+
+func getCheckItemById(c *gin.Context, dbmap *gorp.DbMap, checkItemId int64) (CheckItem, error) {
+	var checkItem CheckItem
+	var err error
+	err = dbmap.SelectOne(&checkItem, "select id, title, text, value, parent, category from check_items WHERE id=:check_item_id ORDER BY id ASC", map[string]interface{}{
+		"status":        "published",
+		"check_item_id": checkItemId,
+	})
+	return checkItem, err
 }
