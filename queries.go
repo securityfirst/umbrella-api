@@ -15,6 +15,7 @@ func initDb() *gorp.DbMap {
 	checkErr(err, "sql.Open failed")
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
+	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
 	return dbmap
 }
 
@@ -27,4 +28,32 @@ func checkUser(c *gin.Context, dbmap *gorp.DbMap) (User, error) {
 		err = dbmap.SelectOne(&user, "select id, name, email, password, token from users where token=?", token)
 	}
 	return user, err
+}
+
+func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, error) {
+	var segments []Segment
+	var err error
+	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+		"status": "published",
+	})
+	return segments, err
+}
+
+func getSegmentById(c *gin.Context, dbmap *gorp.DbMap, segmentId int64) (Segment, error) {
+	var segment Segment
+	var err error
+	err = dbmap.SelectOne(&segment, "select id, title, subtitle, body, category from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
+		"status":     "published",
+		"segment_id": segmentId,
+	})
+	return segment, err
+}
+
+func getAllPublishedCheckItems(c *gin.Context, dbmap *gorp.DbMap) ([]CheckItem, error) {
+	var checkItems []CheckItem
+	var err error
+	_, err = dbmap.Select(&checkItems, "select id, title, text, value, parent, category from check_items WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+		"status": "published",
+	})
+	return checkItems, err
 }
