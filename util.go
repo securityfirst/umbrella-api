@@ -5,7 +5,9 @@ import (
 	"errors"
 	"log"
 	"math/big"
+	"os"
 
+	"github.com/coopernurse/gorp"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -52,4 +54,8 @@ func Auth(strict bool) gin.HandlerFunc {
 			c.Fail(401, errors.New("Not Authorized"))
 		}
 	}
+}
+
+func traceDb(dbmap *gorp.DbMap) {
+	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
 }

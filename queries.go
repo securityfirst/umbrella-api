@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 
 	"unicode/utf8"
 
@@ -43,10 +44,13 @@ func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, erro
 func getSegmentById(c *gin.Context, dbmap *gorp.DbMap, segmentId int64) (Segment, error) {
 	var segment Segment
 	var err error
-	err = dbmap.SelectOne(&segment, "select id, title, subtitle, body, category from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
+	err = dbmap.SelectOne(&segment, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
 		"status":     "published",
 		"segment_id": segmentId,
 	})
+	if err != nil && err.Error() == "sql: no rows in result set" {
+		c.Fail(404, errors.New("The resource could not be found"))
+	}
 	return segment, err
 }
 
@@ -62,7 +66,7 @@ func getAllPublishedCheckItems(c *gin.Context, dbmap *gorp.DbMap) ([]CheckItem, 
 func getCheckItemById(c *gin.Context, dbmap *gorp.DbMap, checkItemId int64) (CheckItem, error) {
 	var checkItem CheckItem
 	var err error
-	err = dbmap.SelectOne(&checkItem, "select id, title, text, value, parent, category from check_items WHERE id=:check_item_id ORDER BY id ASC", map[string]interface{}{
+	err = dbmap.SelectOne(&checkItem, "select id, title, text, value, parent, category, status, created_at, author, approved_at, approved_by from check_items WHERE id=:check_item_id ORDER BY id ASC", map[string]interface{}{
 		"status":        "published",
 		"check_item_id": checkItemId,
 	})
