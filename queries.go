@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"os"
 
 	"unicode/utf8"
 
@@ -12,7 +13,13 @@ import (
 )
 
 func initDb() *gorp.DbMap {
-	db, err := sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(localhost:1234)/umbrella?charset=utf8")
+	var err error
+	var db *sql.DB
+	if os.Getenv("GO_DEV") == "1" {
+		db, err = sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(localhost:1234)/umbrella?charset=utf8")
+	} else {
+		db, err = sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(wikiinstance.ciahzg9ywrfk.eu-west-1.rds.amazonaws.com:3306)/umbrella?charset=utf8")
+	}
 	checkErr(err, "sql.Open failed")
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
