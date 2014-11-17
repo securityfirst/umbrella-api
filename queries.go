@@ -16,7 +16,8 @@ func initDb() *gorp.DbMap {
 	var err error
 	var db *sql.DB
 	if os.Getenv("GO_DEV") == "1" {
-		db, err = sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(localhost:1234)/umbrella?charset=utf8")
+		db, err = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/umbrella?charset=utf8")
+		// db, err = sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(localhost:1234)/umbrella?charset=utf8")
 	} else {
 		db, err = sql.Open("mysql", "apiuser:mEYP4JKdZeeZVbj5@tcp(wikiinstance.ciahzg9ywrfk.eu-west-1.rds.amazonaws.com:3306)/umbrella?charset=utf8")
 	}

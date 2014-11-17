@@ -31,6 +31,9 @@ func main() {
 		v1.GET("/account/login_check", Auth(true), loginCheck)
 		v1.POST("/account/login", loginEndpoint)
 	}
+
+	r.Static("/admin", "./admin")
+
 	r.Run(":8080")
 
 }
