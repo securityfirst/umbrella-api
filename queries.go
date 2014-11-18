@@ -49,6 +49,16 @@ func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, erro
 	return segments, err
 }
 
+func getAllPublishedSegmentsByCat(c *gin.Context, dbmap *gorp.DbMap, category int64) ([]Segment, error) {
+	var segments []Segment
+	var err error
+	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status AND category=:category ORDER BY id ASC", map[string]interface{}{
+		"status":   "published",
+		"category": category,
+	})
+	return segments, err
+}
+
 func getSegmentById(c *gin.Context, dbmap *gorp.DbMap, segmentId int64) (Segment, error) {
 	var segment Segment
 	var err error

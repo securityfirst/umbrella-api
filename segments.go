@@ -18,6 +18,18 @@ func getSegments(c *gin.Context) {
 	c.JSON(200, segments)
 }
 
+func getSegmentsByCat(c *gin.Context) {
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	category := to.Int64(c.Params.ByName("id"))
+	segments, err := getAllPublishedSegmentsByCat(c, dbmap, category)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, segments)
+}
+
 func getSegment(c *gin.Context) {
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 {

@@ -18,6 +18,7 @@ func main() {
 	{
 		v1.GET("/segments", Auth(false), getSegments)
 		v1.GET("/segments/:id", Auth(false), getSegment)
+		v1.GET("/segments/:id/category", Auth(false), getSegmentsByCat)
 		v1.POST("/segments", Auth(true), addSegment)
 		v1.PUT("/segments/:id", Auth(true), editSegment)
 		v1.POST("/segments/:id/status", Auth(true), approveSegment)
