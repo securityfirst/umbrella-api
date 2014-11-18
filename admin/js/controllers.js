@@ -2,9 +2,9 @@
 
 /* Controllers */
 
-var phonecatControllers = angular.module('secFirstControllers', []);
+var secFirstControllers = angular.module('secFirstControllers', []);
 
-phonecatControllers.controller('SegmentList', ['$scope', '$http', 'Segment',
+secFirstControllers.controller('SegmentList', ['$scope', '$http', 'Segment',
   function($scope, $http, Segment) {
 
     Segment.getAll().success(function(response) {
@@ -13,9 +13,28 @@ phonecatControllers.controller('SegmentList', ['$scope', '$http', 'Segment',
     $scope.orderProp = 'age';
   }]);
 
-phonecatControllers.controller('SegmentDetail', ['$scope', '$routeParams', 'Segment',
+secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', 'Segment',
   function($scope, $routeParams, Segment) {
     Segment.getId($routeParams.segmentId).success(function(response){
       $scope.segment = response;
     });
+  }]);
+
+secFirstControllers.controller('LoginForm', ['$scope', '$http', '$cookieStore', '$location', 'Login',
+  function($scope, $http, $cookieStore, $location, Login) {
+    $scope.formData = {};
+
+    $scope.processForm = function() {
+      Login.postForm($scope.formData).success(function(data) {
+          $scope.message = data.token;
+          $scope.data = null;
+          $cookieStore.put('token', data.token);
+          $scope.token = data.token;
+          $location.url('/segments');
+          $scope.error = "";
+      }).error(function(data, status, header, config){
+          $scope.error = data.error;
+          $scope.message = "";
+      });
+    };
   }]);

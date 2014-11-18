@@ -2,19 +2,36 @@
 
 /* Services */
 
-var phonecatServices = angular.module('secFirstServices', []);
+var secFirstServices = angular.module('secFirstServices', []);
 
-phonecatServices.factory('Segment', ['$http',
-  function($http){
+secFirstServices.factory('Segment', ['$http', '$cookieStore',
+  function($http, $cookieStore){
     var factory = {};
 
     factory.getAll = function() {
-        return $http.get("/v1/segments");
+        return $http.get('/v1/segments', {
+            headers: {'token': $cookieStore.get('token')}
+        });
     };
 
     factory.getId = function(segmentId) {
         console.log(segmentId);
-        return $http.get("http://localhost:3000/v1/segments/"+segmentId);
+        return $http.get("/v1/segments/"+segmentId);
+    };
+    return factory;
+  }]);
+
+secFirstServices.factory('Login', ['$http', '$cookieStore',
+  function($http, $cookieStore){
+    var factory = {};
+
+    factory.postForm = function(formData) {
+        return $http({
+          method  : 'POST',
+          url     : '/v1/account/login',
+          headers: {'token': $cookieStore.get('token')},
+          data    : formData
+      });
     };
     return factory;
   }]);
