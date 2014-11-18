@@ -31,6 +31,13 @@ func main() {
 		v1.POST("/check_items/:id/status", Auth(true), approveCheckItem)
 		v1.GET("/account/login_check", Auth(true), loginCheck)
 		v1.POST("/account/login", loginEndpoint)
+		v1.GET("/categories", Auth(false), getCategories)
+		v1.GET("/categories/:id/by_parent", Auth(false), getCategoryByParent)
+		v1.GET("/categories/:id", Auth(false), getCategory)
+		v1.POST("/categories", Auth(true), addCategory)
+		v1.PUT("/categories/:id", Auth(true), editCategory)
+		v1.POST("/categories/:id/status", Auth(true), approveCategory)
+		v1.DELETE("/categories/:id", Auth(true), deleteCategory)
 	}
 
 	r.Static("/admin", "./admin")

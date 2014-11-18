@@ -26,6 +26,7 @@ func initDb() *gorp.DbMap {
 	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
 	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
 	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
+	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
 	return dbmap
 }
 
@@ -89,4 +90,33 @@ func getCheckItemById(c *gin.Context, dbmap *gorp.DbMap, checkItemId int64) (Che
 		"check_item_id": checkItemId,
 	})
 	return checkItem, err
+}
+
+func getAllPublishedCategories(c *gin.Context, dbmap *gorp.DbMap) ([]Category, error) {
+	var categories []Category
+	var err error
+	_, err = dbmap.Select(&categories, "select id, category, parent, category from categories WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+		"status": "published",
+	})
+	return categories, err
+}
+
+func getAllPublishedCategoriesByParent(c *gin.Context, dbmap *gorp.DbMap, parent int64) ([]Category, error) {
+	var categories []Category
+	var err error
+	_, err = dbmap.Select(&categories, "select id, category, parent, category from categories WHERE status=:status AND parent=:parent ORDER BY id ASC", map[string]interface{}{
+		"status": "published",
+		"parent": parent,
+	})
+	return categories, err
+}
+
+func getCategoryById(c *gin.Context, dbmap *gorp.DbMap, categoryId int64) (Category, error) {
+	var category Category
+	var err error
+	err = dbmap.SelectOne(&category, "select id, category, parent, status, created_at, author, approved_at, approved_by from categories WHERE id=:category_id ORDER BY id ASC", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
+	})
+	return category, err
 }

@@ -56,3 +56,20 @@ type JSONSegment struct {
 	Category int64  `json:"category" db:"category"`
 	Status   string `json:"status" db:"status"`
 }
+
+type Category struct {
+	Id         int64  `json:"id" db:"id"`
+	Parent     int64  `json:"parent" db:"parent" binding:"required"`
+	Category   string `json:"category" db:"category" binding:"required"`
+	Status     string `json:"-" db:"status"`
+	CreatedAt  int64  `json:"-" db:"created_at"`
+	ApprovedAt int64  `json:"-" db:"approved_at"`
+	ApprovedBy int64  `json:"-" db:"approved_by"`
+	Author     int64  `json:"-" db:"author"`
+}
+
+type JSONCategory struct {
+	Parent   int64  `json:"parent" db:"parent"`
+	Category string `json:"category" db:"category"`
+	Status   string `json:"status" db:"status"`
+}
