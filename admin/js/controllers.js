@@ -4,20 +4,23 @@
 
 var secFirstControllers = angular.module('secFirstControllers', []);
 
-secFirstControllers.controller('SegmentList', ['$scope', '$http', 'Segment',
-  function($scope, $http, Segment) {
+secFirstControllers.controller('SegmentList', ['$scope', '$http', '$cookieStore', 'Segments',
+  function($scope, $http, $cookieStore, Segments) {
 
-    Segment.getAll().success(function(response) {
+    Segments.getRaw().success(function(response) {
       $scope.segments = response;
     });
     $scope.orderProp = 'age';
+    $scope.token = $cookieStore.get('token');
   }]);
 
-secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', 'Segment',
-  function($scope, $routeParams, Segment) {
-    Segment.getId($routeParams.segmentId).success(function(response){
-      $scope.segment = response;
+secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', 'Segments',
+  function($scope, $routeParams, $cookieStore, Segments) {
+    Segments.getByCat($routeParams.segmentId).success(function(response){
+      $scope.segment = response[0];
     });
+    $scope.token = $cookieStore.get('token');
+
   }]);
 
 secFirstControllers.controller('LoginForm', ['$scope', '$http', '$cookieStore', '$location', 'Login',

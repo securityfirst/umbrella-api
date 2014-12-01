@@ -13,7 +13,7 @@
     <ul class="segments">
       <li ng-repeat="segment in segments | filter:query | orderBy:orderProp"
           class="thumbnail segment-list">
-        <a href="#/segments/{{segment.id}}">{{segment.title}}</a>
+        <a href="#/segments/{{segment.category}}">{{segment.title}}</a>
         <div>{{segment.subtitle}}</div>
         <p>{{segment.body}}</p>
       </li>

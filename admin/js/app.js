@@ -22,6 +22,9 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/login.html',
         controller: 'LoginForm'
       }).
+      when('/about', {
+        templateUrl: 'partials/about.html'
+      }).
       when('/segments/:segmentId', {
         templateUrl: 'partials/segment-detail.html',
         controller: 'SegmentDetail'

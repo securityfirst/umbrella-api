@@ -17,6 +17,8 @@ func main() {
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/segments", Auth(false), getSegments)
+		v1.GET("/segments_raw", Auth(false), getSegmentsRaw)
+		v1.GET("/segments_raw/:id/category", Auth(false), getSegmentsRawByCat)
 		v1.GET("/segments/:id", Auth(false), getSegment)
 		v1.GET("/segments/:id/category", Auth(false), getSegmentsByCat)
 		v1.POST("/segments", Auth(true), addSegment)

@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"strings"
 	"time"
+
+	"code.google.com/p/go.net/html"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
@@ -10,24 +14,76 @@ import (
 func getSegments(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
-	segments, err := getAllPublishedSegments(c, dbmap)
+	segmentList, err := getAllPublishedSegments(c, dbmap)
+
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, segments)
+	c.JSON(200, segmentList)
+}
+
+func getSegmentsRaw(c *gin.Context) {
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	segmentList, err := getAllPublishedSegments(c, dbmap)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, parseForSegments(segmentList))
+}
+
+func parseForSegments(segmentList []Segment) []Segment {
+	var segments []Segment
+	for i := 0; i < len(segmentList); i++ {
+		doc, err := html.Parse(strings.NewReader(segmentList[i].Body))
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		relSegment := false
+		var f func(*html.Node)
+		f = func(n *html.Node) {
+			if relSegment {
+				newSeg := Segment{Id: int64(len(segments)), Title: segmentList[i].Title, SubTitle: segmentList[i].SubTitle, Body: n.Data, Category: segmentList[i].Category}
+				segments = append(segments, newSeg)
+				relSegment = false
+			}
+			if n.Type == html.ElementNode && n.Data == "p" {
+				relSegment = true
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				f(c)
+			}
+		}
+		f(doc)
+	}
+	return segments
+}
+
+func getSegmentsRawByCat(c *gin.Context) {
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	category := to.Int64(c.Params.ByName("id"))
+	segmentList, err := getAllPublishedSegmentsByCat(c, dbmap, category)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, parseForSegments(segmentList))
 }
 
 func getSegmentsByCat(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	category := to.Int64(c.Params.ByName("id"))
-	segments, err := getAllPublishedSegmentsByCat(c, dbmap, category)
+	segmentList, err := getAllPublishedSegmentsByCat(c, dbmap, category)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, segments)
+	c.JSON(200, segmentList)
 }
 
 func getSegment(c *gin.Context) {
@@ -66,6 +122,7 @@ func addSegment(c *gin.Context) {
 		c.JSON(200, segment)
 		return
 	}
+	fmt.Println(json)
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
