@@ -14,20 +14,28 @@ secFirstControllers.controller('SegmentList', ['$scope', '$http', '$cookieStore'
     $scope.token = $cookieStore.get('token');
   }]);
 
-secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', 'Segments',
-  function($scope, $routeParams, $cookieStore, Segments) {
+secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments',
+  function($scope, $routeParams, $cookieStore, $location, Segments) {
     Segments.getByCat($routeParams.segmentId).success(function(response){
       $scope.segment = response[0];
     });
     $scope.token = $cookieStore.get('token');
 
     $scope.options = {
-        // height: 300,
-        focus: true,
-        toolbar: [
-          ['style', ['bold', 'italic', 'underline', 'clear']]
-        ]
-      };
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']]
+      ]
+    };
+
+    $scope.processForm = function() {
+      Segments.updateCat($routeParams.segmentId, $scope.segment).success(function(data) {
+          $scope.error = '';
+          $location.url('/segments');
+      }).error(function(data, status, header, config){
+          $scope.error = data.error;
+          $scope.message = "";
+      });
+    };
 
   }]);
 
@@ -48,4 +56,17 @@ secFirstControllers.controller('LoginForm', ['$scope', '$http', '$cookieStore', 
           $scope.message = "";
       });
     };
+  }]);
+
+secFirstControllers.controller('LogOut', ['$scope', '$cookieStore', '$location',
+  function($scope, $cookieStore, $location) {
+    $cookieStore.put('token', '');
+    $location.url('/segments');
+  }]);
+
+secFirstControllers.controller('TopNav', ['$scope', '$cookieStore', '$location',
+  function($scope, $cookieStore, $location) {
+
+    $scope.token = $cookieStore.get('token');
+
   }]);

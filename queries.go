@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"os"
 
 	"unicode/utf8"
@@ -27,6 +28,7 @@ func initDb() *gorp.DbMap {
 	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
 	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
 	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
+	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
 	return dbmap
 }
 
@@ -44,7 +46,7 @@ func checkUser(c *gin.Context, dbmap *gorp.DbMap) (User, error) {
 func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, error) {
 	var segments []Segment
 	var err error
-	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&segments, "select s1.id, s1.title, s1.subtitle, s1.body, s1.category from segments s1 where status=:status AND (category, id) in (select category, max(id) from segments s2 where status=:status group by category)", map[string]interface{}{
 		"status": "published",
 	})
 	return segments, err
@@ -53,7 +55,7 @@ func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, erro
 func getAllPublishedSegmentsByCat(c *gin.Context, dbmap *gorp.DbMap, category int64) ([]Segment, error) {
 	var segments []Segment
 	var err error
-	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status AND category=:category ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status AND category=:category ORDER BY id DESC", map[string]interface{}{
 		"status":   "published",
 		"category": category,
 	})
@@ -66,6 +68,19 @@ func getSegmentById(c *gin.Context, dbmap *gorp.DbMap, segmentId int64) (Segment
 	err = dbmap.SelectOne(&segment, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
 		"status":     "published",
 		"segment_id": segmentId,
+	})
+	if err != nil && err.Error() == "sql: no rows in result set" {
+		c.Fail(404, errors.New("The resource could not be found"))
+	}
+	return segment, err
+}
+
+func getSegmentByCatId(c *gin.Context, dbmap *gorp.DbMap, categoryId int64) (Segment, error) {
+	var segment Segment
+	var err error
+	err = dbmap.SelectOne(&segment, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE category=:category_id ORDER BY id DESC LIMIT 1", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
 	})
 	if err != nil && err.Error() == "sql: no rows in result set" {
 		c.Fail(404, errors.New("The resource could not be found"))

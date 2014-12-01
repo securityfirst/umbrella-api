@@ -41,10 +41,11 @@
   <div class="container">
     <div class="header">
       <nav>
-        <ul class="nav nav-pills pull-right">
+        <ul class="nav nav-pills pull-right" ng-controller="TopNav">
           <li role="presentation" class="active"><a href="#">Home</a></li>
           <li role="presentation"><a href="#about">About</a></li>
-          <li role="presentation"><a href="#login">Login</a></li>
+          <li role="presentation" ng-hide="token != ''"><a href="#login">Login</a></li>
+          <li role="presentation" ng-hide="token == ''"><a href="#logout">Log Out</a></li>
         </ul>
       </nav>
       <h3 class="text-muted">Secfirst Content contribution</h3>

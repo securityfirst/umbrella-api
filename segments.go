@@ -11,7 +11,7 @@ import (
 	"github.com/gosexy/to"
 )
 
-func getSegments(c *gin.Context) {
+func getSegmentsRaw(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	segmentList, err := getAllPublishedSegments(c, dbmap)
@@ -23,7 +23,7 @@ func getSegments(c *gin.Context) {
 	c.JSON(200, segmentList)
 }
 
-func getSegmentsRaw(c *gin.Context) {
+func getSegments(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	segmentList, err := getAllPublishedSegments(c, dbmap)
@@ -62,7 +62,7 @@ func parseForSegments(segmentList []Segment) []Segment {
 	return segments
 }
 
-func getSegmentsRawByCat(c *gin.Context) {
+func getSegmentsByCat(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	category := to.Int64(c.Params.ByName("id"))
@@ -74,7 +74,7 @@ func getSegmentsRawByCat(c *gin.Context) {
 	c.JSON(200, parseForSegments(segmentList))
 }
 
-func getSegmentsByCat(c *gin.Context) {
+func getSegmentsRawByCat(c *gin.Context) {
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	category := to.Int64(c.Params.ByName("id"))
@@ -158,7 +158,53 @@ func editSegment(c *gin.Context) {
 		segment.CreatedAt = time.Now().Unix()
 		user := c.MustGet("user").(User)
 		segment.Author = user.Id
+
 		_, err = dbmap.Update(&segment)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+		}
+		c.JSON(200, segment)
+		return
+	}
+	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
+}
+
+func editSegmentByCat(c *gin.Context) {
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	var json Segment
+	c.Bind(&json)
+	segmentId := to.Int64(c.Params.ByName("id"))
+	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {
+		fmt.Println(segmentId)
+		segment, err := getSegmentByCatId(c, dbmap, segmentId)
+		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+				return
+			}
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		if json.Title != "" {
+			segment.Title = json.Title
+		}
+		if json.SubTitle != "" {
+			segment.SubTitle = json.SubTitle
+		}
+		if json.Body != "" {
+			segment.Body = json.Body
+		}
+		if json.Category != 0 {
+			segment.Category = to.Int64(json.Category)
+		}
+		// segment.Status = "submitted"
+		segment.CreatedAt = time.Now().Unix()
+		user := c.MustGet("user").(User)
+		segment.Author = user.Id
+		segment.Id = 0
+		err = dbmap.Insert(&segment)
+		// _, err = dbmap.Update(&segment)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 		}

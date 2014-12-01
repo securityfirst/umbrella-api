@@ -23,6 +23,10 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/login.html',
         controller: 'LoginForm'
       }).
+      when('/logout', {
+        templateUrl: 'partials/about.html',
+        controller: 'LogOut'
+      }).
       when('/about', {
         templateUrl: 'partials/about.html'
       }).

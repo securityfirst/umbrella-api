@@ -1,12 +1,39 @@
 <div ng-controller="SegmentDetail">
 
-	<h1>{{segment.title}}</h1>
+	<div ng-if="token != ''">
+		<div class="row">
+		  <p>
+		    <center style="color:red" ng-show="error">{{ error }}</center>
+		    <center ng-show="message">{{ message }}</center>
+		  </p>
+		</div>
+		<div class="row">
+			<form role="form" ng-submit="processForm()">
+				<div class="form-group">
+				  <label for="titleInput">Title</label>
+				  <input type="text" ng-model="segment.title" class="form-control" id="titleInput" placeholder="Title">
+				</div>
+				<div class="form-group">
+				  <label for="subtitleInput">Subtitle</label>
+				  <input type="text" ng-model="segment.subtitle" class="form-control" id="subtitleInput" placeholder="Subtitle (optional)">
+				</div>
+				<div class="form-group">
+					<summernote config="options" ng-model="segment.body"></summernote>
+				</div>
 
-	<p>{{segment.subtitle}}</p>
+				<button type="submit" class="btn btn-default">Edit</button>
+			</form>
+		</div>
+	</div>
+	<div ng-if="token == ''">
+		<h1>{{segment.title}}</h1>
 
-	<br>
-	<br>
+		<p>{{segment.subtitle}}</p>
 
-	<summernote config="options" ng-model="segment.body"></summernote>
+		<br>
+		<br>
+		<div ng-bind-html="segment.body | to_trusted"></div>
+	</div>
+
 </div>
 

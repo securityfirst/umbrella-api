@@ -22,7 +22,7 @@ func main() {
 		v1.GET("/segments/:id", Auth(false), getSegment)
 		v1.GET("/segments/:id/category", Auth(false), getSegmentsByCat)
 		v1.POST("/segments", Auth(true), addSegment)
-		v1.PUT("/segments/:id", Auth(true), editSegment)
+		v1.PUT("/segments/:id/category", Auth(true), editSegmentByCat)
 		v1.POST("/segments/:id/status", Auth(true), approveSegment)
 		v1.DELETE("/segments/:id", Auth(true), deleteSegment)
 		v1.GET("/check_items", Auth(false), getCheckItems)
