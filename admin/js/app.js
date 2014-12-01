@@ -8,7 +8,8 @@ var secFirstApp = angular.module('secFirstApp', [
   'secFirstAnimations',
   'secFirstControllers',
   'secFirstFilters',
-  'secFirstServices'
+  'secFirstServices',
+  'summernote'
 ]);
 
 secFirstApp.config(['$routeProvider',

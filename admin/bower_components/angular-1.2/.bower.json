@@ -1,0 +1,13 @@
+{
+  "name": "angular-1.2",
+  "_cacheHeaders": {
+    "ETag": "\"b9f64f462c62ef632902690c1a750f75aa1766b8\"",
+    "Content-Length": "107501",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:b9f64f462",
+  "main": "index.js",
+  "_source": "https://raw.githubusercontent.com/angular/bower-angular/v1.2.26/angular.min.js",
+  "_target": "*",
+  "_originalSource": "https://raw.githubusercontent.com/angular/bower-angular/v1.2.26/angular.min.js"
+}

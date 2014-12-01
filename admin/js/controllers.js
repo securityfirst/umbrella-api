@@ -21,6 +21,14 @@ secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$coo
     });
     $scope.token = $cookieStore.get('token');
 
+    $scope.options = {
+        // height: 300,
+        focus: true,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']]
+        ]
+      };
+
   }]);
 
 secFirstControllers.controller('LoginForm', ['$scope', '$http', '$cookieStore', '$location', 'Login',

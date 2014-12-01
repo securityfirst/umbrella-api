@@ -1,6 +1,12 @@
+<div ng-controller="SegmentDetail">
 
-<h1>{{segment.title}}</h1>
+	<h1>{{segment.title}}</h1>
 
-<p>{{segment.subtitle}}</p>
+	<p>{{segment.subtitle}}</p>
 
-<div id="editor">{{segment.body}}</div>
+	<br>
+	<br>
+
+	<summernote config="options" ng-model="segment.body"></summernote>
+</div>
+
