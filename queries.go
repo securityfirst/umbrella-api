@@ -37,7 +37,7 @@ func checkUser(c *gin.Context, dbmap *gorp.DbMap) (User, error) {
 	var err error
 	token := c.Request.Header.Get("token")
 	if utf8.RuneCountInString(token) > 0 {
-		err = dbmap.SelectOne(&user, "select id, name, email, password, token from users where token=?", token)
+		err = dbmap.SelectOne(&user, "select id, name, email, password, token, role from users where token=?", token)
 	}
 	return user, err
 }

@@ -1,9 +1,6 @@
 <div class="container-fluid">
   <div class="col-sm-3 col-md-2 sidebar">
-    <ul class="nav nav-pills nav-stacked">
-      <li role="presentation" ng-repeat="x in categories" ng-class="{active:x.id==catId,submenu:x.parent!==0}" ><a href="#segments/{{x.id}}/category">{{ x.category}} {{$location.path}}</a>
-      </li>
-    </ul>
+
   </div>
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 marketing">
     <div class="row">
@@ -27,6 +24,8 @@
           <button ng-click="toggleModal(category.id)" ng-show="token!==''" type="button" class="btn btn-danger">Delete</button>
         </li>
       </ul>
+
+      <a ng-href="#/categories/create" ng-show="token!==''" type="button" class="btn btn-primary">Create new</a>
 
     </div>
   </div>

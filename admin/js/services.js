@@ -66,6 +66,10 @@ secFirstServices.factory('Categories', ['$http', '$cookieStore',
         });
     };
 
+    factory.getId = function(categoryId) {
+        return $http.get("/v1/categories/"+categoryId);
+    };
+
     factory.deleteCat = function(deleteId) {
         return $http.delete('/v1/categories/'+deleteId, {
             headers: {'token': $cookieStore.get('token')}
@@ -87,6 +91,24 @@ secFirstServices.factory('Categories', ['$http', '$cookieStore',
         }
       }
       return sortedCats;
+    };
+
+    factory.getParentOnly = function(response) {
+      var parentOnly = [];
+      for (var i = 0; i < response.length; i++) {
+        if (response[i].parent===0) {parentOnly.push(response[i]);}
+      }
+      return parentOnly;
+    };
+
+    factory.update = function(categoryId, formData) {
+      return $http({method: 'PUT', url: '/v1/categories/'+categoryId, headers: {'token': $cookieStore.get('token')}, data: formData
+      });
+    };
+
+    factory.create = function(formData) {
+      return $http({method: 'POST', url: '/v1/categories/', headers: {'token': $cookieStore.get('token')}, data: formData
+      });
     };
 
     return factory;

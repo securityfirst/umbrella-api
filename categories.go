@@ -45,7 +45,7 @@ func getCategoryByParent(c *gin.Context) {
 	if categoryId != 0 {
 		dbmap := initDb()
 		defer dbmap.Db.Close()
-		checkItem, err := getAllPublishedCategoriesByParent(c, dbmap, categoryId)
+		category, err := getAllPublishedCategoriesByParent(c, dbmap, categoryId)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
@@ -54,7 +54,7 @@ func getCategoryByParent(c *gin.Context) {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(200, checkItem)
+		c.JSON(200, category)
 		return
 	} else {
 		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
@@ -70,6 +70,9 @@ func addCategory(c *gin.Context) {
 	if true {
 		user := c.MustGet("user").(User)
 		category := Category{Category: json.Category, Parent: json.Parent, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+		if user.Role == 1 {
+			category.Status = "published"
+		}
 		err := dbmap.Insert(&category)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
@@ -87,7 +90,7 @@ func editCategory(c *gin.Context) {
 	var json JSONCategory
 	categoryId := to.Int64(c.Params.ByName("id"))
 	if c.EnsureBody(&json) && categoryId != 0 {
-		category, err := getCheckItemById(c, dbmap, categoryId)
+		category, err := getCategoryById(c, dbmap, categoryId)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
@@ -97,9 +100,9 @@ func editCategory(c *gin.Context) {
 			return
 		}
 		if json.Category != "" {
-			category.Category = to.Int64(json.Category)
+			category.Category = json.Category
 			category.Parent = to.Int64(json.Parent)
-			category.Status = "submitted"
+			// category.Status = "submitted"
 			category.CreatedAt = time.Now().Unix()
 			user := c.MustGet("user").(User)
 			category.Author = user.Id

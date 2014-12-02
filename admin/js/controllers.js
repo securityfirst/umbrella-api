@@ -60,6 +60,49 @@ secFirstControllers.controller('CategoryList', ['$scope', '$routeParams', '$http
 
   }]);
 
+secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Categories',
+  function($scope, $routeParams, $http, $cookieStore, $location, Categories) {
+
+    $scope.token = $cookieStore.get('token');
+    $scope.action = $routeParams.action;
+
+    $scope.showModal = false;
+    $scope.toggleModal = function(toDelete){
+      $scope.showModal = !$scope.showModal;
+      $scope.toDelete = $scope.showModal?toDelete:0;
+    };
+
+    Categories.getAll().success(function(response){
+      $scope.categories = Categories.getParentOnly(response);
+    });
+
+    Categories.getId($routeParams.categoryId).success(function(response){
+      $scope.category = response;
+    });
+
+
+    $scope.processForm = function() {
+      if ($routeParams.action=='create') {
+        Categories.create($scope.category).success(function(data) {
+            $scope.error = '';
+            $location.url('/categories');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      } else if ($routeParams.action=='edit'){
+        Categories.update($routeParams.categoryId, $scope.category).success(function(data) {
+            $scope.error = '';
+            $location.url('/categories');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      }
+    };
+
+  }]);
+
 secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments',
   function($scope, $routeParams, $cookieStore, $location, Segments) {
     Segments.getByCat($routeParams.segmentId).success(function(response){

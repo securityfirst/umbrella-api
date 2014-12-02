@@ -34,6 +34,14 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/categories.html',
         controller: 'CategoryList'
       }).
+      when('/categories/:categoryId/:action', {
+        templateUrl: 'partials/category_detail.html',
+        controller: 'CategoryDetail'
+      }).
+      when('/categories/:action', {
+        templateUrl: 'partials/category_detail.html',
+        controller: 'CategoryDetail'
+      }).
       when('/logout', {
         templateUrl: 'partials/about.html',
         controller: 'LogOut'

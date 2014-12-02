@@ -11,6 +11,7 @@ type User struct {
 	Email    string `db:"email"`
 	Password string `json:"-"`
 	Token    string `json:"-"`
+	Role     int    `db:"role" json:"-"`
 }
 
 type CheckItem struct {
