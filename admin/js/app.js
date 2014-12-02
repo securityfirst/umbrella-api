@@ -9,8 +9,11 @@ var secFirstApp = angular.module('secFirstApp', [
   'secFirstControllers',
   'secFirstFilters',
   'secFirstServices',
+  'secFirstDirectives',
   'summernote'
-]);
+]).run(function($rootScope, $location) {
+    $rootScope.location = $location;
+});
 
 secFirstApp.config(['$routeProvider',
   function($routeProvider) {
@@ -26,6 +29,10 @@ secFirstApp.config(['$routeProvider',
       when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginForm'
+      }).
+      when('/categories', {
+        templateUrl: 'partials/categories.html',
+        controller: 'CategoryList'
       }).
       when('/logout', {
         templateUrl: 'partials/about.html',

@@ -66,5 +66,28 @@ secFirstServices.factory('Categories', ['$http', '$cookieStore',
         });
     };
 
+    factory.deleteCat = function(deleteId) {
+        return $http.delete('/v1/categories/'+deleteId, {
+            headers: {'token': $cookieStore.get('token')}
+        });
+    };
+
+    factory.getSorted = function(response) {
+      var sortedCats = [];
+      for (var i = 0; i < response.length; i++) {
+        if (response[i].parent===0) {
+          response[i].parentName = '';
+          sortedCats.push(response[i]);
+          for (var j = 0; j < response.length; j++) {
+            if (response[i].id === response[j].parent) {
+              response[j].parentName = response[i].category;
+              sortedCats.push(response[j]);
+            }
+          }
+        }
+      }
+      return sortedCats;
+    };
+
     return factory;
   }]);

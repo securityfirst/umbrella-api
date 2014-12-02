@@ -12,7 +12,6 @@ secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http'
     Segments.getByCat($routeParams.categoryId).success(function(response) {
       $scope.segments = response;
     });
-    $scope.orderProp = 'age';
     $scope.token = $cookieStore.get('token');
 
     Categories.getAll().success(function(response){
@@ -29,6 +28,35 @@ secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http'
       }
       $scope.categories = sortedCats;
     });
+
+  }]);
+
+secFirstControllers.controller('CategoryList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Categories',
+  function($scope, $routeParams, $http, $cookieStore, $location, Categories) {
+
+    $scope.catId = $routeParams.categoryId;
+    $scope.token = $cookieStore.get('token');
+
+    $scope.showModal = false;
+    $scope.toggleModal = function(krneki){
+      $scope.showModal = !$scope.showModal;
+      $scope.toDelete = $scope.showModal?krneki:0;
+    };
+
+    Categories.getAll().success(function(response){
+      $scope.categories = Categories.getSorted(response);
+    });
+
+    $scope.deleteCat = function() {
+      Categories.deleteCat($scope.toDelete).success(function(response) {
+        $scope.showModal = false;
+        for (var i = 0; i < $scope.categories.length; i++) {
+          if ($scope.categories[i].id==$scope.toDelete) {
+            $scope.categories.splice(i, 1);
+          }
+        }
+      });
+    };
 
   }]);
 
@@ -84,7 +112,5 @@ secFirstControllers.controller('LogOut', ['$scope', '$cookieStore', '$location',
 
 secFirstControllers.controller('TopNav', ['$scope', '$cookieStore', '$location',
   function($scope, $cookieStore, $location) {
-
     $scope.token = $cookieStore.get('token');
-
   }]);
