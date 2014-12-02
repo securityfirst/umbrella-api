@@ -42,7 +42,9 @@
     <div class="header">
       <nav>
         <ul class="nav nav-pills pull-right" ng-controller="TopNav">
-          <li role="presentation" class="active"><a href="#">Home</a></li>
+          <li role="presentation" class="active"><a href="#">Segments</a></li>
+          <li role="presentation"><a href="#">Categories</a></li>
+          <li role="presentation"><a href="#">Check Items</a></li>
           <li role="presentation"><a href="#about">About</a></li>
           <li role="presentation" ng-hide="token != ''"><a href="#login">Login</a></li>
           <li role="presentation" ng-hide="token == ''"><a href="#logout">Log Out</a></li>
@@ -56,15 +58,15 @@
       <p><a class="btn btn-lg btn-success" href="#" role="button">Log in</a></p>
     </div>
 
-    <div class="row marketing">
-
+    <div class="row">
       <div class="view-container">
         <div ng-view class="view-frame"></div>
       </div>
     </div>
 
+
     <footer class="footer">
-      <p><a href="https://secfirst.org">Secfirst</a></p>
+      <p><a href="https://secfirst.org" target="_blank">Global Security First</a></p>
     </footer>
 
   </div> <!-- /container -->

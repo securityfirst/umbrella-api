@@ -1,23 +1,34 @@
 <div class="container-fluid">
-  <div class="row">
-    Search: <input ng-model="query">
-    Sort by:
-    <select ng-model="orderProp">
-      <option value="name">Alphabetical</option>
-      <option value="age">Newest</option>
-    </select>
-  </div>
-
-  <div class="row">
-
-    <ul class="segments">
-      <li ng-repeat="segment in segments | filter:query | orderBy:orderProp"
-          class="thumbnail segment-list">
-        <a href="#/segments/{{segment.category}}">{{segment.title}}</a>
-        <div>{{segment.subtitle}}</div>
-        <p>{{segment.body}}</p>
+  <div class="col-sm-3 col-md-2 sidebar">
+    <ul class="nav nav-pills nav-stacked">
+      <li role="presentation" ng-repeat="x in categories" ng-class="{active:x.id==catId,submenu:x.parent!==0}" ><a href="#segments/{{x.id}}/category">{{ x.category}} {{$location.path}}</a>
       </li>
     </ul>
-
   </div>
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 marketing">
+    <div class="row">
+      <div class="search_bar">
+        Search: <input ng-model="query">
+        <span class="hide">Sort by:</span>
+        <select class="hide" ng-model="orderProp">
+          <option value="name">Alphabetical</option>
+          <option value="age">Newest</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <ul class="segments">
+        <li ng-repeat="segment in segments | filter:query | orderBy:orderProp"
+            class="thumbnail segment-list">
+          <a href="#/segments/{{segment.category}}">{{segment.title}}</a>
+          <div>{{segment.subtitle}}</div>
+          <p>{{segment.body}}</p>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
 </div>

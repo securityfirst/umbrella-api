@@ -21,7 +21,13 @@ secFirstServices.factory('Segments', ['$http', '$cookieStore',
     };
 
     factory.getByCat = function(categoryId) {
-        return $http.get("/v1/segments_raw/"+categoryId+"/category");
+        if (typeof categoryId === "undefined") {
+          return $http.get('/v1/segments', {
+              headers: {'token': $cookieStore.get('token')}
+          });
+        } else{
+          return $http.get("/v1/segments/"+categoryId+"/category");
+        }
     };
 
     factory.updateCat = function(categoryId, formData) {
@@ -53,6 +59,12 @@ secFirstServices.factory('Login', ['$http', '$cookieStore',
 secFirstServices.factory('Categories', ['$http', '$cookieStore',
   function($http, $cookieStore){
     var factory = {};
+
+    factory.getAll = function() {
+        return $http.get('/v1/categories', {
+            headers: {'token': $cookieStore.get('token')}
+        });
+    };
 
     return factory;
   }]);

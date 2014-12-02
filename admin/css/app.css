@@ -1,10 +1,8 @@
-/* Space out content a bit */
 body {
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
 .footer {
@@ -12,11 +10,10 @@ body {
   padding-left: 15px;
 }
 
-/* Custom page header */
 .header {
   border-bottom: 1px solid #e5e5e5;
 }
-/* Make the masthead heading the same height as the navigation */
+
 .header h3 {
   padding-bottom: 19px;
   margin-top: 0;
@@ -24,24 +21,21 @@ body {
   line-height: 40px;
 }
 
-/* Custom page footer */
 .footer {
   padding-top: 19px;
   color: #777;
   border-top: 1px solid #e5e5e5;
 }
 
-/* Customize container */
 @media (min-width: 768px) {
   .container {
-    max-width: 730px;
+    max-width: 1024px;
   }
 }
 .container-narrow > hr {
   margin: 30px 0;
 }
 
-/* Main marketing message and sign up button */
 .jumbotron {
   text-align: center;
   border-bottom: 1px solid #e5e5e5;
@@ -51,43 +45,37 @@ body {
   font-size: 21px;
 }
 
-/* Supporting marketing content */
 .marketing {
-  margin: 40px 0;
+  margin: 0px 0 20px;
 }
 .marketing p + h4 {
   margin-top: 28px;
 }
 
-/* Responsive: Portrait tablets and up */
+.sidebar {
+  margin-top: 50px;
+}
+
+.submenu {
+  padding-left: 20px;
+}
+
 @media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
+
   .header,
   .marketing,
   .footer {
     padding-right: 0;
     padding-left: 0;
   }
-  /* Space out the masthead */
+
   .header {
     margin-bottom: 30px;
   }
-  /* Remove the bottom border on the jumbotron for visual effect */
+
   .jumbotron {
     border-bottom: 0;
   }
-}
-
-
-/* app css stylesheet */
-
-.phone-images {
-  background-color: white;
-  width: 450px;
-  height: 450px;
-  overflow: hidden;
-  position: relative;
-  float: left;
 }
 
 .segments {
@@ -107,64 +95,8 @@ body {
   padding-top: 15px;
 }
 
-/** Detail View **/
-img.phone {
-  float: left;
-  margin-right: 3em;
-  margin-bottom: 2em;
-  background-color: white;
-  padding: 2em;
-  height: 400px;
-  width: 400px;
-  display: none;
-}
-
-img.phone:first-child {
-  display: block;
-}
-
-
-ul.phone-thumbs {
-  margin: 0;
-  list-style: none;
-}
-
-ul.phone-thumbs li {
-  border: 1px solid black;
-  display: inline-block;
-  margin: 1em;
-  background-color: white;
-}
-
-ul.phone-thumbs img {
-  height: 100px;
-  width: 100px;
-  padding: 1em;
-}
-
-ul.phone-thumbs img:hover {
-  cursor: pointer;
-}
-
-
-ul.specs {
-  clear: both;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.specs > li{
-  display: inline-block;
-  width: 200px;
-  vertical-align: top;
-}
-
-ul.specs > li > span{
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-ul.specs dt {
-  font-weight: bold;
+.search_bar {
+  text-align: center;
+  margin-left:40px;
+  margin-bottom:20px;
 }

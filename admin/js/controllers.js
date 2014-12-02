@@ -4,14 +4,32 @@
 
 var secFirstControllers = angular.module('secFirstControllers', []);
 
-secFirstControllers.controller('SegmentList', ['$scope', '$http', '$cookieStore', 'Segments',
-  function($scope, $http, $cookieStore, Segments) {
+secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Segments', 'Categories',
+  function($scope, $routeParams, $http, $cookieStore, $location, Segments, Categories) {
 
-    Segments.getRaw().success(function(response) {
+    $scope.catId = $routeParams.categoryId;
+
+    Segments.getByCat($routeParams.categoryId).success(function(response) {
       $scope.segments = response;
     });
     $scope.orderProp = 'age';
     $scope.token = $cookieStore.get('token');
+
+    Categories.getAll().success(function(response){
+      var sortedCats = [];
+      for (var i = 0; i < response.length; i++) {
+        if (response[i].parent===0) {
+          sortedCats.push(response[i]);
+          for (var j = 0; j < response.length; j++) {
+            if (response[i].id === response[j].parent) {
+              sortedCats.push(response[j]);
+            }
+          }
+        }
+      }
+      $scope.categories = sortedCats;
+    });
+
   }]);
 
 secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments',
