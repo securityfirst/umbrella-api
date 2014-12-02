@@ -10,7 +10,8 @@ var secFirstApp = angular.module('secFirstApp', [
   'secFirstFilters',
   'secFirstServices',
   'secFirstDirectives',
-  'summernote'
+  'summernote',
+  'ui.sortable'
 ]).run(function($rootScope, $location) {
     $rootScope.location = $location;
 });
@@ -21,6 +22,10 @@ secFirstApp.config(['$routeProvider',
       when('/segments', {
         templateUrl: 'partials/segments.html',
         controller: 'SegmentList'
+      }).
+      when('/check_items', {
+        templateUrl: 'partials/check_items.html',
+        controller: 'CheckItemList'
       }).
       when('/segments/:categoryId/category', {
         templateUrl: 'partials/segments.html',
@@ -50,7 +55,7 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/about.html'
       }).
       when('/segments/:segmentId', {
-        templateUrl: 'partials/segment-detail.html',
+        templateUrl: 'partials/segment_detail.html',
         controller: 'SegmentDetail'
       }).
       otherwise({

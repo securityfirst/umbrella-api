@@ -67,6 +67,7 @@ type Category struct {
 	ApprovedAt int64  `json:"-" db:"approved_at"`
 	ApprovedBy int64  `json:"-" db:"approved_by"`
 	Author     int64  `json:"-" db:"author"`
+	SortOrder  int64  `json:"-" db:"sort_order"`
 }
 
 type JSONCategory struct {

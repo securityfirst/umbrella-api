@@ -31,11 +31,46 @@ secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http'
 
   }]);
 
+secFirstControllers.controller('CheckItemList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Segments', 'Categories',
+  function($scope, $routeParams, $http, $cookieStore, $location, Segments, Categories) {
+
+    $scope.catId = $routeParams.categoryId;
+
+    Segments.getByCat($routeParams.categoryId).success(function(response) {
+      $scope.segments = response;
+    });
+    $scope.token = $cookieStore.get('token');
+
+    Categories.getAll().success(function(response){
+      var sortedCats = [];
+      for (var i = 0; i < response.length; i++) {
+        if (response[i].parent===0) {
+          sortedCats.push(response[i]);
+          for (var j = 0; j < response.length; j++) {
+            if (response[i].id === response[j].parent) {
+              sortedCats.push(response[j]);
+            }
+          }
+        }
+      }
+      $scope.categories = sortedCats;
+    });
+
+  }]);
+
 secFirstControllers.controller('CategoryList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Categories',
   function($scope, $routeParams, $http, $cookieStore, $location, Categories) {
 
     $scope.catId = $routeParams.categoryId;
     $scope.token = $cookieStore.get('token');
+
+    $scope.items = ["One", "Two", "Three"];
+
+    $scope.sortableOptions = {
+        update: function(e, ui) { console.log($scope.categories); },
+        'ui-floating': true,
+        axis: 'y'
+      };
 
     $scope.showModal = false;
     $scope.toggleModal = function(krneki){

@@ -100,11 +100,13 @@ func editCategory(c *gin.Context) {
 			return
 		}
 		if json.Category != "" {
+			user := c.MustGet("user").(User)
 			category.Category = json.Category
 			category.Parent = to.Int64(json.Parent)
-			// category.Status = "submitted"
+			if user.Role != 1 {
+				category.Status = "submitted"
+			}
 			category.CreatedAt = time.Now().Unix()
-			user := c.MustGet("user").(User)
 			category.Author = user.Id
 			count, err := dbmap.Update(&category)
 			if err != nil {

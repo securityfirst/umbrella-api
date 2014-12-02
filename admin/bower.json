@@ -14,6 +14,7 @@
     "angular-resource": "1.3.x",
     "angular-animate": "1.3.x",
     "angular-cookies": "1.3.x",
-    "angular-summernote":"latest"
+    "angular-summernote":"latest",
+    "angular-ui-sortable":"latest"
   }
 }

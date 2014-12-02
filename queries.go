@@ -109,7 +109,7 @@ func getCheckItemById(c *gin.Context, dbmap *gorp.DbMap, checkItemId int64) (Che
 func getAllPublishedCategories(c *gin.Context, dbmap *gorp.DbMap) ([]Category, error) {
 	var categories []Category
 	var err error
-	_, err = dbmap.Select(&categories, "select id, category, parent, category from categories WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&categories, "select id, category, parent, category, sort_order from categories WHERE status=:status ORDER BY id ASC", map[string]interface{}{
 		"status": "published",
 	})
 	return categories, err
@@ -118,7 +118,7 @@ func getAllPublishedCategories(c *gin.Context, dbmap *gorp.DbMap) ([]Category, e
 func getAllPublishedCategoriesByParent(c *gin.Context, dbmap *gorp.DbMap, parent int64) ([]Category, error) {
 	var categories []Category
 	var err error
-	_, err = dbmap.Select(&categories, "select id, category, parent, category from categories WHERE status=:status AND parent=:parent ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&categories, "select id, category, parent, category, sort_order from categories WHERE status=:status AND parent=:parent ORDER BY id ASC", map[string]interface{}{
 		"status": "published",
 		"parent": parent,
 	})
