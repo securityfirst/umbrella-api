@@ -90,8 +90,18 @@ func getSegmentByCatId(c *gin.Context, dbmap *gorp.DbMap, categoryId int64) (Seg
 func getAllPublishedCheckItems(c *gin.Context, dbmap *gorp.DbMap) ([]CheckItem, error) {
 	var checkItems []CheckItem
 	var err error
-	_, err = dbmap.Select(&checkItems, "select id, title, text, value, parent, category from check_items WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&checkItems, "select id, title, text, value, parent, category from check_items WHERE status=:status ORDER BY sort_order ASC, id ASC", map[string]interface{}{
 		"status": "published",
+	})
+	return checkItems, err
+}
+
+func getAllPublishedCheckItemsByCat(c *gin.Context, dbmap *gorp.DbMap, categoryId int64) ([]CheckItem, error) {
+	var checkItems []CheckItem
+	var err error
+	_, err = dbmap.Select(&checkItems, "select id, title, text, value, parent, category from check_items WHERE status=:status AND category=:category_id ORDER BY sort_order ASC, id ASC", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
 	})
 	return checkItems, err
 }

@@ -31,14 +31,15 @@ secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http'
 
   }]);
 
-secFirstControllers.controller('CheckItemList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Segments', 'Categories',
-  function($scope, $routeParams, $http, $cookieStore, $location, Segments, Categories) {
+secFirstControllers.controller('CheckItemList', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'CheckItems', 'Categories',
+  function($scope, $routeParams, $http, $cookieStore, $location, CheckItems, Categories) {
 
     $scope.catId = $routeParams.categoryId;
 
-    Segments.getByCat($routeParams.categoryId).success(function(response) {
-      $scope.segments = response;
+    CheckItems.getByCat($routeParams.categoryId).success(function(response){
+      $scope.checkItems = response;
     });
+
     $scope.token = $cookieStore.get('token');
 
     Categories.getAll().success(function(response){
@@ -55,6 +56,60 @@ secFirstControllers.controller('CheckItemList', ['$scope', '$routeParams', '$htt
       }
       $scope.categories = sortedCats;
     });
+
+    $scope.deleteItem = function() {
+      CheckItems.deleteCat($scope.toDelete).success(function(response) {
+        $scope.showModal = false;
+        for (var i = 0; i < $scope.checkItems.length; i++) {
+          if ($scope.checkItems[i].id==$scope.toDelete) {
+            $scope.checkItems.splice(i, 1);
+          }
+        }
+      });
+    };
+
+  }]);
+
+secFirstControllers.controller('CheckItemDetail', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Categories', 'CheckItems',
+  function($scope, $routeParams, $http, $cookieStore, $location, Categories, CheckItems) {
+
+    $scope.token = $cookieStore.get('token');
+    $scope.action = $routeParams.action;
+
+    $scope.showModal = false;
+    $scope.toggleModal = function(toDelete){
+      $scope.showModal = !$scope.showModal;
+      $scope.toDelete = $scope.showModal?toDelete:0;
+    };
+
+    Categories.getAll().success(function(response){
+      $scope.categories = Categories.getParentOnly(response);
+    });
+
+    CheckItems.getId($routeParams.categoryId).success(function(response){
+      $scope.checkItem = response;
+    });
+
+
+    $scope.processForm = function() {
+      if ($routeParams.action=='create') {
+        CheckItems.create($scope.category).success(function(data) {
+            $scope.error = '';
+            $location.url('/check_items');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      } else if ($routeParams.action=='edit'){
+        CheckItems.update($routeParams.categoryId, $scope.category).success(function(data) {
+            $scope.error = '';
+            $location.url('/check_items');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      }
+    };
 
   }]);
 

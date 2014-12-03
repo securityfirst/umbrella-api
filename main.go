@@ -27,6 +27,7 @@ func main() {
 		v1.DELETE("/segments/:id", Auth(true), deleteSegment)
 		v1.GET("/check_items", Auth(false), getCheckItems)
 		v1.GET("/check_items/:id", Auth(false), getCheckItem)
+		v1.GET("/check_items/:id/category", Auth(false), getCheckItemsByCat)
 		v1.POST("/check_items", Auth(true), addCheckItem)
 		v1.PUT("/check_items/:id", Auth(true), editCheckItem)
 		v1.DELETE("/check_items/:id", Auth(true), deleteCheckItem)

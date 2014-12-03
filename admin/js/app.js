@@ -27,6 +27,18 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/check_items.html',
         controller: 'CheckItemList'
       }).
+      when('/check_items/:categoryId/category', {
+        templateUrl: 'partials/check_items.html',
+        controller: 'CheckItemList'
+      }).
+      when('/check_items/:categoryId/:action', {
+        templateUrl: 'partials/check_item_detail.html',
+        controller: 'CheckItemDetail'
+      }).
+      when('/check_items/:action', {
+        templateUrl: 'partials/check_item_detail.html',
+        controller: 'CheckItemDetail'
+      }).
       when('/segments/:categoryId/category', {
         templateUrl: 'partials/segments.html',
         controller: 'SegmentList'

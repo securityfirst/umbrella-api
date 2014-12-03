@@ -19,6 +19,18 @@ func getCheckItems(c *gin.Context) {
 	c.JSON(200, checkItems)
 }
 
+func getCheckItemsByCat(c *gin.Context) {
+	categoryId := to.Int64(c.Params.ByName("id"))
+	dbmap := initDb()
+	defer dbmap.Db.Close()
+	checkItems, err := getAllPublishedCheckItemsByCat(c, dbmap, categoryId)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, checkItems)
+}
+
 func getCheckItem(c *gin.Context) {
 	checkItemId := to.Int64(c.Params.ByName("id"))
 	if checkItemId != 0 {

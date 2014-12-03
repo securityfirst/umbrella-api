@@ -113,3 +113,40 @@ secFirstServices.factory('Categories', ['$http', '$cookieStore',
 
     return factory;
   }]);
+
+secFirstServices.factory('CheckItems', ['$http', '$cookieStore',
+  function($http, $cookieStore){
+    var factory = {};
+
+    factory.getAll = function() {
+        return $http.get('/v1/check_items', {
+            headers: {'token': $cookieStore.get('token')}
+        });
+    };
+
+    factory.getByCat = function(categoryId) {
+        if (typeof categoryId === "undefined") {
+          return $http.get('/v1/check_items', {
+              headers: {'token': $cookieStore.get('token')}
+          });
+        } else{
+          return $http.get("/v1/check_items/"+categoryId+"/category");
+        }
+    };
+
+    factory.updateCat = function(categoryId, formData) {
+      return $http({method: 'PUT', url: '/v1/check_items/'+categoryId+'/category/', headers: {'token': $cookieStore.get('token')}, data: formData
+      });
+    };
+
+    factory.deleteCat = function(deleteId) {
+        return $http.delete('/v1/check_items/'+deleteId, {
+            headers: {'token': $cookieStore.get('token')}
+        });
+    };
+
+    factory.getId = function(checkItemId) {
+        return $http.get("/v1/check_items/"+checkItemId);
+    };
+    return factory;
+  }]);
