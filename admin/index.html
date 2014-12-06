@@ -46,14 +46,14 @@
 
   <div class="container">
     <div class="header">
-      <nav>
+      <nav role="navigation" data-navigation>
         <ul class="nav nav-pills pull-right" ng-controller="TopNav">
-          <li role="presentation" class="active"><a href="#segments">Segments</a></li>
-          <li role="presentation"><a href="#categories">Categories</a></li>
-          <li role="presentation"><a href="#check_items">Check Items</a></li>
-          <li role="presentation"><a href="#about">About</a></li>
-          <li role="presentation" ng-hide="token != ''"><a href="#login">Login</a></li>
-          <li role="presentation" ng-hide="token == ''"><a href="#logout">Log Out</a></li>
+          <li role="presentation" class="active"><a href="#/segments">Segments</a></li>
+          <li role="presentation"><a href="#/categories">Categories</a></li>
+          <li role="presentation"><a href="#/check_items">Check Items</a></li>
+          <li role="presentation"><a href="#/about">About</a></li>
+          <li role="presentation" ng-hide="token != ''"><a href="#/login">Login</a></li>
+          <li role="presentation" ng-hide="token == ''"><a href="#/logout">Log Out</a></li>
         </ul>
       </nav>
       <h3 class="text-muted">Secfirst Content contribution</h3>

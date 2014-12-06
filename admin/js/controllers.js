@@ -245,5 +245,8 @@ secFirstControllers.controller('LogOut', ['$scope', '$cookieStore', '$location',
 
 secFirstControllers.controller('TopNav', ['$scope', '$cookieStore', '$location',
   function($scope, $cookieStore, $location) {
-    $scope.token = $cookieStore.get('token');
+
+    $scope.$watch(function() { return $cookieStore.get('token');}, function(newValue) {
+        $scope.token = $cookieStore.get('token');
+    });
   }]);

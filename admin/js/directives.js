@@ -45,3 +45,31 @@ angular.module('secFirstDirectives').directive('modal', function () {
       }
     };
   });
+
+angular.module("secFirstDirectives").directive("navigation", [
+    "$location", function($location) {
+      return {
+        restrict: 'A',
+        scope: {},
+        link: function(scope, element) {
+          var classSelected, navLinks;
+
+          scope.location = $location;
+
+          classSelected = 'active';
+
+          navLinks = element.find('a');
+
+          scope.$watch('location.path()', function(newPath) {
+            var segments =  newPath.split('/');
+            if (segments.length>1) {newPath = '/'+segments[1];}
+            var el;
+            el = navLinks.filter('[href="#' + newPath + '"]');
+
+            navLinks.not(el).closest('li').removeClass(classSelected);
+            return el.closest('li').addClass(classSelected);
+          });
+        }
+      };
+    }
+  ]);
