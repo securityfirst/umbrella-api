@@ -155,6 +155,7 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
 
     $scope.token = $cookieStore.get('token');
     $scope.action = $routeParams.action;
+    console.log($routeParams);
     if (typeof($scope.action) === "undefined") { $scope.action = ''; }
 
     $scope.showModal = false;
@@ -168,11 +169,17 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
     });
 
     Categories.getId($routeParams.categoryId).success(function(response){
-      $scope.category = response;
-      if ($scope.category.parent!==0) {
-        for (var i = 0; i < $scope.categories.length; i++) {
-          if ($scope.categories[i].id==$scope.category.parent) {
-            $scope.category.parentName = $scope.categories[i].category;
+      if ($scope.action==='create') {
+        var category = {}
+        category.parent = response.id;
+        $scope.category = category;
+      } else{
+        $scope.category = response;
+        if ($scope.category.parent!==0) {
+          for (var i = 0; i < $scope.categories.length; i++) {
+            if ($scope.categories[i].id==$scope.category.parent) {
+              $scope.category.parentName = $scope.categories[i].category;
+            }
           }
         }
       }

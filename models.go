@@ -71,6 +71,18 @@ type Category struct {
 	SortOrder  int64  `json:"-" db:"sort_order"`
 }
 
+type CategoryInsert struct {
+	Id         int64  `json:"id" db:"id"`
+	Parent     int64  `json:"parent" db:"parent" binding:"required"`
+	Category   string `json:"category" db:"category" binding:"required"`
+	Status     string `json:"-" db:"status"`
+	CreatedAt  int64  `json:"-" db:"created_at"`
+	ApprovedAt int64  `json:"-" db:"approved_at"`
+	ApprovedBy int64  `json:"-" db:"approved_by"`
+	Author     int64  `json:"-" db:"author"`
+	SortOrder  int64  `json:"-" db:"sort_order"`
+}
+
 type JSONCategory struct {
 	Parent   int64  `json:"parent" db:"parent"`
 	Category string `json:"category" db:"category"`

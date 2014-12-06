@@ -62,16 +62,18 @@ func getCategoryByParent(c *gin.Context) {
 }
 
 func addCategory(c *gin.Context) {
-	var json Category
+	var json CategoryInsert
 	dbmap := initDb()
 	defer dbmap.Db.Close()
 	c.Bind(&json)
 	fmt.Println(json)
 	if true {
 		user := c.MustGet("user").(User)
-		category := Category{Category: json.Category, Parent: json.Parent, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+		category := CategoryInsert{Category: json.Category, Parent: json.Parent, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
 		if user.Role == 1 {
 			category.Status = "published"
+			category.ApprovedBy = user.Id
+			category.ApprovedAt = time.Now().Unix()
 		}
 		err := dbmap.Insert(&category)
 		if err != nil {

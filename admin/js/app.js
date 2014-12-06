@@ -55,6 +55,10 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/category_detail.html',
         controller: 'CategoryDetail'
       }).
+      when('/categories/:categoryId/:action/:parentId', {
+        templateUrl: 'partials/category_detail.html',
+        controller: 'CategoryDetail'
+      }).
       when('/categories/:categoryId', {
         templateUrl: 'partials/category_detail.html',
         controller: 'CategoryDetail'

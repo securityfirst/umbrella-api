@@ -27,6 +27,7 @@ func initDb() *gorp.DbMap {
 	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
 	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
 	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
+	dbmap.AddTableWithName(CategoryInsert{}, "categories").SetKeys(true, "Id")
 	// dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
 	return dbmap
 }
