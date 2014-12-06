@@ -119,7 +119,7 @@ func getCheckItemById(c *gin.Context, dbmap *gorp.DbMap, checkItemId int64) (Che
 func getAllPublishedCategories(c *gin.Context, dbmap *gorp.DbMap) ([]Category, error) {
 	var categories []Category
 	var err error
-	_, err = dbmap.Select(&categories, "select id, category, parent, category, sort_order from categories WHERE status=:status ORDER BY id ASC", map[string]interface{}{
+	_, err = dbmap.Select(&categories, "select categories.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, categories.category, categories.parent, categories.`status`,categories. created_at, categories.author, categories.approved_at, categories.approved_by from categories LEFT JOIN categories as cat ON cat.id = categories.parent WHERE categories.status=:status ORDER BY id ASC", map[string]interface{}{
 		"status": "published",
 	})
 	return categories, err
@@ -128,9 +128,9 @@ func getAllPublishedCategories(c *gin.Context, dbmap *gorp.DbMap) ([]Category, e
 func getAllPublishedCategoriesByParent(c *gin.Context, dbmap *gorp.DbMap, parent int64) ([]Category, error) {
 	var categories []Category
 	var err error
-	_, err = dbmap.Select(&categories, "select id, category, parent, category, sort_order from categories WHERE status=:status AND parent=:parent ORDER BY id ASC", map[string]interface{}{
-		"status": "published",
-		"parent": parent,
+	_, err = dbmap.Select(&categories, "select categories.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, categories.category, categories.parent, categories.`status`,categories. created_at, categories.author, categories.approved_at, categories.approved_by from categories LEFT JOIN categories as cat ON cat.id = categories.parent WHERE categories.status=:status AND categories.id=:parent_id ORDER BY id ASC", map[string]interface{}{
+		"status":    "published",
+		"parent_id": parent,
 	})
 	return categories, err
 }
@@ -138,7 +138,7 @@ func getAllPublishedCategoriesByParent(c *gin.Context, dbmap *gorp.DbMap, parent
 func getCategoryById(c *gin.Context, dbmap *gorp.DbMap, categoryId int64) (Category, error) {
 	var category Category
 	var err error
-	err = dbmap.SelectOne(&category, "select id, category, parent, status, created_at, author, approved_at, approved_by from categories WHERE id=:category_id ORDER BY id ASC", map[string]interface{}{
+	err = dbmap.SelectOne(&category, "select categories.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, categories.category, categories.parent, categories.`status`,categories. created_at, categories.author, categories.approved_at, categories.approved_by from categories LEFT JOIN categories as cat ON cat.id = categories.parent WHERE categories.status=:status AND categories.id=:category_id ORDER BY id ASC", map[string]interface{}{
 		"status":      "published",
 		"category_id": categoryId,
 	})

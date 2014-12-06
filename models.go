@@ -6,9 +6,9 @@ type LoginJSON struct {
 }
 
 type User struct {
-	Id       int64  `db:"id"`
-	Name     string `db:"name"`
-	Email    string `db:"email"`
+	Id       int64  `db:"id" json:"-"`
+	Name     string `db:"name" json:"name"`
+	Email    string `db:"email" json:"email"`
 	Password string `json:"-"`
 	Token    string `json:"-"`
 	Role     int    `db:"role" json:"-"`
@@ -61,6 +61,7 @@ type JSONSegment struct {
 type Category struct {
 	Id         int64  `json:"id" db:"id"`
 	Parent     int64  `json:"parent" db:"parent" binding:"required"`
+	ParentName string `json:"parentName" db:"parent_name"`
 	Category   string `json:"category" db:"category" binding:"required"`
 	Status     string `json:"-" db:"status"`
 	CreatedAt  int64  `json:"-" db:"created_at"`

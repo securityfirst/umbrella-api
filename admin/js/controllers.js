@@ -155,6 +155,7 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
 
     $scope.token = $cookieStore.get('token');
     $scope.action = $routeParams.action;
+    if (typeof($scope.action) === "undefined") { $scope.action = ''; }
 
     $scope.showModal = false;
     $scope.toggleModal = function(toDelete){
@@ -168,6 +169,13 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
 
     Categories.getId($routeParams.categoryId).success(function(response){
       $scope.category = response;
+      if ($scope.category.parent!==0) {
+        for (var i = 0; i < $scope.categories.length; i++) {
+          if ($scope.categories[i].id==$scope.category.parent) {
+            $scope.category.parentName = $scope.categories[i].category;
+          }
+        }
+      }
     });
 
 
@@ -228,6 +236,7 @@ secFirstControllers.controller('LoginForm', ['$scope', '$http', '$cookieStore', 
           $scope.data = null;
           $cookieStore.put('token', data.token);
           $scope.token = data.token;
+          $cookieStore.put('loginProfile', data.profile);
           $location.url('/segments');
           $scope.error = "";
       }).error(function(data, status, header, config){
@@ -247,6 +256,7 @@ secFirstControllers.controller('TopNav', ['$scope', '$cookieStore', '$location',
   function($scope, $cookieStore, $location) {
 
     $scope.$watch(function() { return $cookieStore.get('token');}, function(newValue) {
+        $scope.loginProfile = $cookieStore.get('loginProfile');
         $scope.token = $cookieStore.get('token');
     });
   }]);

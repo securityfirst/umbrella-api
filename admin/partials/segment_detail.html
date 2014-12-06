@@ -1,5 +1,8 @@
-<div ng-controller="SegmentDetail">
-
+<div class="row">
+	<a href="#/segments"><< Back to Segments</a>
+	<br><br>
+</div>
+<div class="row">
 	<div ng-if="token != ''">
 		<div class="row">
 		  <p>
@@ -34,6 +37,4 @@
 		<br>
 		<div ng-bind-html="segment.body | to_trusted"></div>
 	</div>
-
 </div>
-
