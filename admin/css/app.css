@@ -17,6 +17,10 @@ body {
   line-height: 40px;
 }
 
+.header {
+  border-bottom: 1px solid #e5e5e5;
+}
+
 .footer {
   padding-top: 19px;
   color: #777;
@@ -30,6 +34,10 @@ body {
 }
 .container-narrow > hr {
   margin: 30px 0;
+}
+
+.header{
+  margin-bottom: 20px;
 }
 
 .jumbotron {
@@ -63,10 +71,6 @@ body {
   .footer {
     padding-right: 0;
     padding-left: 0;
-  }
-
-  .header {
-    margin-bottom: 30px;
   }
 
   .jumbotron {

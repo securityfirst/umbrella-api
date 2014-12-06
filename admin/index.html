@@ -53,12 +53,14 @@
           <li role="presentation"><a href="#/check_items">Check Items</a></li>
           <li role="presentation"><a href="#/about">About</a></li>
           <li role="presentation" ng-hide="token != ''"><a href="#/login">Login</a></li>
-          <li role="presentation" ng-hide="token == ''"><a href="#/logout">Log Out</a></li>
+          <li><a class="dropdown-toggle" ng-show="token != ''" id="userDropdown" data-toggle="dropdown" aria-expanded="true">Logged in as {{loginProfile.name}}<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="userDropdown">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#/logout">Log out</a></li>
+          </ul>
+          </li>
         </ul>
       </nav>
       <h3 class="text-muted">Secfirst Content contribution</h3>
-      <div ng-show="token!==''" class="pull-right">Logged in as <span style="text-transform: capitalize;"><a href="mailto:{{loginProfile.email}}">{{loginProfile.name}}</a></span></div>
-      <hr>
     </div>
 
     <div class="row">
