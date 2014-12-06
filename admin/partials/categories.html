@@ -8,7 +8,7 @@
 
       <ul ui-sortable="sortableOptions" ng-model="categories" class="categories">
         <li ng-class="{active:x.id==catId,submenu:x.parent!==0}" ng-repeat="category in categories" class="segment-list">
-          <a href="#/segments/{{category.id}}">{{category.category}}</a>
+          <a href="#/categories/{{category.id}}">{{category.category}}</a>
           <p ng-show="category.parentName!==''">belongs to parent category {{category.parentName}}</p>
           <a ng-href="#/categories/{{category.id}}/edit" ng-show="token!==''" type="button" class="btn btn-warning">Edit</a>
           <button ng-click="toggleModal(category.id)" ng-show="token!==''" type="button" class="btn btn-danger">Delete</button>
