@@ -28,10 +28,16 @@
       </ul>
     </div>
 
-    <div class="row">
+    <div class="row" ng-show="catParent">
       <br><br><br>
       <center>
-        <a ng-href="#/categories/{{catId}}/create" ng-show="token!==''" type="button" class="btn btn-primary">Create new subcategory</a>
+        <a ng-show="catParent" ng-href="#/categories/{{catId}}/create" ng-show="token!==''" type="button" class="btn btn-primary">Create new subcategory</a>
+      </center>
+    </div>
+    <div class="row" ng-show="!catParent" ng-hide="segments.length>0">
+      <br><br><br>
+      <center>
+        <a ng-href="#/segments/{{catId}}" ng-show="token!==''" type="button" class="btn btn-primary">Add text for segment</a>
       </center>
     </div>
   </div>

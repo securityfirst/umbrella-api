@@ -1,5 +1,6 @@
 <div class="row">
-	<a href="#/segments"><< Back to Segments</a>
+	<a ng-show="segment.id" href="#/segments/{{segment.id}}/category"><< Back to Segments</a>
+	<a ng-hide="segment.id" href="#/segments"><< Back to Segments</a>
 	<br><br>
 </div>
 <div class="row">

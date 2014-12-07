@@ -17,6 +17,9 @@ secFirstControllers.controller('SegmentList', ['$scope', '$routeParams', '$http'
     Categories.getAll().success(function(response){
       var sortedCats = [];
       for (var i = 0; i < response.length; i++) {
+        if (response[i].id===parseInt($scope.catId, 10)) {
+          $scope.catParent = (response[i].parent===0) ? true : false;
+        }
         if (response[i].parent===0) {
           sortedCats.push(response[i]);
           for (var j = 0; j < response.length; j++) {
@@ -200,7 +203,11 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
       if ($routeParams.action=='create') {
         Categories.create($scope.category).success(function(data) {
             $scope.error = '';
-            $location.url('/categories');
+            if (typeof($scope.categoryId)!=='undefined') {
+              $location.url('/segments/'+$scope.categoryId+'/category');
+            } else{
+              $location.url('/categories');
+            }
         }).error(function(data, status, header, config){
             $scope.error = data.error;
             $scope.message = "";
@@ -218,11 +225,21 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
 
   }]);
 
-secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments',
-  function($scope, $routeParams, $cookieStore, $location, Segments) {
+secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments', 'Categories',
+  function($scope, $routeParams, $cookieStore, $location, Segments, Categories) {
     Segments.getByCat($routeParams.segmentId).success(function(response){
-      $scope.segment = response[0];
+      if (response!==null) {
+        $scope.segment = response[0];
+      } else {
+        Categories.getId($routeParams.segmentId).success(function(response){
+          var segment = {};
+          segment.id = $routeParams.segmentId;
+          segment.title = response.category;
+          $scope.segment = segment;
+        });
+      }
     });
+
 
     $scope.token = $cookieStore.get('token');
 

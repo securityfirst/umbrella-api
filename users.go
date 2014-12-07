@@ -17,7 +17,7 @@ func loginEndpoint(c *gin.Context) {
 		defer dbmap.Db.Close()
 
 		var u User
-		err := dbmap.SelectOne(&u, "select id, name, email, password, token from users where email=?", json.Email)
+		err := dbmap.SelectOne(&u, "select id, name, email, password, token, role from users where email=?", json.Email)
 		if err != nil {
 			fmt.Println(err)
 			match, _ := regexp.MatchString("connection refused", err.Error())
