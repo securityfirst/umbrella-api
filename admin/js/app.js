@@ -31,11 +31,11 @@ secFirstApp.config(['$routeProvider',
         templateUrl: 'partials/check_items.html',
         controller: 'CheckItemList'
       }).
-      when('/check_items/:categoryId/:action', {
+      when('/check_items/:action', {
         templateUrl: 'partials/check_item_detail.html',
         controller: 'CheckItemDetail'
       }).
-      when('/check_items/:action', {
+      when('/check_items/:categoryId/:action', {
         templateUrl: 'partials/check_item_detail.html',
         controller: 'CheckItemDetail'
       }).

@@ -153,10 +153,17 @@ secFirstControllers.controller('CategoryList', ['$scope', '$routeParams', '$http
 secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$http', '$cookieStore', '$location', 'Categories',
   function($scope, $routeParams, $http, $cookieStore, $location, Categories) {
 
+    $scope.backLink = 'categories';
+    $scope.backLinkName = 'Categories';
+
     $scope.token = $cookieStore.get('token');
-    $scope.action = $routeParams.action;
-    console.log($routeParams);
-    if (typeof($scope.action) === "undefined") { $scope.action = ''; }
+    if (Object.keys($routeParams).length==1) {
+      $scope.action = $routeParams.categoryId;
+      if (typeof($scope.action) === "undefined") { $scope.action = ''; }
+    } else{
+      $scope.action = $routeParams.action;
+      $scope.categoryId = $routeParams.categoryId;
+    }
 
     $scope.showModal = false;
     $scope.toggleModal = function(toDelete){
@@ -168,23 +175,26 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
       $scope.categories = Categories.getParentOnly(response);
     });
 
-    Categories.getId($routeParams.categoryId).success(function(response){
-      if ($scope.action==='create') {
-        var category = {}
-        category.parent = response.id;
-        $scope.category = category;
-      } else{
-        $scope.category = response;
-        if ($scope.category.parent!==0) {
-          for (var i = 0; i < $scope.categories.length; i++) {
-            if ($scope.categories[i].id==$scope.category.parent) {
-              $scope.category.parentName = $scope.categories[i].category;
+    if (typeof($scope.categoryId)!=='undefined') {
+      Categories.getId($routeParams.categoryId).success(function(response){
+        if ($scope.action==='create') {
+          $scope.backLink = 'segments/'+$routeParams.categoryId+'/category';
+          $scope.backLinkName = 'Segments';
+          var category = {};
+          category.parent = response.id;
+          $scope.category = category;
+        } else{
+          $scope.category = response;
+          if ($scope.category.parent!==0) {
+            for (var i = 0; i < $scope.categories.length; i++) {
+              if ($scope.categories[i].id==$scope.category.parent) {
+                $scope.category.parentName = $scope.categories[i].category;
+              }
             }
           }
         }
-      }
-    });
-
+      });
+    }
 
     $scope.processForm = function() {
       if ($routeParams.action=='create') {
@@ -213,6 +223,7 @@ secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$coo
     Segments.getByCat($routeParams.segmentId).success(function(response){
       $scope.segment = response[0];
     });
+
     $scope.token = $cookieStore.get('token');
 
     $scope.options = {

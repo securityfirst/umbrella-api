@@ -18,7 +18,6 @@
     </div>
 
     <div class="row">
-
       <ul class="segments">
         <li ng-repeat="segment in segments | filter:query | orderBy:orderProp"
             class="thumbnail segment-list">
@@ -27,7 +26,13 @@
           <p>{{segment.body}}</p>
         </li>
       </ul>
+    </div>
 
+    <div class="row">
+      <br><br><br>
+      <center>
+        <a ng-href="#/categories/{{catId}}/create" ng-show="token!==''" type="button" class="btn btn-primary">Create new subcategory</a>
+      </center>
     </div>
   </div>
 
