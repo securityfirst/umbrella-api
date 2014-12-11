@@ -55,7 +55,7 @@ func getAllPublishedSegments(c *gin.Context, dbmap *gorp.DbMap) ([]Segment, erro
 func getAllPublishedSegmentsByCat(c *gin.Context, dbmap *gorp.DbMap, category int64) ([]Segment, error) {
 	var segments []Segment
 	var err error
-	_, err = dbmap.Select(&segments, "select id, title, subtitle, body, category from segments WHERE status=:status AND category=:category ORDER BY id DESC", map[string]interface{}{
+	_, err = dbmap.Select(&segments, "SELECT s.id, s.title, s.subtitle, s.body, s.category FROM segments s INNER JOIN (SELECT `category`, MAX(`created_at`) as max_date FROM segments GROUP BY category) b ON s.category = b.category AND s.created_at = b.max_date WHERE s.category=:category", map[string]interface{}{
 		"status":   "published",
 		"category": category,
 	})

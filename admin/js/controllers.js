@@ -227,15 +227,18 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
 
 secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$cookieStore', '$location', 'Segments', 'Categories',
   function($scope, $routeParams, $cookieStore, $location, Segments, Categories) {
-    Segments.getByCat($routeParams.segmentId).success(function(response){
-      if (response!==null) {
+
+    Segments.getRawByCat($routeParams.segmentId).success(function(response){
+      if (response!==null && Object.keys(response).length>0) {
         $scope.segment = response[0];
+        $scope.action = 'Edit';
       } else {
         Categories.getId($routeParams.segmentId).success(function(response){
           var segment = {};
-          segment.id = $routeParams.segmentId;
           segment.title = response.category;
+          segment.category = $routeParams.segmentId;
           $scope.segment = segment;
+          $scope.action = 'Create';
         });
       }
     });
@@ -245,18 +248,34 @@ secFirstControllers.controller('SegmentDetail', ['$scope', '$routeParams', '$coo
 
     $scope.options = {
       toolbar: [
-        ['style', ['bold', 'italic', 'underline', 'clear']]
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['misc', ['codeview']]
       ]
     };
 
     $scope.processForm = function() {
-      Segments.updateCat($routeParams.segmentId, $scope.segment).success(function(data) {
-          $scope.error = '';
-          $location.url('/segments');
-      }).error(function(data, status, header, config){
-          $scope.error = data.error;
-          $scope.message = "";
-      });
+    $scope.segment.body = $scope.segment.body.replace(/(\r\n|\n|\r|<p><br><\/p>)/gm,"");
+    if (!/^<p>(.*?)<\/p>$/.test($scope.segment.body)) {$scope.segment.body = '<p>'+$scope.segment.body+'</p>';}
+      if (typeof($scope.segment.id)==='undefined') {
+        $scope.segment.status = 0;
+        $scope.segment.category = parseInt($scope.segment.category, 10);
+        if (typeof($scope.segment.subtitle)==='undefined') {$scope.segment.subtitle=' ';}
+        Segments.insertCat($scope.segment).success(function(response){
+            $scope.error = '';
+            $location.url('/segments/'+$scope.segment.category+'/category');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      } else {
+        Segments.updateCat($scope.segment.category, $scope.segment).success(function(data) {
+            $scope.error = '';
+            $location.url('/segments/'+$scope.category+'/category');
+        }).error(function(data, status, header, config){
+            $scope.error = data.error;
+            $scope.message = "";
+        });
+      }
     };
 
   }]);

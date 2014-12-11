@@ -30,8 +30,23 @@ secFirstServices.factory('Segments', ['$http', '$cookieStore',
         }
     };
 
+    factory.getRawByCat = function(categoryId) {
+        if (typeof categoryId === "undefined") {
+          return $http.get('/v1/segments_raw', {
+              headers: {'token': $cookieStore.get('token')}
+          });
+        } else{
+          return $http.get("/v1/segments_raw/"+categoryId+"/category");
+        }
+    };
+
     factory.updateCat = function(categoryId, formData) {
       return $http({method: 'PUT', url: '/v1/segments/'+categoryId+'/category/', headers: {'token': $cookieStore.get('token')}, data: formData
+      });
+    };
+
+    factory.insertCat = function(formData) {
+      return $http({method: 'POST', url: '/v1/segments', headers: {'token': $cookieStore.get('token')}, data: formData
       });
     };
 

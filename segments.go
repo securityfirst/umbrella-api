@@ -114,6 +114,11 @@ func addSegment(c *gin.Context) {
 	if c.EnsureBody(&json) {
 		user := c.MustGet("user").(User)
 		segment := Segment{Title: json.Title, SubTitle: json.SubTitle, Body: json.Body, Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+		if user.Role == 1 {
+			segment.Status = "published"
+			segment.ApprovedBy = user.Id
+			segment.ApprovedAt = time.Now().Unix()
+		}
 		err := dbmap.Insert(&segment)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})

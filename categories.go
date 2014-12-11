@@ -169,6 +169,11 @@ func deleteCategory(c *gin.Context) {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
+		_, err = dbmap.Exec("delete from segments where category=?", category.Id)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
 		_, err = dbmap.Delete(&category)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})

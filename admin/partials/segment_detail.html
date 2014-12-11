@@ -25,17 +25,17 @@
 					<summernote config="options" ng-model="segment.body"></summernote>
 				</div>
 
-				<button type="submit" class="btn btn-default">Edit</button>
+				<button type="submit" class="btn btn-default">{{action}}</button>
 			</form>
 		</div>
 	</div>
 	<div ng-if="token == ''">
 		<h1>{{segment.title}}</h1>
-
 		<p>{{segment.subtitle}}</p>
-
 		<br>
 		<br>
 		<div ng-bind-html="segment.body | to_trusted"></div>
 	</div>
 </div>
+<br>
+<br>
