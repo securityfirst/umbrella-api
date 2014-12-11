@@ -200,7 +200,7 @@ secFirstControllers.controller('CategoryDetail', ['$scope', '$routeParams', '$ht
     }
 
     $scope.processForm = function() {
-      if ($routeParams.action=='create') {
+      if ($routeParams.action=='create' || typeof($routeParams.action)==='undefined') {
         Categories.create($scope.category).success(function(data) {
             $scope.error = '';
             if (typeof($scope.categoryId)!=='undefined') {
