@@ -1,59 +1,55 @@
 package main
 
 import (
-	"database/sql"
+	"flag"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tmilewski/goenv"
 )
 
-var (
-	db *sql.DB
-)
+var isProduction bool
 
 func main() {
+	err := goenv.Load()
+	checkErr(err)
+	// envArg := flag.String("env", "production", "Environment")
+	envArg := flag.String("env", "development", "Environment")
+	flag.Parse()
+	if *envArg == "production" {
+		isProduction = true
+	}
+	um := getUmbrella()
+	if um.Db != nil {
 
+	}
 	r := gin.Default()
-
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/segments", Auth(false), getSegments)
-		v1.GET("/segments_raw", Auth(false), getSegmentsRaw)
-		v1.GET("/segments_raw/:id/category", Auth(false), getSegmentsRawByCat)
-		v1.GET("/segments/:id", Auth(false), getSegment)
-		v1.GET("/segments/:id/category", Auth(false), getSegmentsByCat)
-		v1.POST("/segments", Auth(true), addSegment)
-		v1.PUT("/segments/:id/category", Auth(true), editSegmentByCat)
-		v1.POST("/segments/:id/status", Auth(true), approveSegment)
-		v1.DELETE("/segments/:id", Auth(true), deleteSegment)
-		v1.GET("/check_items", Auth(false), getCheckItems)
-		v1.GET("/check_items/:id", Auth(false), getCheckItem)
-		v1.GET("/check_items/:id/category", Auth(false), getCheckItemsByCat)
-		v1.POST("/check_items", Auth(true), addCheckItem)
-		v1.PUT("/check_items/:id", Auth(true), editCheckItem)
-		v1.DELETE("/check_items/:id", Auth(true), deleteCheckItem)
-		v1.POST("/check_items/:id/status", Auth(true), approveCheckItem)
-		v1.GET("/account/login_check", Auth(true), loginCheck)
-		v1.POST("/account/login", loginEndpoint)
-		v1.GET("/categories", Auth(false), getCategories)
-		v1.GET("/categories/:id/by_parent", Auth(false), getCategoryByParent)
-		v1.GET("/categories/:id", Auth(false), getCategory)
-		v1.POST("/categories", Auth(true), addCategory)
-		v1.PUT("/categories/:id", Auth(true), editCategory)
-		v1.POST("/categories/:id/status", Auth(true), approveCategory)
-		v1.DELETE("/categories/:id", Auth(true), deleteCategory)
+		v1.GET("/segments", um.getSegmentsRaw)
+		v1.GET("/segments_raw", um.Auth(false), um.getSegmentsRaw)
+		v1.GET("/segments_raw/:id/category", um.Auth(false), um.getSegmentsRawByCat)
+		v1.GET("/segments/:id", um.Auth(false), um.getSegment)
+		v1.GET("/segments/:id/category", um.Auth(false), um.getSegmentsByCat)
+		v1.POST("/segments", um.Auth(true), um.addSegment)
+		v1.PUT("/segments/:id/category", um.Auth(true), um.editSegmentByCat)
+		v1.POST("/segments/:id/status", um.Auth(true), um.approveSegment)
+		v1.DELETE("/segments/:id", um.Auth(true), um.deleteSegment)
+		v1.GET("/check_items", um.Auth(false), um.getCheckItems)
+		v1.GET("/check_items/:id", um.Auth(false), um.getCheckItem)
+		v1.GET("/check_items/:id/category", um.Auth(false), um.getCheckItemsByCat)
+		v1.POST("/check_items", um.Auth(true), um.addCheckItem)
+		v1.DELETE("/check_items/:id", um.Auth(true), um.deleteCheckItem)
+		v1.POST("/check_items/:id/status", um.Auth(true), um.approveCheckItem)
+		v1.GET("/account/login_check", um.Auth(true), um.loginCheck)
+		v1.POST("/account/login", um.loginEndpoint)
+		v1.GET("/categories", um.Auth(false), um.getCategories)
+		v1.GET("/categories/:id/by_parent", um.Auth(false), um.getCategoryByParent)
+		v1.GET("/categories/:id", um.Auth(false), um.getCategory)
+		v1.POST("/categories", um.Auth(true), um.addCategory)
+		v1.PUT("/categories/:id", um.Auth(true), um.editCategory)
+		v1.POST("/categories/:id/status", um.Auth(true), um.approveCategory)
+		v1.DELETE("/categories/:id", um.Auth(true), um.deleteCategory)
 	}
-
-	r.Static("/admin", "./admin")
-
 	r.Run(":8080")
 
-}
-
-func newDb(connection string) *sql.DB {
-	db, err := sql.Open("mysql", connection)
-	if err != nil {
-		panic(err)
-	}
-
-	return db
 }

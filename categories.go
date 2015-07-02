@@ -1,37 +1,47 @@
 package main
 
 import (
-	"fmt"
+	"database/sql"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
 )
 
-func getCategories(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	categories, err := getAllPublishedCategories(c, dbmap)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+func (um *Umbrella) getCategories(c *gin.Context) {
+	categories, err := um.getAllPublishedCategories(c)
+	um.checkErr(c, err)
 	c.JSON(200, categories)
 }
 
-func getCategory(c *gin.Context) {
+func (um *Umbrella) getCategory(c *gin.Context) {
 	categoryId := to.Int64(c.Params.ByName("id"))
 	if categoryId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		category, err := getCategoryById(c, dbmap, categoryId)
+		category, err := um.getCategoryById(c, categoryId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
+		}
+		c.JSON(200, category)
+		return
+	} else {
+		c.JSON(404, gin.H{"error": "Not found"})
+	}
+}
+
+func (um *Umbrella) getCategoryByParent(c *gin.Context) {
+	categoryId := to.Int64(c.Params.ByName("id"))
+	if categoryId != 0 {
+		category, err := um.getAllPublishedCategoriesByParent(c, categoryId)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
+				return
+			}
+			um.checkErr(c, err)
 		}
 		c.JSON(200, category)
 		return
@@ -40,33 +50,9 @@ func getCategory(c *gin.Context) {
 	}
 }
 
-func getCategoryByParent(c *gin.Context) {
-	categoryId := to.Int64(c.Params.ByName("id"))
-	if categoryId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		category, err := getAllPublishedCategoriesByParent(c, dbmap, categoryId)
-		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
-				return
-			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, category)
-		return
-	} else {
-		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
-	}
-}
-
-func addCategory(c *gin.Context) {
+func (um *Umbrella) addCategory(c *gin.Context) {
 	var json CategoryInsert
-	dbmap := initDb()
-	defer dbmap.Db.Close()
 	c.Bind(&json)
-	fmt.Println(json)
 	if true {
 		user := c.MustGet("user").(User)
 		category := CategoryInsert{Category: json.Category, Parent: json.Parent, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
@@ -75,31 +61,25 @@ func addCategory(c *gin.Context) {
 			category.ApprovedBy = user.Id
 			category.ApprovedAt = time.Now().Unix()
 		}
-		err := dbmap.Insert(&category)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
+		err := um.Db.Insert(&category)
+		um.checkErr(c, err)
 		c.JSON(200, category)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func editCategory(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) editCategory(c *gin.Context) {
 	var json JSONCategory
 	categoryId := to.Int64(c.Params.ByName("id"))
 	if c.EnsureBody(&json) && categoryId != 0 {
-		category, err := getCategoryById(c, dbmap, categoryId)
+		category, err := um.getCategoryById(c, categoryId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		if json.Category != "" {
 			user := c.MustGet("user").(User)
@@ -110,12 +90,8 @@ func editCategory(c *gin.Context) {
 			}
 			category.CreatedAt = time.Now().Unix()
 			category.Author = user.Id
-			count, err := dbmap.Update(&category)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-			} else if count < 1 {
-				c.JSON(500, gin.H{"error": "Could not update the resource"})
-			}
+			_, err := um.Db.Update(&category)
+			um.checkErr(c, err)
 			c.JSON(200, category)
 			return
 		}
@@ -123,65 +99,50 @@ func editCategory(c *gin.Context) {
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func approveCategory(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) approveCategory(c *gin.Context) {
 	var json JSONCategory
 	c.Bind(&json)
 	categoryId := to.Int64(c.Params.ByName("id"))
 	if categoryId != 0 {
-		category, err := getCategoryById(c, dbmap, categoryId)
+		category, err := um.getCategoryById(c, categoryId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not Found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		category.Status = json.Status
-		user := c.MustGet("user").(User)
 		if category.Status == "published" {
 			category.ApprovedAt = time.Now().Unix()
-			category.ApprovedBy = user.Id
+			category.ApprovedBy = c.MustGet("user").(User).Id
 		}
-		_, err = dbmap.Update(&category)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-		}
+		_, err = um.Db.Update(&category)
+		um.checkErr(c, err)
 		c.JSON(200, category)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or more parameters are missing"})
 }
 
-func deleteCategory(c *gin.Context) {
+func (um *Umbrella) deleteCategory(c *gin.Context) {
 	categoryId := to.Int64(c.Params.ByName("id"))
 	if categoryId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		category, err := getCategoryById(c, dbmap, categoryId)
+		category, err := um.getCategoryById(c, categoryId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
-		_, err = dbmap.Exec("delete from segments where category=?", category.Id)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		_, err = dbmap.Delete(&category)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
+		_, err = um.Db.Exec("delete from segments where category=?", category.Id)
+		um.checkErr(c, err)
+		_, err = um.Db.Delete(&category)
+		um.checkErr(c, err)
 		c.Writer.WriteHeader(204)
 		return
 	} else {
-		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+		c.JSON(404, gin.H{"error": "Not found"})
 	}
 }

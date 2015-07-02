@@ -2,19 +2,90 @@ package main
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"math/big"
 	"os"
+	"runtime"
 
-	"github.com/coopernurse/gorp"
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
+	"github.com/go-gorp/gorp"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func checkErr(err error, msg string) {
+func getUmbrella() (umbrella Umbrella) {
+	umbrella = Umbrella{
+		Db: initDb(),
+	}
+	if !isProduction {
+		umbrella.Db.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
+	}
+	return umbrella
+}
+
+func initDb() *gorp.DbMap {
+	var connString string
+	if isProduction {
+		connString = os.Getenv("DB_PROD")
+	} else {
+		connString = os.Getenv("DB_DEV")
+	}
+	db, err := sql.Open("mysql", connString)
+	if isProduction {
+		db.SetMaxIdleConns(2000)
+		db.SetMaxOpenConns(2000)
+	}
+	checkErr(err)
+	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
+	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
+	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
+	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
+	dbmap.AddTableWithName(CategoryInsert{}, "categories").SetKeys(true, "Id")
+	// dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
+	return dbmap
+}
+
+func (um *Umbrella) JSON(c *gin.Context, code int, obj interface{}) {
+	if !c.Writer.Written() {
+		if obj != nil {
+			c.JSON(code, obj)
+		} else {
+			c.Writer.WriteHeader(code)
+			c.Writer.Write([]byte(""))
+			obj = gin.H{"": ""}
+		}
+	}
+}
+
+func (um *Umbrella) HTML(c *gin.Context, code int, name string, obj interface{}) {
+	if !c.Writer.Written() {
+		c.HTML(code, name, obj)
+	}
+}
+
+func checkErr(err error) {
 	if err != nil {
-		log.Fatalln(msg, err)
+		info := color.New(color.FgGreen).SprintFunc()
+		pc, fn, line, _ := runtime.Caller(1)
+		log.Printf(info(fmt.Sprintf("[error] in %s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, err)))
+	}
+}
+
+func redLog(toLog interface{}) {
+	info := color.New(color.FgRed).SprintFunc()
+	pc, fn, line, _ := runtime.Caller(1)
+	log.Printf(info(fmt.Sprintf("%s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, fmt.Sprint(toLog))))
+}
+
+func (um *Umbrella) checkErr(c *gin.Context, err error) {
+	if err != nil && !c.Writer.Written() {
+		checkErr(err)
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		c.Abort()
 	}
 }
 
@@ -39,12 +110,9 @@ func randString(n int) string {
 }
 
 // Auth Middleware
-func Auth(strict bool) gin.HandlerFunc {
+func (um *Umbrella) Auth(strict bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-
-		user, err1 := checkUser(c, dbmap)
+		user, err1 := um.checkUser(c)
 		if err1 != nil {
 			user = User{Id: 0}
 		}

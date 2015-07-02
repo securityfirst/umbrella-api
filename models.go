@@ -1,5 +1,11 @@
 package main
 
+import "github.com/go-gorp/gorp"
+
+type Umbrella struct {
+	Db *gorp.DbMap
+}
+
 type LoginJSON struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -43,6 +49,7 @@ type Segment struct {
 	SubTitle   string `json:"subtitle" db:"subtitle" binding:"required"`
 	Body       string `json:"body" db:"body" binding:"required"`
 	Category   int64  `json:"category" db:"category" binding:"required"`
+	Difficulty int64  `json:"difficulty" db:"difficulty"`
 	Status     string `json:"-" db:"status"`
 	CreatedAt  int64  `json:"-" db:"created_at"`
 	ApprovedAt int64  `json:"-" db:"approved_at"`

@@ -1,91 +1,67 @@
 package main
 
 import (
-	"fmt"
+	"database/sql"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
 )
 
-func getCheckItems(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	checkItems, err := getAllPublishedCheckItems(c, dbmap)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+func (um *Umbrella) getCheckItems(c *gin.Context) {
+	checkItems, err := um.getAllPublishedCheckItems(c)
+	um.checkErr(c, err)
 	c.JSON(200, checkItems)
 }
 
-func getCheckItemsByCat(c *gin.Context) {
+func (um *Umbrella) getCheckItemsByCat(c *gin.Context) {
 	categoryId := to.Int64(c.Params.ByName("id"))
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	checkItems, err := getAllPublishedCheckItemsByCat(c, dbmap, categoryId)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if categoryId != 0 {
+		checkItems, err := um.getAllPublishedCheckItemsByCat(c, categoryId)
+		um.checkErr(c, err)
+		c.JSON(200, checkItems)
 		return
 	}
-	c.JSON(200, checkItems)
+	c.JSON(404, gin.H{"error": "Not found"})
 }
 
-func getCheckItem(c *gin.Context) {
+func (um *Umbrella) getCheckItem(c *gin.Context) {
 	checkItemId := to.Int64(c.Params.ByName("id"))
 	if checkItemId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		checkItem, err := getCheckItemById(c, dbmap, checkItemId)
+		checkItem, err := um.getCheckItemById(c, checkItemId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
 		}
 		c.JSON(200, checkItem)
 		return
-	} else {
-		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
 	}
+	c.JSON(404, gin.H{"error": "Requested resource could not be found"})
 }
 
-func addCheckItem(c *gin.Context) {
+func (um *Umbrella) addCheckItem(c *gin.Context) {
 	var json CheckItem
-	dbmap := initDb()
-	defer dbmap.Db.Close()
 	c.Bind(&json)
-	fmt.Println(json)
-	if true {
-		user := c.MustGet("user").(User)
-		checkItem := CheckItem{Title: json.Title, Text: json.Text, Value: json.Value, Parent: json.Parent, Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
-		err := dbmap.Insert(&checkItem)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(200, checkItem)
-		return
-	}
-	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
+	user := c.MustGet("user").(User)
+	checkItem := CheckItem{Title: json.Title, Text: json.Text, Value: json.Value, Parent: json.Parent, Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+	err := um.Db.Insert(&checkItem)
+	um.checkErr(c, err)
+	c.JSON(200, checkItem)
 }
 
-func editCheckItem(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) editCheckItem(c *gin.Context) {
 	var json JSONCheckItem
 	checkItemId := to.Int64(c.Params.ByName("id"))
 	if c.EnsureBody(&json) && checkItemId != 0 {
-		checkItem, err := getCheckItemById(c, dbmap, checkItemId)
+		checkItem, err := um.getCheckItemById(c, checkItemId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		if json.Title != "" || json.Text != "" || json.Category != 0 {
 			if json.Title != "" {
@@ -103,12 +79,8 @@ func editCheckItem(c *gin.Context) {
 			checkItem.CreatedAt = time.Now().Unix()
 			user := c.MustGet("user").(User)
 			checkItem.Author = user.Id
-			count, err := dbmap.Update(&checkItem)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-			} else if count < 1 {
-				c.JSON(500, gin.H{"error": "Could not update the resource"})
-			}
+			_, err := um.Db.Update(&checkItem)
+			um.checkErr(c, err)
 			c.JSON(200, checkItem)
 			return
 		}
@@ -116,21 +88,18 @@ func editCheckItem(c *gin.Context) {
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func approveCheckItem(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) approveCheckItem(c *gin.Context) {
 	var json JSONCheckItem
 	c.Bind(&json)
 	checkItemId := to.Int64(c.Params.ByName("id"))
 	if checkItemId != 0 {
-		checkItem, err := getCheckItemById(c, dbmap, checkItemId)
+		checkItem, err := um.getCheckItemById(c, checkItemId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		checkItem.Status = json.Status
 		user := c.MustGet("user").(User)
@@ -138,38 +107,29 @@ func approveCheckItem(c *gin.Context) {
 			checkItem.ApprovedAt = time.Now().Unix()
 			checkItem.ApprovedBy = user.Id
 		}
-		_, err = dbmap.Update(&checkItem)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-		}
+		_, err = um.Db.Update(&checkItem)
+		um.checkErr(c, err)
 		c.JSON(200, checkItem)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or more parameters are missing"})
 }
 
-func deleteCheckItem(c *gin.Context) {
+func (um *Umbrella) deleteCheckItem(c *gin.Context) {
 	checkItemId := to.Int64(c.Params.ByName("id"))
 	if checkItemId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		checkItem, err := getCheckItemById(c, dbmap, checkItemId)
+		checkItem, err := um.getCheckItemById(c, checkItemId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
-		_, err = dbmap.Delete(&checkItem)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
+		_, err = um.Db.Delete(&checkItem)
+		um.checkErr(c, err)
 		c.Writer.WriteHeader(204)
 		return
-	} else {
-		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
 	}
+	c.JSON(404, gin.H{"error": "Requested resource could not be found"})
 }

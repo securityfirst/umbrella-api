@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -11,27 +12,17 @@ import (
 	"github.com/gosexy/to"
 )
 
-func getSegmentsRaw(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	segmentList, err := getAllPublishedSegments(c, dbmap)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(200, segmentList)
+func (um *Umbrella) getSegmentsRaw(c *gin.Context) {
+	segmentList, err := um.getAllPublishedSegments(c)
+	checkErr(err)
+	um.checkErr(c, err)
+	um.JSON(c, 200, segmentList)
 }
 
-func getSegments(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-	segmentList, err := getAllPublishedSegments(c, dbmap)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+func (um *Umbrella) getSegments(c *gin.Context) {
+	segmentList, err := um.getAllPublishedSegments(c)
+	checkErr(err)
+	um.checkErr(c, err)
 	c.JSON(200, parseForSegments(segmentList))
 }
 
@@ -62,55 +53,48 @@ func parseForSegments(segmentList []Segment) []Segment {
 	return segments
 }
 
-func getSegmentsByCat(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) getSegmentsByCat(c *gin.Context) {
 	category := to.Int64(c.Params.ByName("id"))
-	segmentList, err := getAllPublishedSegmentsByCat(c, dbmap, category)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if category != 0 {
+		segmentList, err := um.getAllPublishedSegmentsByCat(c, category)
+		um.checkErr(c, err)
+		c.JSON(200, parseForSegments(segmentList))
 		return
 	}
-	c.JSON(200, parseForSegments(segmentList))
+	c.JSON(404, gin.H{"error": "Not found"})
 }
 
-func getSegmentsRawByCat(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) getSegmentsRawByCat(c *gin.Context) {
 	category := to.Int64(c.Params.ByName("id"))
-	segmentList, err := getAllPublishedSegmentsByCat(c, dbmap, category)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if category != 0 {
+		segmentList, err := um.getAllPublishedSegmentsByCat(c, category)
+		um.checkErr(c, err)
+		c.JSON(200, segmentList)
 		return
 	}
-	c.JSON(200, segmentList)
+	c.JSON(404, gin.H{"error": "Not found"})
 }
 
-func getSegment(c *gin.Context) {
+func (um *Umbrella) getSegment(c *gin.Context) {
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		segment, err := getSegmentById(c, dbmap, segmentId)
+		segment, err := um.getSegmentById(c, segmentId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		c.JSON(200, segment)
 		return
 	} else {
-		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+		c.JSON(404, gin.H{"error": "Not found"})
 	}
 }
 
-func addSegment(c *gin.Context) {
+func (um *Umbrella) addSegment(c *gin.Context) {
 	var json Segment
-	dbmap := initDb()
-	defer dbmap.Db.Close()
 	if c.EnsureBody(&json) {
 		user := c.MustGet("user").(User)
 		segment := Segment{Title: json.Title, SubTitle: json.SubTitle, Body: json.Body, Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
@@ -119,33 +103,26 @@ func addSegment(c *gin.Context) {
 			segment.ApprovedBy = user.Id
 			segment.ApprovedAt = time.Now().Unix()
 		}
-		err := dbmap.Insert(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
+		err := um.Db.Insert(&segment)
+		um.checkErr(c, err)
 		c.JSON(200, segment)
 		return
 	}
-	fmt.Println(json)
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func editSegment(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) editSegment(c *gin.Context) {
 	var json Segment
 	c.Bind(&json)
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {
-		segment, err := getSegmentById(c, dbmap, segmentId)
+		segment, err := um.getSegmentById(c, segmentId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		if json.Title != "" {
 			segment.Title = json.Title
@@ -164,32 +141,27 @@ func editSegment(c *gin.Context) {
 		user := c.MustGet("user").(User)
 		segment.Author = user.Id
 
-		_, err = dbmap.Update(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-		}
+		_, err = um.Db.Update(&segment)
+		um.checkErr(c, err)
 		c.JSON(200, segment)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func editSegmentByCat(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) editSegmentByCat(c *gin.Context) {
 	var json Segment
 	c.Bind(&json)
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {
 		fmt.Println(segmentId)
-		segment, err := getSegmentByCatId(c, dbmap, segmentId)
+		segment, err := um.getSegmentByCatId(c, segmentId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
 		if json.Title != "" {
 			segment.Title = json.Title
@@ -203,73 +175,58 @@ func editSegmentByCat(c *gin.Context) {
 		if json.Category != 0 {
 			segment.Category = to.Int64(json.Category)
 		}
-		// segment.Status = "submitted"
 		segment.CreatedAt = time.Now().Unix()
 		user := c.MustGet("user").(User)
 		segment.Author = user.Id
 		segment.Id = 0
-		err = dbmap.Insert(&segment)
-		// _, err = dbmap.Update(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-		}
+		err = um.Db.Insert(&segment)
+		um.checkErr(c, err)
 		c.JSON(200, segment)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 }
 
-func approveSegment(c *gin.Context) {
-	dbmap := initDb()
-	defer dbmap.Db.Close()
+func (um *Umbrella) approveSegment(c *gin.Context) {
 	var json JSONSegment
 	c.Bind(&json)
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 {
-		segment, err := getSegmentById(c, dbmap, segmentId)
+		segment, err := um.getSegmentById(c, segmentId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
 		}
+		um.checkErr(c, err)
 		segment.Status = json.Status
 		user := c.MustGet("user").(User)
 		if segment.Status == "published" {
 			segment.ApprovedAt = time.Now().Unix()
 			segment.ApprovedBy = user.Id
 		}
-		_, err = dbmap.Update(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-		}
+		_, err = um.Db.Update(&segment)
+		um.checkErr(c, err)
 		c.JSON(200, segment)
 		return
 	}
 	c.JSON(400, gin.H{"error": "One or more parameters are missing"})
 }
 
-func deleteSegment(c *gin.Context) {
+func (um *Umbrella) deleteSegment(c *gin.Context) {
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 {
-		dbmap := initDb()
-		defer dbmap.Db.Close()
-		segment, err := getSegmentById(c, dbmap, segmentId)
+		segment, err := um.getSegmentById(c, segmentId)
 		if err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
 				return
 			}
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
+			um.checkErr(c, err)
 		}
-		_, err = dbmap.Delete(&segment)
-		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
+		_, err = um.Db.Delete(&segment)
+		um.checkErr(c, err)
 		c.Writer.WriteHeader(204)
 		return
 	} else {
