@@ -16,7 +16,7 @@ func (um *Umbrella) checkUser(c *gin.Context) (user User, err error) {
 }
 
 func (um *Umbrella) getAllPublishedSegments(c *gin.Context) (segments []Segment, err error) {
-	_, err = um.Db.Select(&segments, "select s1.id, s1.title, s1.subtitle, s1.body, s1.category, s1.difficulty from segments s1 where status=:status ordery by id asc", map[string]interface{}{
+	_, err = um.Db.Select(&segments, "select s1.id, s1.title, s1.subtitle, s1.body, s1.category, s1.difficulty from segments s1 where status=:status order by id asc", map[string]interface{}{
 		"status": "published",
 	})
 	return segments, err
