@@ -38,6 +38,16 @@ type CheckItem struct {
 	Author     int64  `json:"-" db:"author"`
 }
 
+type FeedItem struct {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+	Country     string `json:"country"`
+	Source      int64  `json:"source"`
+	UpdatedAt   int64  `json:"updated_at" db:"updated_at"`
+}
+
 // type JSONCheckItem struct {
 // 	Title    string `json:"title" db:"title"`
 // 	Text     string `json:"text" db:"text"`

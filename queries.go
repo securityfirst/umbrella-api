@@ -1,10 +1,14 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gosexy/to"
 )
 
 func (um *Umbrella) checkUser(c *gin.Context) (user User, err error) {
@@ -20,6 +24,34 @@ func (um *Umbrella) getAllPublishedSegments(c *gin.Context) (segments []Segment,
 		"status": "published",
 	})
 	return segments, err
+}
+
+func (um *Umbrella) getCountry(urlCountry string) string {
+	country, err := um.Db.SelectStr("select iso3 from countries_index where iso3 = :iso3 order by id asc limit 1", map[string]interface{}{
+		"iso3": urlCountry,
+	})
+	checkErr(err)
+	return country
+}
+
+func (um *Umbrella) getFeedItems(sources []string, country string, since int64) (feedItems []FeedItem, err error) {
+	for i := range sources {
+		inrange := to.Int64(sources[i])
+		if inrange < 1 || inrange > 4 {
+			sources = append(sources[:i], sources[i+1:]...)
+		}
+	}
+	if len(sources) < 1 {
+		err = errors.New("No valid sources selected")
+	} else if country == "" || len(country) != 3 {
+		err = errors.New("Selected country is not valid")
+	} else {
+		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
+			"country": country,
+			"since":   since,
+		})
+	}
+	return feedItems, err
 }
 
 // func (um *Umbrella) getAllPublishedSegmentsByCat(c *gin.Context, category int64) (segments []Segment, err error) {

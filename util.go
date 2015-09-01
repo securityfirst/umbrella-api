@@ -82,7 +82,11 @@ func redLog(toLog interface{}) {
 
 func (um *Umbrella) checkErr(c *gin.Context, err error) {
 	if err != nil && !c.Writer.Written() {
-		checkErr(err)
+		if err != nil {
+			info := color.New(color.FgGreen).SprintFunc()
+			pc, fn, line, _ := runtime.Caller(1)
+			log.Printf(info(fmt.Sprintf("[error] in %s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, err)))
+		}
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		c.Abort()
 	}
@@ -118,7 +122,7 @@ func (um *Umbrella) Auth(strict bool) gin.HandlerFunc {
 		c.Set("user", user)
 		if strict && user.Id == 0 {
 			c.JSON(401, gin.H{"error": "Not Authorized"})
-			c.Fail(401, errors.New("Not Authorized"))
+			c.AbortWithError(401, errors.New("Not Authorized"))
 		}
 	}
 }

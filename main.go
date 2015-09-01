@@ -28,6 +28,8 @@ func main() {
 		v1.GET("/account/login_check", um.Auth(true), um.loginCheck)
 		v1.POST("/account/login", um.loginEndpoint)
 
+		v1.GET("/feed", um.getFeed)
+
 		v1.GET("/segments", um.getSegments)
 		// v1.GET("/segments/:id", um.Auth(false), um.getSegment)
 		// v1.GET("/segments/:id/category", um.Auth(false), um.getSegmentsByCat)

@@ -11,7 +11,7 @@ import (
 
 func (um *Umbrella) loginEndpoint(c *gin.Context) {
 	var json LoginJSON
-	if c.EnsureBody(&json) {
+	if err := c.Bind(&json); err == nil {
 		var u User
 		err := um.Db.SelectOne(&u, "select id, name, email, password, token, role from users where email=?", json.Email)
 		if err != nil {
