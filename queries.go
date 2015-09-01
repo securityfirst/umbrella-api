@@ -27,8 +27,8 @@ func (um *Umbrella) getAllPublishedSegments(c *gin.Context) (segments []Segment,
 }
 
 func (um *Umbrella) getCountry(urlCountry string) string {
-	country, err := um.Db.SelectStr("select iso3 from countries_index where iso3 = :iso3 order by id asc limit 1", map[string]interface{}{
-		"iso3": urlCountry,
+	country, err := um.Db.SelectStr("select iso2 from countries_index where iso2 = :iso2 order by id asc limit 1", map[string]interface{}{
+		"iso2": urlCountry,
 	})
 	checkErr(err)
 	return country
@@ -43,7 +43,7 @@ func (um *Umbrella) getFeedItems(sources []string, country string, since int64) 
 	}
 	if len(sources) < 1 {
 		err = errors.New("No valid sources selected")
-	} else if country == "" || len(country) != 3 {
+	} else if country == "" || len(country) != 2 {
 		err = errors.New("Selected country is not valid")
 	} else {
 		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
