@@ -28,17 +28,18 @@ func (um *Umbrella) getAllPublishedSegments(c *gin.Context) (segments []Segment,
 
 func (um *Umbrella) getCountry(urlCountry string) string {
 	country, err := um.Db.SelectStr("select iso2 from countries_index where iso2 = :iso2 order by id asc limit 1", map[string]interface{}{
-		"iso2": urlCountry,
+		"iso2": strings.ToLower(strings.TrimSpace(urlCountry)),
 	})
 	checkErr(err)
 	return country
 }
 
 func (um *Umbrella) getFeedItems(sources []string, country string, since int64) (feedItems []FeedItem, err error) {
+	var cleanSources []string
 	for i := range sources {
-		inrange := to.Int64(sources[i])
-		if inrange < 1 || inrange > 4 {
-			sources = append(sources[:i], sources[i+1:]...)
+		inrange := to.Int64(strings.TrimSpace(sources[i]))
+		if inrange >= 0 && inrange <= 3 {
+			cleanSources = append(cleanSources, strings.TrimSpace(sources[i]))
 		}
 	}
 	if len(sources) < 1 {
@@ -46,7 +47,7 @@ func (um *Umbrella) getFeedItems(sources []string, country string, since int64) 
 	} else if country == "" || len(country) != 2 {
 		err = errors.New("Selected country is not valid")
 	} else {
-		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
+		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where country=:country and updated_at>:since and source in (%v) order by updated_at desc", strings.Join(cleanSources, ",")), map[string]interface{}{
 			"country": country,
 			"since":   since,
 		})
