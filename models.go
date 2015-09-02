@@ -39,12 +39,12 @@ type CheckItem struct {
 }
 
 type FeedItem struct {
-	Id          int64  `json:"id"`
+	Id          int64  `json:"-"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	URL         string `json:"url"`
-	Country     string `json:"country"`
-	Source      int64  `json:"source"`
+	Country     string `json:"-"`
+	Source      int64  `json:"-"`
 	UpdatedAt   int64  `json:"updated_at" db:"updated_at"`
 }
 
