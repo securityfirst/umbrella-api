@@ -20,6 +20,16 @@ type User struct {
 	Role     int    `db:"role" json:"-"`
 }
 
+type Country struct {
+	Id          int64    `db:"id"`
+	Name        string   `db:"name"`
+	Iso2        string   `db:"iso2"`
+	Iso3        string   `db:"iso3"`
+	ReliefWeb   int64    `db:"reliefweb_int"`
+	Search      string   `db:"search"`
+	SearchSlice []string `db:"-"`
+}
+
 type CheckItem struct {
 	Id         int64  `json:"id"`
 	Title      string `json:"title"`
@@ -46,6 +56,13 @@ type FeedItem struct {
 	Country     string `json:"-"`
 	Source      int64  `json:"-"`
 	UpdatedAt   int64  `json:"updated_at" db:"updated_at"`
+}
+
+type FeedLastChecked struct {
+	Id          int64
+	Country     string
+	Source      string
+	LastChecked int64 `db:"last_checked"`
 }
 
 // type JSONCheckItem struct {
@@ -116,3 +133,127 @@ type Category struct {
 // 	Category string `json:"category" db:"category"`
 // 	Status   string `json:"status" db:"status"`
 // }
+
+type RWResponse struct {
+	Version string `json:"version"`
+	Status  int    `json:"status"`
+	Time    int    `json:"time"`
+	Data    struct {
+		Type string `json:"type"`
+		ID   int    `json:"id"`
+		Item struct {
+			ID              int       `json:"id"`
+			Name            string    `json:"name"`
+			Description     string    `json:"description"`
+			Status          string    `json:"status"`
+			Iso3            string    `json:"iso3"`
+			Featured        bool      `json:"featured"`
+			URL             string    `json:"url"`
+			DescriptionHTML string    `json:"description-html"`
+			Current         bool      `json:"current"`
+			Location        []float64 `json:"location"`
+		} `json:"item"`
+	} `json:"data"`
+}
+
+type RWReport struct {
+	Version string `json:"version"`
+	Status  int    `json:"status"`
+	Time    int    `json:"time"`
+	Data    struct {
+		Type string `json:"type"`
+		ID   int    `json:"id"`
+		Item struct {
+			ID       int    `json:"id"`
+			Title    string `json:"title"`
+			Status   string `json:"status"`
+			Body     string `json:"body"`
+			Headline struct {
+				Title    string `json:"title"`
+				Summary  string `json:"summary"`
+				Featured bool   `json:"featured"`
+			} `json:"headline"`
+			File []struct {
+				ID          string `json:"id"`
+				Description string `json:"description"`
+				URL         string `json:"url"`
+				Filename    string `json:"filename"`
+				Filemime    string `json:"filemime"`
+				Filesize    string `json:"filesize"`
+				Preview     struct {
+					URL      string `json:"url"`
+					URLLarge string `json:"url-large"`
+					URLSmall string `json:"url-small"`
+					URLThumb string `json:"url-thumb"`
+				} `json:"preview"`
+			} `json:"file"`
+			PrimaryCountry struct {
+				ID       int       `json:"id"`
+				Name     string    `json:"name"`
+				Iso3     string    `json:"iso3"`
+				Location []float64 `json:"location"`
+			} `json:"primary_country"`
+			Country []struct {
+				ID       int       `json:"id"`
+				Name     string    `json:"name"`
+				Iso3     string    `json:"iso3"`
+				Location []float64 `json:"location"`
+				Primary  bool      `json:"primary"`
+			} `json:"country"`
+			Source []struct {
+				ID        int    `json:"id"`
+				Name      string `json:"name"`
+				Shortname string `json:"shortname"`
+				Longname  string `json:"longname"`
+				Homepage  string `json:"homepage"`
+				Type      struct {
+					ID   int    `json:"id"`
+					Name string `json:"name"`
+				} `json:"type"`
+			} `json:"source"`
+			Language []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+				Code string `json:"code"`
+			} `json:"language"`
+			Theme []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"theme"`
+			Format []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"format"`
+			OchaProduct []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"ocha_product"`
+			Disaster []struct {
+				ID    int    `json:"id"`
+				Name  string `json:"name"`
+				Glide string `json:"glide"`
+				Type  []struct {
+					ID   int    `json:"id"`
+					Name string `json:"name"`
+					Code string `json:"code"`
+				} `json:"type"`
+			} `json:"disaster"`
+			DisasterType []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+				Code string `json:"code"`
+			} `json:"disaster_type"`
+			VulnerableGroups []struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"vulnerable_groups"`
+			URL      string `json:"url"`
+			BodyHTML string `json:"body-html"`
+			Date     struct {
+				Created  int64 `json:"created"`
+				Changed  int64 `json:"changed"`
+				Original int64 `json:"original"`
+			} `json:"date"`
+		} `json:"item"`
+	} `json:"data"`
+}

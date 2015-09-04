@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gosexy/to"
 )
 
 func (um *Umbrella) checkUser(c *gin.Context) (user User, err error) {
@@ -34,25 +33,71 @@ func (um *Umbrella) getCountry(urlCountry string) string {
 	return country
 }
 
-func (um *Umbrella) getFeedItems(sources []string, country string, since int64) (feedItems []FeedItem, err error) {
-	var cleanSources []string
-	for i := range sources {
-		inrange := to.Int64(strings.TrimSpace(sources[i]))
-		if inrange >= 0 && inrange <= 3 {
-			cleanSources = append(cleanSources, strings.TrimSpace(sources[i]))
-		}
+func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
+	var checked struct {
+		Relief int64
+		FCO    int64
+		UN     int64
+		CDC    int64
 	}
+	err := um.Db.SelectOne(&checked, "select COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 0 limit 1),0) as relief, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 1 limit 1),0) as fco, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 2 limit 1),0) as un, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 3 limit 1),0) as cdc from feed_last_checked limit 1", map[string]interface{}{
+		"iso2": strings.ToLower(strings.TrimSpace(urlCountry)),
+	})
+	checkErr(err)
+	if err == nil {
+		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC}
+	}
+	if len(lastChecked) != 4 {
+		lastChecked = []int64{0, 0, 0, 0}
+	}
+	return lastChecked
+}
+
+func (um *Umbrella) getCountryInfo(urlCountry string) (country Country, err error) {
+	err = um.Db.SelectOne(&country, "select id, name, iso3, iso2, reliefweb_int, search from countries_index where iso2 = :iso2 order by id asc limit 1", map[string]interface{}{
+		"iso2": strings.ToLower(strings.TrimSpace(urlCountry)),
+	})
+	checkErr(err)
+	return country, err
+}
+
+func (um *Umbrella) getDbFeedItems(sources []string, country string, since int64) (feedItems []FeedItem, err error) {
 	if len(sources) < 1 {
 		err = errors.New("No valid sources selected")
 	} else if country == "" || len(country) != 2 {
 		err = errors.New("Selected country is not valid")
 	} else {
-		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where country=:country and updated_at>:since and source in (%v) order by updated_at desc", strings.Join(cleanSources, ",")), map[string]interface{}{
+		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where country=:country and updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
 			"country": country,
 			"since":   since,
 		})
 	}
 	return feedItems, err
+}
+
+func (um *Umbrella) updateLastChecked(country string, source int, updatedAt int64) {
+	_, err := um.Db.Exec("INSERT INTO feed_last_checked (country, source, last_checked) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE last_checked = ?", country, source, updatedAt, updatedAt)
+	checkErr(err)
+}
+
+func (f *FeedItem) updateRelief(um *Umbrella) {
+	var alreadyExists FeedItem
+	trans, err := um.Db.Begin()
+	checkErr(err)
+	err = trans.SelectOne(&alreadyExists, "select * from feed_items where country= ? and source = ? and url = ? order by updated_at desc", f.Country, f.Source, f.URL)
+	checkErr(err)
+	if err == nil {
+		if alreadyExists.UpdatedAt < f.UpdatedAt { // only if it has been updated since
+			alreadyExists.UpdatedAt = f.UpdatedAt
+			alreadyExists.Title = f.Title
+			alreadyExists.Description = f.Description
+			_, err := trans.Update(&alreadyExists)
+			checkErr(err)
+		}
+	} else {
+		checkErr(trans.Insert(f))
+	}
+	trans.Commit()
 }
 
 // func (um *Umbrella) getAllPublishedSegmentsByCat(c *gin.Context, category int64) (segments []Segment, err error) {

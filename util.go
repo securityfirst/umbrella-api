@@ -5,10 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"math/big"
+	"net/http"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
@@ -44,7 +48,8 @@ func initDb() *gorp.DbMap {
 	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
 	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
 	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
-	// dbmap.AddTableWithName(CategoryInsert{}, "categories").SetKeys(true, "Id")
+	dbmap.AddTableWithName(FeedLastChecked{}, "feed_last_checked").SetKeys(true, "Id")
+	dbmap.AddTableWithName(FeedItem{}, "feed_items").SetKeys(true, "Id")
 	return dbmap
 }
 
@@ -129,4 +134,43 @@ func (um *Umbrella) Auth(strict bool) gin.HandlerFunc {
 
 func traceDb(dbmap *gorp.DbMap) {
 	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "myapp:", log.Lmicroseconds))
+}
+
+func colorLog(toLog interface{}, col ...color.Attribute) {
+	info := color.New(col...).SprintFunc()
+	pc, fn, line, _ := runtime.Caller(1)
+	log.Printf(info(fmt.Sprintf("%s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, fmt.Sprint(toLog))))
+}
+
+func makeRequest(uri string, method string, requestBody io.Reader) (response []byte, err error) {
+	req, err := http.NewRequest(strings.ToUpper("GET"), uri, requestBody)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return response, err
+	}
+	defer resp.Body.Close()
+	response, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		checkErr(err)
+	}
+	return response, err
+}
+
+func difference(slice1 []int, slice2 []int) []int {
+	var diff []int
+	for _, s1 := range slice1 {
+		found := false
+		for _, s2 := range slice2 {
+			if s1 == s2 {
+				found = true
+				break
+			}
+		}
+		if !found {
+			diff = append(diff, s1)
+		}
+	}
+
+	return diff
 }
