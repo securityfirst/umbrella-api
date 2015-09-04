@@ -104,7 +104,8 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 				}
 			}
 		}
-	} else if len(diff) > 0 {
+	}
+	if len(diff) > 0 {
 		var dbFeedSources []string
 		for k := range diff {
 			dbFeedSources = append(dbFeedSources, strconv.Itoa(diff[k]))
