@@ -40,7 +40,7 @@ func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
 		UN     int64
 		CDC    int64
 	}
-	err := um.Db.SelectOne(&checked, "select COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 0 limit 1),0) as relief, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 1 limit 1),0) as fco, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 2 limit 1),0) as un, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 3 limit 1),0) as cdc from feed_last_checked limit 1", map[string]interface{}{
+	err := um.Db.SelectOne(&checked, "select COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 0 limit 1),0) as relief, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 1 limit 1),0) as fco, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 2 limit 1),0) as un, COALESCE((SELECT last_checked FROM feed_last_checked WHERE source = 3 limit 1),0) as cdc from feed_last_checked limit 1", map[string]interface{}{
 		"iso2": strings.ToLower(strings.TrimSpace(urlCountry)),
 	})
 	checkErr(err)
