@@ -50,6 +50,7 @@ func initDb() *gorp.DbMap {
 	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
 	dbmap.AddTableWithName(FeedLastChecked{}, "feed_last_checked").SetKeys(true, "Id")
 	dbmap.AddTableWithName(FeedItem{}, "feed_items").SetKeys(true, "Id")
+	dbmap.AddTableWithName(FeedRequestLog{}, "feed_log").SetKeys(true, "Id")
 	return dbmap
 }
 

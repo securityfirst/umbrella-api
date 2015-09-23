@@ -23,11 +23,22 @@ func (um *Umbrella) getFeed(c *gin.Context) {
 	sources := strings.Split(c.Request.URL.Query().Get("sources"), ",")
 	feedItems, err := um.getFeedItems(sources, country, since)
 	um.checkErr(c, err)
-	if err == nil {
-		c.JSON(200, feedItems)
+	feedLog := &FeedRequestLog{
+		Country:   country.Iso2,
+		Sources:   c.Request.URL.Query().Get("sources"),
+		CheckedAt: time.Now().Unix(),
+	}
+	if err != nil {
+		checkErr(err)
+		feedLog.Status = 500
+		go checkErr(um.Db.Insert(feedLog))
+		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
-	c.JSON(400, gin.H{"error": err.Error()})
+	feedLog.Status = 200
+	go checkErr(um.Db.Insert(feedLog))
+	c.JSON(200, feedItems)
+	return
 }
 
 func (um *Umbrella) getFeedItems(sources []string, country Country, since int64) (items []FeedItem, err error) {
@@ -49,10 +60,15 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 		for k := range toRefresh {
 			switch toRefresh[k] {
 			case CDC:
+				lenItems := len(items)
 				fmt.Println("refresh cdc")
 				// refresh cdc
-				go um.updateLastChecked(country.Iso2, CDC, time.Now().Unix())
+				if len(items) == lenItems {
+					diff = append(diff, CDC)
+				}
+				// go um.updateLastChecked(country.Iso2, CDC, time.Now().Unix())
 			case ReliefWeb:
+				lenItems := len(items)
 				body, err := makeRequest(fmt.Sprintf("http://api.rwlabs.org/v0/country/%v", country.ReliefWeb), "get", nil)
 				var rwResp RWResponse
 				err = json.Unmarshal(body, &rwResp)
@@ -101,6 +117,9 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 							go item.updateRelief(um)
 						}
 					})
+				}
+				if len(items) == lenItems {
+					diff = append(diff, ReliefWeb)
 				}
 			}
 		}

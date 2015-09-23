@@ -65,6 +65,14 @@ type FeedLastChecked struct {
 	LastChecked int64 `db:"last_checked"`
 }
 
+type FeedRequestLog struct {
+	Id        int64
+	Country   string
+	Sources   string
+	Status    int64
+	CheckedAt int64 `db:"checked_at"`
+}
+
 // type JSONCheckItem struct {
 // 	Title    string `json:"title" db:"title"`
 // 	Text     string `json:"text" db:"text"`
