@@ -1,0 +1,29 @@
+{
+  "name": "jquery-methodOverride",
+  "homepage": "https://github.com/adjohnson916/jquery-methodOverride",
+  "description": "More HTTP methods for jQuery.ajax and forms",
+  "main": "src/jquery.methodOverride.js",
+  "authors": [
+    "Anders D. Johnson"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "*"
+  },
+  "_release": "492b80bace",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "492b80bace95d02e0299a14982e5f8f960244bfc"
+  },
+  "_source": "https://github.com/adjohnson916/jquery-methodOverride.git",
+  "_target": "*",
+  "_originalSource": "jquery-methodOverride"
+}
