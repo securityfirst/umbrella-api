@@ -59,6 +59,7 @@ func main() {
 		// v1.PUT("/categories/:id", um.Auth(true), um.editCategory)
 		// v1.POST("/categories/:id/status", um.Auth(true), um.approveCategory)
 		// v1.DELETE("/categories/:id", um.Auth(true), um.deleteCategory)
+		v1.GET("/languages", um.Auth(false), um.getLanguages)
 	}
 	r.Run(":8080")
 

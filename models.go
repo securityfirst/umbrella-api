@@ -142,6 +142,11 @@ type Category struct {
 // 	Status   string `json:"status" db:"status"`
 // }
 
+type Language struct {
+	Name  string `json:"name" db:"name"`
+	Label string `json:"label" db:"label"`
+}
+
 type RWResponse struct {
 	Version string `json:"version"`
 	Status  int    `json:"status"`
