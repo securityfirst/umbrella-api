@@ -1,0 +1,117 @@
+a {
+  color: #4e4a46;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: #c94e50;
+  }
+}
+
+main {
+  height: 100%;
+  padding: 3em 2em;
+  text-align: center;
+  background: #b4bad2;
+  overflow: scroll;
+}
+
+h1 {
+  font-weight: 800;
+  font-size: 3.75em;
+}
+
+.description {
+  max-width: 20em;
+  margin: 1.2em auto 1em;
+  line-height: 1.3em;
+  font-weight: 400;
+}
+
+.side-button {
+  display: inline-block;
+  width: 5em;
+  height: 2.5em;
+  line-height: 2.5em;
+  cursor: pointer;
+  background: #fffce1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8em;
+  font-weight: 800;
+
+  &.left {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+
+  &.right {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  &.active {
+    background: #c94e50;
+    color: #fffce1;
+  }
+}
+
+@media screen and (max-width: 40em) {
+  main {
+    font-size: 80%;
+  }
+
+  h1 {
+    padding-top: 1em;
+    font-size: 2.5em;
+  }
+}
+
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+}
+
+.bm-burger-bars {
+  background: #373a47;
+}
+
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+.bm-menu {
+  background: #373a47;
+
+  a {
+    color: #b8b7ad;
+
+    &:hover,
+    &:focus {
+      color: #c94e50;
+    }
+  }
+}
+
+.bm-item-list a {
+  padding: 0.8em;
+
+  span {
+    margin-left: 10px;
+    font-weight: 700;
+  }
+}
+
+#slide {
+  &.bm-cross {
+    background: #bdc3c7;
+  }
+
+  &.bm-menu {
+    padding: 2.5em 1.5em 0;
+    font-size: 1.15em;
+  }
+}

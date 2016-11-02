@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
 	"github.com/tmilewski/goenv"
 )
 
@@ -22,6 +24,15 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*") // Make templates available
 	r.Static("/assets", "./assets")
+	r.Use(cors.Middleware(cors.Config{
+		Origins:         "http://localhost:8000, http://127.0.0.1:8000",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "Access-Control-Allow-Origin",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
 
 	admin := r.Group("/admin")
 	{
