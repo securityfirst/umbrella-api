@@ -1,0 +1,19 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _redux = require('redux');
+
+var _categoryReducer = require('./categoryReducer');
+
+var _categoryReducer2 = _interopRequireDefault(_categoryReducer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = (0, _redux.combineReducers)({
+  // formReducer,
+  categoryReducer: _categoryReducer2.default
+});
+// import { reducer as formReducer } from 'redux-form';

@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HappyPack = require( 'happypack' )
 
 const config = {
   context: __dirname,
@@ -12,10 +13,10 @@ const config = {
     loaders: [{
       exclude: /node_modules/,
       test: /\.(js|jsx)$/,
-      loader: 'babel'
+      loader: 'happypack/loader?id=babelJs'
     },
     {
-      test: /\.scss$/,
+      test: /\.(css|scss)$/,
       loader: ExtractTextPlugin.extract('css!sass')
     }]
   },
@@ -30,7 +31,11 @@ const config = {
   plugins: [
     new webpack.DefinePlugin({ 'process.env':{ 'NODE_ENV': JSON.stringify('production') } }),
     new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(false),
+    new HappyPack({
+      id: 'babelJs',
+      loaders: [ 'babel' ]
+    }),
     new webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false },
       output: {comments: false },

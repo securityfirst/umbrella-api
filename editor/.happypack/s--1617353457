@@ -1,0 +1,37 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = require('react-router');
+
+var _app = require('./components/app');
+
+var _app2 = _interopRequireDefault(_app);
+
+var _notFound = require('./components/pages/not-found');
+
+var _notFound2 = _interopRequireDefault(_notFound);
+
+var _home = require('./components/pages/home');
+
+var _home2 = _interopRequireDefault(_home);
+
+var _category = require('./components/pages/category');
+
+var _category2 = _interopRequireDefault(_category);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createElement(
+  _reactRouter.Route,
+  { path: '/', component: _app2.default },
+  _react2.default.createElement(_reactRouter.IndexRoute, { component: _home2.default }),
+  _react2.default.createElement(_reactRouter.Route, { name: 'categoryDetails', path: 'category/:categoryName', component: _category2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '*', component: _notFound2.default })
+);

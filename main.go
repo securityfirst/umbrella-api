@@ -65,7 +65,7 @@ func main() {
 
 		v1.GET("/categories", um.Auth(false), um.getCategories)
 		// v1.GET("/categories/:id/by_parent", um.Auth(false), um.getCategoryByParent)
-		// v1.GET("/categories/:id", um.Auth(false), um.getCategory)
+		v1.GET("/categories/:id", um.Auth(false), um.getCategory)
 		// v1.POST("/categories", um.Auth(true), um.addCategory)
 		// v1.PUT("/categories/:id", um.Auth(true), um.editCategory)
 		// v1.POST("/categories/:id/status", um.Auth(true), um.approveCategory)

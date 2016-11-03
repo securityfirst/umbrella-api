@@ -5,7 +5,6 @@ import { CATEGORIES,
 const START_STATE = { error: '', message: '', categories:'', content: '', authenticated: false}
 
 export default function (state = START_STATE, action) {
-  console.log("get reducer");
   console.log(action.type);
   switch(action.type) {
     case CATEGORIES:

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import BurgerMenu from 'react-burger-menu';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import MenuWrap from './menuWrap';
 import AppContent from './appContent';
+import MenuWrap from './menuWrap';
+import MainNavBar from './mainNavBar';
 import axios from 'axios';
 import { Link } from 'react-router';
 import { getRepos } from '../actions';
-import '../public/stylesheets/menu.scss';
+import { Button, Grid, Row, Col } from 'react-bootstrap';
+import '../public/stylesheets/metisMenu.css';
 
 class App extends Component {
 
@@ -17,38 +18,21 @@ class App extends Component {
     this.props.getRepos();
   }
 
-  getCategories() {
-    var categories = [];
-    if(this.props.categories) {
-      for (var i = this.props.categories.length - 1; i >= 0; i--) {
-        var r = this.props.categories[i];
-        if (r.parent == 0) {
-          categories.push(<span><Link key="{r.id}" to={`/category/${r.id}`}><i className="fa fa-fw fa-bell-o"></i>{r.category}</Link></span>);
-        };
-      }
-    }
-    return categories;
-  }
-
-  getMenu() {
-    const Menu = BurgerMenu['slide'];
-    return (
-      <MenuWrap wait={20}>
-        <Menu id={ "slide" } pageWrapId={"page-wrap"} outerContainerId={"outer-container"}>
-          {this.getCategories()}
-        </Menu>
-      </MenuWrap>
-    );
-  }
-
   render() {
     return (
-      <div id="outer-container" style={{height: '100%'}}>
-        {this.getMenu()}
-        <main id="page-wrap">
-          <AppContent children={this.props.children}/>
-        </main>
-      </div>
+      <Grid>
+        <MainNavBar/>
+        <Row className="show-grid" id="menu">
+        </Row>
+        <Row className="show-grid">
+          <Col xs={3} md={3} lg={3}>
+            <MenuWrap categories={this.props.categories}/>
+          </Col>
+          <Col xs={9} md={9} lg={9}>
+            <AppContent children={this.props.children}/>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }

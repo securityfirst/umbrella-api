@@ -175,10 +175,10 @@ func (um *Umbrella) getAllPublishedCategories(c *gin.Context) (categories []Cate
 // 	return categories, err
 // }
 
-// func (um *Umbrella) getCategoryById(c *gin.Context, categoryId int64) (category Category, err error) {
-// 	err = um.Db.SelectOne(&category, "select categories.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, categories.category, categories.parent, categories.`status`,categories. created_at, categories.author, categories.approved_at, categories.approved_by from categories LEFT JOIN categories as cat ON cat.id = categories.parent WHERE categories.status=:status AND categories.id=:category_id ORDER BY id ASC", map[string]interface{}{
-// 		"status":      "published",
-// 		"category_id": categoryId,
-// 	})
-// 	return category, err
-// }
+func (um *Umbrella) getCategoryById(c *gin.Context, categoryId int64) (category Category, err error) {
+	err = um.Db.SelectOne(&category, "select categories.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, categories.category, categories.parent, categories.`status`,categories. created_at, categories.author, categories.approved_at, categories.approved_by from categories LEFT JOIN categories as cat ON cat.id = categories.parent WHERE categories.status=:status AND categories.id=:category_id ORDER BY id ASC", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
+	})
+	return category, err
+}
