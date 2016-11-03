@@ -13,6 +13,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
@@ -174,4 +175,34 @@ func difference(slice1 []int, slice2 []int) []int {
 	}
 
 	return diff
+}
+
+func (um *Umbrella) WebAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie, err := c.Request.Cookie("token")
+		colorLog(fmt.Sprintf("%+v, %+v", cookie, err), color.FgCyan)
+		if err != nil || cookie.Value == "" {
+			c.Redirect(302, "/admin/login")
+			c.Abort()
+		} else {
+			if user, err := um.checkWebUser(cookie.Value); err == nil {
+				c.Set("user", user)
+			} else {
+				c.Redirect(302, "/admin/login")
+				c.Abort()
+			}
+		}
+	}
+}
+
+func (u *User) setCookie(c *gin.Context) {
+	expiration := time.Now().Add(time.Hour * 24 * 365)
+	cookie := http.Cookie{Name: "token", Value: u.Token, Expires: expiration}
+	http.SetCookie(c.Writer, &cookie)
+}
+
+func (u *User) removeCookie(c *gin.Context) {
+	expiration := time.Now().Add(time.Hour * -1)
+	cookie := http.Cookie{Name: "token", Value: "", Expires: expiration}
+	http.SetCookie(c.Writer, &cookie)
 }

@@ -18,6 +18,13 @@ func (um *Umbrella) checkUser(c *gin.Context) (user User, err error) {
 	return user, err
 }
 
+func (um *Umbrella) checkWebUser(token string) (user User, err error) {
+	if utf8.RuneCountInString(token) > 0 {
+		err = um.Db.SelectOne(&user, "select id, name, email, password, token, role from users where token=?", token)
+	}
+	return user, err
+}
+
 func (um *Umbrella) getAllPublishedSegments(c *gin.Context) (segments []Segment, err error) {
 	_, err = um.Db.Select(&segments, "select s1.id, s1.title, s1.subtitle, s1.body, s1.category, s1.difficulty from segments s1 where status=:status order by id asc", map[string]interface{}{
 		"status": "published",

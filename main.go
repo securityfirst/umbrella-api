@@ -19,10 +19,17 @@ func main() {
 		isProduction = true
 	}
 	um := getUmbrella()
-	if um.Db != nil {
-
-	}
 	r := gin.Default()
+	r.LoadHTMLGlob("templates/*") // Make templates available
+	r.Static("/assets", "./assets")
+
+	admin := r.Group("/admin")
+	{
+		admin.GET("/", um.WebAuth(), um.Index)
+		admin.GET("/login", um.Login)
+		admin.POST("/login", um.LoginPost)
+		admin.GET("/logout", um.WebAuth(), um.LogOut)
+	}
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/account/login_check", um.Auth(true), um.loginCheck)
