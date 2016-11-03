@@ -8,6 +8,7 @@ class MainNavBar extends Component {
   }
 
   render() {
+    const useIcon = "<i class='fa fa-fw fa-question'></i>"
     return (
       <Navbar collapseOnSelect>
         <Navbar.Header>

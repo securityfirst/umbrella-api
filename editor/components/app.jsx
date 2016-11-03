@@ -9,6 +9,7 @@ import { Link } from 'react-router';
 import { getRepos } from '../actions';
 import { Button, Grid, Row, Col } from 'react-bootstrap';
 import '../public/stylesheets/metisMenu.css';
+require('font-awesome/css/font-awesome.css');
 
 class App extends Component {
 
@@ -21,10 +22,10 @@ class App extends Component {
   render() {
     return (
       <Grid>
-        <MainNavBar/>
-        <Row className="show-grid" id="menu">
-        </Row>
         <Row className="show-grid">
+          <MainNavBar/>
+        </Row>
+        <Row className="show-grid" id="menu">
           <Col xs={3} md={3} lg={3}>
             <MenuWrap categories={this.props.categories}/>
           </Col>
