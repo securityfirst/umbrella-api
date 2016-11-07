@@ -20,9 +20,17 @@ func (um *Umbrella) getFeed(c *gin.Context) {
 	since := to.Int64(c.Request.URL.Query().Get("since"))
 	country, err := um.getCountryInfo(c.Request.URL.Query().Get("country"))
 	um.checkErr(c, err)
+	if err != nil {
+		log.Println("country", err)
+		return
+	}
 	sources := strings.Split(c.Request.URL.Query().Get("sources"), ",")
 	feedItems, err := um.getFeedItems(sources, country, since)
 	um.checkErr(c, err)
+	if err != nil {
+		log.Println("sources", err)
+		return
+	}
 	feedLog := &FeedRequestLog{
 		Country:   country.Iso2,
 		Sources:   c.Request.URL.Query().Get("sources"),
@@ -123,31 +131,41 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 				}
 			case GDASC:
 				f := GdascFetcher{}
-				i, err := f.Fetch()
+				srcItems, err := f.Fetch()
 				if err != nil {
 					checkErr(err)
 					continue
 				}
-				for _, item := range i {
-					go item.updateRelief(um)
-				}
-				items = append(items, i...)
-				if len(i) == 0 {
-					diff = append(diff, src)
+				var change bool
+				for i, item := range srcItems {
+					go srcItems[i].updateOthers(um)
+					if item.Country == country.Iso2 {
+						items = append(items, item)
+						if change {
+							continue
+						}
+						change = true
+						diff = append(diff, src)
+					}
 				}
 			case CADATA:
 				f := CadataFetcher{}
-				i, err := f.Fetch()
+				srcItems, err := f.Fetch()
 				if err != nil {
 					checkErr(err)
 					continue
 				}
-				for _, item := range i {
-					go item.updateRelief(um)
-				}
-				items = append(items, i...)
-				if len(i) == 0 {
-					diff = append(diff, src)
+				var change bool
+				for i, item := range srcItems {
+					go srcItems[i].updateOthers(um)
+					if item.Country == country.Iso2 {
+						items = append(items, item)
+						if change {
+							continue
+						}
+						change = true
+						diff = append(diff, src)
+					}
 				}
 			}
 		}

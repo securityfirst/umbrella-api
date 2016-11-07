@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -25,13 +26,22 @@ func (g *CadataFetcher) Fetch() ([]FeedItem, error) {
 			return nil, err
 		}
 		for i := range v.Title {
+			identifier := strings.TrimSpace(v.Identifier[i])
+			if identifier == "" {
+				continue
+			}
 			t, _ := time.Parse(time.RFC1123, v.PubDate[i])
+			c, err := query.FindCountryByAlpha(identifier)
+			if err != nil {
+				log.Printf("Cannot find country by alpha for %q: %s", identifier, err)
+				continue
+			}
 			feeds = append(feeds, FeedItem{
 				Title:       v.Title[i],
 				Description: v.Description[i],
 				URL:         v.Link[i],
-				Country:     strings.TrimSpace(v.Identifier[i]),
-				Source:      GDASC,
+				Country:     strings.ToLower(c.Codes.Alpha2),
+				Source:      CADATA,
 				UpdatedAt:   t.Unix(),
 			})
 		}

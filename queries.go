@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -104,6 +105,18 @@ func (f *FeedItem) updateRelief(um *Umbrella) {
 			checkErr(err)
 		}
 	} else {
+		checkErr(trans.Insert(f))
+	}
+	trans.Commit()
+}
+
+func (f *FeedItem) updateOthers(um *Umbrella) {
+	var alreadyExists FeedItem
+	trans, err := um.Db.Begin()
+	checkErr(err)
+	err = trans.SelectOne(&alreadyExists, "select * from feed_items where country= ? and source = ? and url = ? order by updated_at desc", f.Country, f.Source, f.URL)
+	checkErr(err)
+	if err == sql.ErrNoRows {
 		checkErr(trans.Insert(f))
 	}
 	trans.Commit()

@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/xml"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pariz/gountries"
@@ -25,12 +27,16 @@ func (g *GdascFetcher) Fetch() ([]FeedItem, error) {
 	var feeds = make([]FeedItem, len(v.Title))
 	for i := range v.Title {
 		t, _ := time.Parse(time.RFC1123, v.PubDate[i])
-		c, _ := query.FindCountryByName(v.Country[i])
+		c, err := query.FindCountryByName(v.Country[i])
+		if err != nil {
+			log.Printf("Cannot find country by name for %q: %s", v.Country[i], err)
+			continue
+		}
 		feeds[i] = FeedItem{
 			Title:       v.Title[i],
 			Description: v.Description[i],
 			URL:         v.Link[i],
-			Country:     c.Codes.Alpha2,
+			Country:     strings.ToLower(c.Codes.Alpha2),
 			Source:      GDASC,
 			UpdatedAt:   t.Unix(),
 		}
