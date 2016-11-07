@@ -11,6 +11,8 @@ import (
 
 var isProduction bool
 
+var fips = buildFips()
+
 func main() {
 	err := goenv.Load()
 	checkErr(err)

@@ -5,8 +5,8 @@ import (
 
 	"regexp"
 
-	"code.google.com/p/go.crypto/bcrypt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (um *Umbrella) loginEndpoint(c *gin.Context) {

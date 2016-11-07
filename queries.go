@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -46,16 +47,18 @@ func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
 		FCO    int64
 		UN     int64
 		CDC    int64
+		GDASC  int64
+		CADATA int64
 	}
 	err := um.Db.SelectOne(&checked, "select COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 0 limit 1),0) as relief, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 1 limit 1),0) as fco, COALESCE((SELECT last_checked FROM feed_last_checked WHERE country = :iso2 AND source = 2 limit 1),0) as un, COALESCE((SELECT last_checked FROM feed_last_checked WHERE source = 3 limit 1),0) as cdc from feed_last_checked limit 1", map[string]interface{}{
 		"iso2": strings.ToLower(strings.TrimSpace(urlCountry)),
 	})
 	checkErr(err)
 	if err == nil {
-		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC}
+		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC, checked.GDASC, checked.CADATA}
 	}
-	if len(lastChecked) != 4 {
-		lastChecked = []int64{0, 0, 0, 0}
+	if len(lastChecked) != SourceCount {
+		lastChecked = make([]int64, SourceCount)
 	}
 	return lastChecked
 }
@@ -102,6 +105,18 @@ func (f *FeedItem) updateRelief(um *Umbrella) {
 			checkErr(err)
 		}
 	} else {
+		checkErr(trans.Insert(f))
+	}
+	trans.Commit()
+}
+
+func (f *FeedItem) updateOthers(um *Umbrella) {
+	var alreadyExists FeedItem
+	trans, err := um.Db.Begin()
+	checkErr(err)
+	err = trans.SelectOne(&alreadyExists, "select * from feed_items where country= ? and source = ? and url = ? order by updated_at desc", f.Country, f.Source, f.URL)
+	checkErr(err)
+	if err == sql.ErrNoRows {
 		checkErr(trans.Insert(f))
 	}
 	trans.Commit()

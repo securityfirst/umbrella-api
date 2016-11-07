@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"database/sql"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
@@ -205,4 +206,27 @@ func (u *User) removeCookie(c *gin.Context) {
 	expiration := time.Now().Add(time.Hour * -1)
 	cookie := http.Cookie{Name: "token", Value: "", Expires: expiration}
 	http.SetCookie(c.Writer, &cookie)
+}
+
+func buildFips() map[string]string {
+	const fileName = "fips.csv"
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		log.Fatalf("Cannot open %s: %s", fileName, err)
+	}
+	var m = make(map[string]string, 265)
+	r := csv.NewReader(f)
+	r.Comma = '	'
+	for count := 0; ; count++ {
+		record, err := r.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatalf("Cannot red %s: %s", fileName, err)
+		}
+		m[record[0]] = record[1]
+	}
+	return m
 }
