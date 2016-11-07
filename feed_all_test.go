@@ -2,24 +2,26 @@ package main
 
 import "testing"
 
-func TestGdasc(t *testing.T) {
-	var f = GdascFetcher{}
+type Fetcher interface {
+	Fetch() ([]FeedItem, error)
+}
+
+func baseTest(t *testing.T, f Fetcher) {
 	items, err := f.Fetch()
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, item := range items {
-		t.Logf("%+v", item)
-	}
+	t.Logf("%T: %d feeds", f, len(items))
+}
+
+func TestRefiweb(t *testing.T) {
+	baseTest(t, &RefiWebFetcher{&Country{ReliefWeb: 241, Iso2: "UA"}})
+}
+
+func TestGdasc(t *testing.T) {
+	baseTest(t, &GdascFetcher{})
 }
 
 func TestCadata(t *testing.T) {
-	var f = CadataFetcher{}
-	items, err := f.Fetch()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, item := range items {
-		t.Logf("%q", item.Country)
-	}
+	baseTest(t, &CadataFetcher{})
 }
