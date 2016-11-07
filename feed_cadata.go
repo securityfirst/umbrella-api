@@ -27,13 +27,17 @@ func (g *CadataFetcher) Fetch() ([]FeedItem, error) {
 		}
 		for i := range v.Title {
 			code := strings.TrimSpace(v.Identifier[i])
-			if _, ok := fips[code]; !ok {
+			if code == "" {
+				continue
+			}
+			fips, ok := fips[code]
+			if !ok || fips == "" {
 				log.Printf("Cannot find name for code %q", code)
 				continue
 			}
-			c, err := query.FindCountryByName(fips[code])
+			c, err := query.FindCountryByName(fips)
 			if err != nil {
-				log.Printf("Cannot find country by name for %q: %s", fips[code], err)
+				log.Printf("Cannot find country by name for %q: %s", fips, err)
 				continue
 			}
 			t, _ := time.Parse(time.RFC1123, v.PubDate[i])

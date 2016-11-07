@@ -35,7 +35,7 @@ IO	BRITISH INDIAN OCEAN TERRITORY
 VI	BRITISH VIRGIN ISLANDS	
 BX	BRUNEI	district
 BU	BULGARIA	province/oblast
-UV	BURKINA	province/province
+UV	BURKINA FASO	province/province
 BM	BURMA	*division state
 BY	BURUNDI	province
 CB	CAMBODIA	*autonomous municipality province/khet
@@ -52,7 +52,7 @@ IP	CLIPPERTON ISLAND
 CK	COCOS (KEELING) ISLANDS	
 CO	COLOMBIA	*commissariat/comisaria department/departamento **intendancy/intendencia ***special district/distrito especial
 CN	COMOROS	island
-CF	CONGO	*commune region/region
+CF	DR CONGO	*commune region/region
 CW	COOK ISLANDS	
 CR	CORAL SEA ISLANDS	
 CS	COSTA RICA	province/provincia
@@ -126,7 +126,7 @@ KZ	KAZAKHSTAN
 KE	KENYA	*area province
 KQ	KINGMAN REEF	
 KR	KIRIBATI	islands
-KN	KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF	province *special city
+KN	NORTH KOREA	province *special city
 KS	KOREA, REPUBLIC OF	province *special city
 KU	KUWAIT	governorate/muhafazah
 KG	KYRGYZSTAN 	
@@ -214,6 +214,7 @@ BP	SOLOMON ISLANDS	province
 SO	SOMALIA	region/gobolka
 SF	SOUTH AFRICA	province
 SX	SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS	
+OD	SOUTH SUDAN	
 SP	SPAIN	autonomous community/comunidad autonoma
 PG	SPRATLY ISLANDS	
 CE	SRI LANKA	district
@@ -259,7 +260,7 @@ WE	WEST BANK
 WI	WESTERN SAHARA	
 WS	WESTERN SAMOA	district
 YM	YEMEN	governorate/muhafazah
-CG	ZAIRE	region/region *town/ville
+CG	DR CONGO	region/region *town/ville
 ZA	ZAMBIA	province
 ZI	ZIMBABWE	province
 TW	TAIWAN	*municipality/shih province/sheng

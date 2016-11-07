@@ -26,6 +26,9 @@ func (g *GdascFetcher) Fetch() ([]FeedItem, error) {
 	}
 	var feeds = make([]FeedItem, len(v.Title))
 	for i := range v.Title {
+		if v.Country[i] == "" {
+			continue
+		}
 		t, _ := time.Parse(time.RFC1123, v.PubDate[i])
 		c, err := query.FindCountryByName(v.Country[i])
 		if err != nil {
