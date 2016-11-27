@@ -43,37 +43,47 @@
                     <a href="/admin"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 {{ $categories := .menu }}
+                {{ $sel_cat := .cat_id }}
+                {{ $sel_diff := .diff }}
                 {{ range $category := $categories }}
                     {{if eq $category.Parent 0 }}
                         <li>
+                            {{ if $category.HasSubcategories }}
                             <a href="#"><i class="fa fa-sitemap fa-fw"></i>{{$category.Category}}<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 {{ range $sub := $categories }}
                                     {{if eq $category.Id $sub.Parent }}
                                         <li>
+                                            {{ if $sub.HasDifficulty }}
                                             <a href="#">{{ $sub.Category }}<span class="fa arrow"></span></a>
                                             <ul class="nav nav-third-level">
                                                 {{ if eq $sub.DiffBeginner 1 }}
                                                 <li>
-                                                    <a href="#">Beginner</a>
+                                                    <a href="/admin/category/{{$sub.Id}}/difficulty/beginner">Beginner</a>
                                                 </li>
                                                 {{ end }}
                                                 {{ if eq $sub.DiffAdvanced 1 }}
                                                 <li>
-                                                    <a href="#">Advanced</a>
+                                                    <a href="/admin/category/{{$sub.Id}}/difficulty/advanced">Advanced</a>
                                                 </li>
                                                 {{ end }}
                                                 {{ if eq $sub.DiffExpert 1 }}
                                                 <li>
-                                                    <a href="#">Expert</a>
+                                                    <a href="/admin/category/{{$sub.Id}}/difficulty/expert">Expert</a>
                                                 </li>
                                                 {{ end }}
                                             </ul>
+                                            {{ else }}
+                                            <a href="/admin/category/{{$sub.Id}}">{{ $sub.Category }}</a>
+                                            {{ end }}
                                             <!-- /.nav-third-level -->
                                         </li>
                                     {{ end }}
                                 {{ end }}
                             </ul>
+                            {{ else }}
+                            <a href="/admin/category/{{$category.Id}}"><i class="fa fa-sitemap fa-fw"></i>{{$category.Category}}</a>
+                            {{ end }}
                             <!-- /.nav-second-level -->
                         </li>
                     {{ end }}

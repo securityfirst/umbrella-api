@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/gosexy/to"
+
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/crypto/bcrypt"
 
@@ -16,8 +18,10 @@ func (um *Umbrella) Index(c *gin.Context) {
 	menuStruct, err := um.getAllPublishedCategories(c)
 	checkErr(err)
 	obj := gin.H{
-		"title": "Umbrella Dashboard",
-		"menu":  menuStruct,
+		"title":  "Umbrella Dashboard",
+		"menu":   menuStruct,
+		"diff":   "",
+		"cat_id": 0,
 	}
 	c.HTML(200, "index.tmpl", obj)
 }
@@ -25,6 +29,26 @@ func (um *Umbrella) Index(c *gin.Context) {
 func (um *Umbrella) Login(c *gin.Context) {
 	obj := gin.H{"title": "Login"}
 	c.HTML(http.StatusOK, "login.tmpl", obj)
+}
+
+func (um *Umbrella) Category(c *gin.Context) {
+	menuStruct, err := um.getAllPublishedCategories(c)
+	checkErr(err)
+	obj := gin.H{
+		"title": "Category",
+		"menu":  menuStruct,
+	}
+	if catId, ok := c.Params.Get("cat_id"); ok {
+		obj["cat_id"] = to.Int64(catId)
+	} else {
+		obj["cat_id"] = int64(0)
+	}
+	if diff, ok := c.Params.Get("difficulty"); ok {
+		obj["diff"] = diff
+	} else {
+		obj["diff"] = ""
+	}
+	c.HTML(http.StatusOK, "index.tmpl", obj)
 }
 
 func (um *Umbrella) LoginPost(c *gin.Context) {

@@ -176,7 +176,7 @@ func (um *Umbrella) getAllPublishedCheckItems(c *gin.Context) (checkItems []Chec
 // }
 
 func (um *Umbrella) getAllPublishedCategories(c *gin.Context) (categories []Category, err error) {
-	_, err = um.Db.Select(&categories, "select c.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, c.category, c.parent, c.has_difficulty, c.diff_beginner, c.diff_advanced, c.diff_expert, COALESCE(c.text_beginner, '') as text_beginner, COALESCE(c.text_advanced, '') as text_advanced, COALESCE(c.text_expert, '') as text_expert, c.`status`,c. created_at, c.author, c.approved_at, c.approved_by FROM categories as c LEFT JOIN categories as cat ON cat.id = c.parent WHERE c.status=:status ORDER BY id ASC", map[string]interface{}{
+	_, err = um.Db.Select(&categories, "select c.id, (case when cat.category IS NOT NULL then cat.category else '' end) as parent_name, EXISTS(SELECT * FROM categories c2 WHERE c2.parent = c.id LIMIT 1) as has_subcategories, c.category, c.parent, c.has_difficulty, c.diff_beginner, c.diff_advanced, c.diff_expert, COALESCE(c.text_beginner, '') as text_beginner, COALESCE(c.text_advanced, '') as text_advanced, COALESCE(c.text_expert, '') as text_expert, c.`status`,c. created_at, c.author, c.approved_at, c.approved_by FROM categories as c LEFT JOIN categories as cat ON cat.id = c.parent WHERE c.status=:status ORDER BY id ASC, c.sort_order ASC", map[string]interface{}{
 		"status": "published",
 	})
 	return categories, err

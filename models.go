@@ -105,23 +105,24 @@ type Segment struct {
 // }
 
 type Category struct {
-	Id            int64  `json:"id" db:"id"`
-	Parent        int64  `json:"parent" db:"parent"`
-	ParentName    string `json:"parentName" db:"parent_name"`
-	Category      string `json:"category" db:"category"`
-	HasDifficulty int64  `json:"has_difficulty" db:"has_difficulty"`
-	DiffBeginner  int64  `json:"difficulty_beginner" db:"diff_beginner"`
-	DiffAdvanced  int64  `json:"difficulty_advanced" db:"diff_advanced"`
-	DiffExpert    int64  `json:"difficulty_expert" db:"diff_expert"`
-	TextBeginner  string `json:"text_beginner" db:"text_beginner"`
-	TextAdvanced  string `json:"text_advanced" db:"text_advanced"`
-	TextExpert    string `json:"text_expert" db:"text_expert"`
-	Status        string `json:"-" db:"status"`
-	CreatedAt     int64  `json:"-" db:"created_at"`
-	ApprovedAt    int64  `json:"-" db:"approved_at"`
-	ApprovedBy    int64  `json:"-" db:"approved_by"`
-	Author        int64  `json:"-" db:"author"`
-	SortOrder     int64  `json:"-" db:"sort_order"`
+	Id               int64  `json:"id" db:"id"`
+	Parent           int64  `json:"parent" db:"parent"`
+	ParentName       string `json:"parentName" db:"parent_name"`
+	Category         string `json:"category" db:"category"`
+	HasSubcategories bool   `json:"-" db:"has_subcategories"`
+	HasDifficulty    int64  `json:"has_difficulty" db:"has_difficulty"`
+	DiffBeginner     int64  `json:"difficulty_beginner" db:"diff_beginner"`
+	DiffAdvanced     int64  `json:"difficulty_advanced" db:"diff_advanced"`
+	DiffExpert       int64  `json:"difficulty_expert" db:"diff_expert"`
+	TextBeginner     string `json:"text_beginner" db:"text_beginner"`
+	TextAdvanced     string `json:"text_advanced" db:"text_advanced"`
+	TextExpert       string `json:"text_expert" db:"text_expert"`
+	Status           string `json:"-" db:"status"`
+	CreatedAt        int64  `json:"-" db:"created_at"`
+	ApprovedAt       int64  `json:"-" db:"approved_at"`
+	ApprovedBy       int64  `json:"-" db:"approved_by"`
+	Author           int64  `json:"-" db:"author"`
+	SortOrder        int64  `json:"-" db:"sort_order"`
 }
 
 // type CategoryInsert struct {

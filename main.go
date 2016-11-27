@@ -40,6 +40,8 @@ func main() {
 	{
 		admin.GET("/", um.WebAuth(), um.Index)
 		admin.GET("/login", um.Login)
+		admin.GET("/category/:cat_id", um.Category)
+		admin.GET("/category/:cat_id/difficulty/:difficulty", um.Category)
 		admin.POST("/login", um.LoginPost)
 		admin.GET("/logout", um.WebAuth(), um.LogOut)
 	}

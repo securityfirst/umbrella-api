@@ -29,7 +29,12 @@ function LoadCorrectSidebar() {
     var url = window.location;
     var element = $('ul.nav a').filter(function() {
         return this.href == url || url.href.indexOf(this.href) == 0;
-    }).addClass('active').parent().parent().addClass('in').parent();
+    }).last();
+    var element2 = element.addClass('active').parent().parent().addClass('in').parent();
+    var element3 = element.parent().parent().parent().parent();
+    if (element3.is('ul')) {
+        element3.addClass('in');
+    }
     if (element.is('li')) {
         element.addClass('active');
     }
