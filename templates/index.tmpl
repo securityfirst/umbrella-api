@@ -18,23 +18,6 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Content Area
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Actions
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#">Edit</a>
-                                        </li>
-                                        <li><a href="#">Clone to another Segment</a>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Delete</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -53,33 +36,72 @@
                               <!-- Tab panes -->
                               <div class="tab-content">
                               {{ range $k, $segment := .segments }}
-                                <div role="tabpanel" class="tab-pane{{if eq $k 0 }} active in{{end}}" id="seg{{$segment.Id}}">{{$segment.Title}}</div>
+                                <div role="tabpanel" class="tab-pane{{if eq $k 0 }} active in{{end}}" id="seg{{$segment.Id}}">
+                                    <div class="panel panel-default">
+                                      <div class="panel-heading">Edit Segment {{$segment.Title}}
+                                        <div class="pull-right">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                                    Actions
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu pull-right" role="menu">
+                                                    <li><a href="#">Delete this Segment</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                      </div>
+                                      <div class="panel-body">
+                                        <form action="/admin/segment/{{$segment.Id}}">
+                                          <div class="form-group">
+                                            <label for="segTitle">Segment Title</label>
+                                            <input type="text" name="title" class="form-control" id="segTitle" placeholder="Segment Title" value="{{$segment.Title}}">
+                                          </div>
+                                          <div class="form-group">
+                                          <label for="segBody">Segment Body</label>
+                                          <textarea name="body" class="summernote" id="segBody">
+                                                {{$segment.Body}}
+                                          </textarea>
+                                          </div>
+                                          <button type="submit" class="btn btn-primary pull-right">Save</button>
+                                        </form>
+                                      </div>
+                                    </div>
+                                </div>
                               {{ end }}
                               {{ if .check_items }}
                                 <div role="tabpanel" class="tab-pane" id="check_items">
-                                <br>
-                                <center>
-                                    <h3>Check Items</h3>
-                                </center>
-                                <br>
-                                <ul class="list-group">
-                                    {{ $check_items := .check_items }}
-                                    {{ range $check_item := .check_items }}
-                                        {{ if eq $check_item.Parent 0 }}
-                                            <li class="list-group-item">{{ $check_item.Title }}<span class="pull-right"></span>
-                                                {{ if $check_item.HasSubItems}}
-                                                    <br><br><ul>
-                                                    {{ range $sub_item := $check_items }}
-                                                        {{ if eq $check_item.Id $sub_item.Parent }}
-                                                            <li class="list-group-item">{{ $sub_item.Text }}<span class="pull-right"></span>
+                                <div class="panel panel-default">
+                                  <div class="panel-heading">Edit Check Items
+                                  </div>
+                                  <div class="panel-body">
+                                    <ul class="list-group">
+                                        {{ $check_items := .check_items }}
+                                        {{ range $check_item := .check_items }}
+                                            {{ if eq $check_item.Parent 0 }}
+                                                <li class="list-group-item">{{ $check_item.Title }}<span class="pull-right">
+                                                    <button type="button" class="btn btn-warning">Edit</button>
+                                                    <button type="button" class="btn btn-danger">Delete</button>
+                                                </span>
+                                                    {{ if $check_item.HasSubItems}}
+                                                        <br><br><ul>
+                                                        {{ range $sub_item := $check_items }}
+                                                            {{ if eq $check_item.Id $sub_item.Parent }}
+                                                                <li class="list-group-item">{{ $sub_item.Text }}<span class="pull-right">
+                                                                    <button type="button" class="btn btn-warning">Edit</button>
+                                                                    <button type="button" class="btn btn-danger">Delete</button>
+                                                                </span>
+                                                            {{ end }}
                                                         {{ end }}
+                                                        </ul>
                                                     {{ end }}
-                                                    </ul>
-                                                {{ end }}
-                                            </li>
+                                                </li>
+                                            {{ end }}
                                         {{ end }}
-                                    {{ end }}
-                                </ul>
+                                    </ul>
+                                  </div>
+                                </div>
                                 </div>
                               {{ end }}
                               </div>
@@ -222,6 +244,7 @@
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="/assets/bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="/assets/bower_components/summernote/dist/summernote.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="/assets/js/admin.js"></script>

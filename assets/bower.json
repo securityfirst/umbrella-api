@@ -42,6 +42,7 @@
     "bootstrap-datepicker": "~1.4.0",
     "ekko-lightbox": "latest",
     "eonasdan-bootstrap-datetimepicker": "latest",
-    "jquery-timeago": "latest"
+    "jquery-timeago": "latest",
+    "summernote": "latest"
   }
 }

@@ -1,7 +1,8 @@
 $(function() {
     SetupMetisMenu();
     LoadCorrectSidebar();
-    SetupEkkoLightBox()
+    SetupEkkoLightBox();
+    SetupSummerNote();
 });
 
 //Loads the correct sidebar on window load,
@@ -50,4 +51,8 @@ function SetupEkkoLightBox() {
 
 function SetupMetisMenu() {
     $('#side-menu').metisMenu();
+}
+
+function SetupSummerNote() {
+    $('.summernote').summernote();
 }
