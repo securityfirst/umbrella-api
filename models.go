@@ -31,21 +31,22 @@ type Country struct {
 }
 
 type CheckItem struct {
-	Id         int64  `json:"id"`
-	Title      string `json:"title"`
-	Text       string `json:"text"`
-	Value      int64  `json:"value"`
-	Parent     int64  `json:"parent"`
-	Category   int64  `json:"category"`
-	Difficulty int64  `json:"difficulty"`
-	Custom     int64  `json:"custom"`
-	Disabled   int64  `json:"disabled"`
-	NoCheck    int64  `json:"no_check" db:"no_check"`
-	Status     string `json:"-" db:"status"`
-	CreatedAt  int64  `json:"-" db:"created_at"`
-	ApprovedAt int64  `json:"-" db:"approved_at"`
-	ApprovedBy int64  `json:"-" db:"approved_by"`
-	Author     int64  `json:"-" db:"author"`
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Text        string `json:"text"`
+	Value       int64  `json:"value"`
+	Parent      int64  `json:"parent"`
+	HasSubItems bool   `json:"-" db:"has_subitems"`
+	Category    int64  `json:"category"`
+	Difficulty  int64  `json:"difficulty"`
+	Custom      int64  `json:"custom"`
+	Disabled    int64  `json:"disabled"`
+	NoCheck     int64  `json:"no_check" db:"no_check"`
+	Status      string `json:"-" db:"status"`
+	CreatedAt   int64  `json:"-" db:"created_at"`
+	ApprovedAt  int64  `json:"-" db:"approved_at"`
+	ApprovedBy  int64  `json:"-" db:"approved_by"`
+	Author      int64  `json:"-" db:"author"`
 }
 
 type FeedItem struct {

@@ -141,16 +141,37 @@ func (f *FeedItem) updateOthers(um *Umbrella) {
 // 	return segment, err
 // }
 
-// func (um *Umbrella) getSegmentByCatId(c *gin.Context, categoryId int64) (segment Segment, err error) {
-// 	err = um.Db.SelectOne(&segment, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE category=:category_id ORDER BY id DESC LIMIT 1", map[string]interface{}{
-// 		"status":      "published",
-// 		"category_id": categoryId,
-// 	})
-// 	if err != nil && err.Error() == "sql: no rows in result set" {
-// 		c.Fail(404, errors.New("The resource could not be found"))
-// 	}
-// 	return segment, err
-// }
+func (um *Umbrella) getSegmentByCatIdAndDifficulty(categoryId int64, difficulty string) (segments []Segment, err error) {
+	var diffInt int = 1
+	switch difficulty {
+	case "advanced":
+		diffInt = 2
+	case "expert":
+		diffInt = 3
+	}
+	_, err = um.Db.Select(&segments, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE status = :status and category=:category_id and difficulty=:difficulty ORDER BY id ASC", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
+		"difficulty":  diffInt,
+	})
+	return segments, err
+}
+
+func (um *Umbrella) getCheckItemsByCatIdAndDifficulty(categoryId int64, difficulty string) (checkItems []CheckItem, err error) {
+	var diffInt int = 1
+	switch difficulty {
+	case "advanced":
+		diffInt = 2
+	case "expert":
+		diffInt = 3
+	}
+	_, err = um.Db.Select(&checkItems, "select id, title, text, value, parent, category, EXISTS(SELECT * FROM check_items ci WHERE check_items.parent = 0 AND ci.parent = check_items.id LIMIT 1) as has_subitems from check_items WHERE status=:status AND category=:category_id ORDER BY sort_order ASC, id ASC", map[string]interface{}{
+		"status":      "published",
+		"category_id": categoryId,
+		"difficulty":  diffInt,
+	})
+	return checkItems, err
+}
 
 func (um *Umbrella) getAllPublishedCheckItems(c *gin.Context) (checkItems []CheckItem, err error) {
 	_, err = um.Db.Select(&checkItems, "select id, title, text, value, parent, category, difficulty, custom, disabled, no_check from check_items WHERE status=:status ORDER BY sort_order ASC, id ASC", map[string]interface{}{

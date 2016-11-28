@@ -35,18 +35,26 @@ func (um *Umbrella) Category(c *gin.Context) {
 	menuStruct, err := um.getAllPublishedCategories(c)
 	checkErr(err)
 	obj := gin.H{
-		"title": "Category",
-		"menu":  menuStruct,
+		"title":  "Category",
+		"menu":   menuStruct,
+		"diff":   "",
+		"cat_id": 0,
 	}
-	if catId, ok := c.Params.Get("cat_id"); ok {
+	catId, ok := c.Params.Get("cat_id")
+	if ok {
 		obj["cat_id"] = to.Int64(catId)
-	} else {
-		obj["cat_id"] = int64(0)
 	}
-	if diff, ok := c.Params.Get("difficulty"); ok {
+	diff, ok := c.Params.Get("difficulty")
+	if ok {
 		obj["diff"] = diff
 	} else {
 		obj["diff"] = ""
+	}
+	if cat := to.Int64(catId); cat > 0 {
+		obj["segments"], err = um.getSegmentByCatIdAndDifficulty(cat, diff)
+		checkErr(err)
+		obj["check_items"], err = um.getCheckItemsByCatIdAndDifficulty(cat, diff)
+		checkErr(err)
 	}
 	c.HTML(http.StatusOK, "index.tmpl", obj)
 }
