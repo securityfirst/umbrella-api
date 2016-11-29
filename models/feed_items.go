@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/go-gorp/gorp"
 )

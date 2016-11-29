@@ -13,8 +13,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"umbrella/models"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/models"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"

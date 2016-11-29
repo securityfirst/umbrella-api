@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"umbrella/models"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/models"
+	"github.com/securityfirst/umbrella-api/utils"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"

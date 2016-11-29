@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"time"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"

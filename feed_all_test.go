@@ -2,7 +2,7 @@ package main
 
 import (
 	"testing"
-	"umbrella/models"
+	"github.com/securityfirst/umbrella-api/models"
 )
 
 type Fetcher interface {

@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"umbrella/models"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/models"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"

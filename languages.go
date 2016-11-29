@@ -1,7 +1,7 @@
 package main
 
 import (
-	"umbrella/models"
+	"github.com/securityfirst/umbrella-api/models"
 	"github.com/gin-gonic/gin"
 )
 

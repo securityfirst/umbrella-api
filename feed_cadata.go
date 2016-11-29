@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"umbrella/country"
-	"umbrella/models"
+	"github.com/securityfirst/umbrella-api/country"
+	"github.com/securityfirst/umbrella-api/models"
 )
 
 type CadataFetcher struct{}

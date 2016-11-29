@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"umbrella/models"
-	"umbrella/utils"
+	"github.com/securityfirst/umbrella-api/models"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/gosexy/to"
 

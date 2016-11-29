@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"umbrella/models"
+	"github.com/securityfirst/umbrella-api/models"
 
 	"regexp"
 

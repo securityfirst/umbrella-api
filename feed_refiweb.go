@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
-	"umbrella/models"
+	"github.com/securityfirst/umbrella-api/models"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gosexy/to"
