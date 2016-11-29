@@ -3,3 +3,4 @@ api
 gin-bin
 deploy.sh
 editor/.happypack
+.env
