@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"umbrella/country"
+	"umbrella/models"
 )
 
 type CadataFetcher struct{}
 
-func (g *CadataFetcher) Fetch() ([]FeedItem, error) {
-	var feeds []FeedItem
+func (g *CadataFetcher) Fetch() ([]models.FeedItem, error) {
+	var feeds []models.FeedItem
 	for _, src := range []string{
 		"https://cadatacatalog.state.gov/storage/f/2013-11-24T21%3A00%3A30.424Z/tas.xml",
 		"https://cadatacatalog.state.gov/storage/f/2013-11-24T21%3A00%3A58.223Z/tws.xml",
@@ -30,18 +32,13 @@ func (g *CadataFetcher) Fetch() ([]FeedItem, error) {
 			if code == "" {
 				continue
 			}
-			fips, ok := fips[code]
-			if !ok || fips == "" {
-				log.Printf("Cannot find name for code %q", code)
-				continue
-			}
-			c, err := query.FindCountryByName(fips)
+			c, err := country.ByFips(code)
 			if err != nil {
-				log.Printf("Cannot find country by name for %q: %s", fips, err)
+				log.Printf("Cannot find country: %s", err)
 				continue
 			}
 			t, _ := time.Parse(time.RFC1123, v.PubDate[i])
-			feeds = append(feeds, FeedItem{
+			feeds = append(feeds, models.FeedItem{
 				Title:       v.Title[i],
 				Description: v.Description[i],
 				URL:         v.Link[i],

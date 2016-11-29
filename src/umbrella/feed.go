@@ -11,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 
+	"umbrella/models"
+	"umbrella/utils"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
@@ -31,25 +34,25 @@ func (um *Umbrella) getFeed(c *gin.Context) {
 		log.Println("sources", err)
 		return
 	}
-	feedLog := &FeedRequestLog{
+	feedLog := models.FeedRequestLog{
 		Country:   country.Iso2,
 		Sources:   c.Request.URL.Query().Get("sources"),
 		CheckedAt: time.Now().Unix(),
 	}
 	if err != nil {
-		checkErr(err)
+		utils.CheckErr(err)
 		feedLog.Status = 500
-		go checkErr(um.Db.Insert(feedLog))
+		go utils.CheckErr(um.Db.Insert(&feedLog))
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
 	feedLog.Status = 200
-	go checkErr(um.Db.Insert(feedLog))
+	go utils.CheckErr(um.Db.Insert(&feedLog))
 	c.JSON(200, feedItems)
 	return
 }
 
-func (um *Umbrella) getFeedItems(sources []string, country Country, since int64) (items []FeedItem, err error) {
+func (um *Umbrella) getFeedItems(sources []string, country models.Country, since int64) (items []models.FeedItem, err error) {
 	getLastChecked := um.getLastChecked(country.Iso2)
 	var cleanSources, toRefresh, diff []int
 	for i := range sources {
@@ -81,7 +84,7 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 				var rwResp RWResponse
 				err = json.Unmarshal(body, &rwResp)
 				if err != nil {
-					checkErr(err)
+					utils.CheckErr(err)
 					fmt.Println(string(body[:]))
 				} else {
 					go um.updateLastChecked(country.Iso2, ReliefWeb, time.Now().Unix())
@@ -95,7 +98,7 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 					s.Next().Children().Each(func(i int, t *goquery.Selection) {
 						href, ok := t.Contents().Attr("href")
 						if ok {
-							item := FeedItem{
+							item := models.FeedItem{
 								Title:     t.Contents().Text(),
 								URL:       href,
 								Country:   country.Iso2,
@@ -109,7 +112,7 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 								var rwReport RWReport
 								err = json.Unmarshal(body, &rwReport)
 								if err != nil {
-									checkErr(err)
+									utils.CheckErr(err)
 									fmt.Println(string(body[:]))
 								} else {
 									if rwReport.Data.Item.Headline.Summary != "" {
@@ -122,7 +125,7 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 
 							}
 							items = append(items, item)
-							go item.updateRelief(um)
+							go item.UpdateRelief(um.Db)
 						}
 					})
 				}
@@ -133,12 +136,12 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 				f := GdascFetcher{}
 				srcItems, err := f.Fetch()
 				if err != nil {
-					checkErr(err)
+					utils.CheckErr(err)
 					continue
 				}
 				var change bool
 				for i, item := range srcItems {
-					go srcItems[i].updateOthers(um)
+					go srcItems[i].UpdateOthers(um.Db)
 					if item.Country == country.Iso2 {
 						items = append(items, item)
 						if change {
@@ -152,12 +155,12 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 				f := CadataFetcher{}
 				srcItems, err := f.Fetch()
 				if err != nil {
-					checkErr(err)
+					utils.CheckErr(err)
 					continue
 				}
 				var change bool
 				for i, item := range srcItems {
-					go srcItems[i].updateOthers(um)
+					go srcItems[i].UpdateOthers(um.Db)
 					if item.Country == country.Iso2 {
 						items = append(items, item)
 						if change {
@@ -179,14 +182,14 @@ func (um *Umbrella) getFeedItems(sources []string, country Country, since int64)
 		if err == nil {
 			items = append(items, feedItems...)
 		} else {
-			checkErr(err)
+			utils.CheckErr(err)
 		}
 	}
 	sort.Sort(SortFeedByDate(items))
 	return items, err
 }
 
-type SortFeedByDate []FeedItem
+type SortFeedByDate []models.FeedItem
 
 func (slice SortFeedByDate) Len() int {
 	return len(slice)

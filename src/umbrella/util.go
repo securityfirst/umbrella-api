@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/rand"
 	"database/sql"
-	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
@@ -14,7 +13,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
+	"umbrella/models"
+	"umbrella/utils"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
@@ -44,15 +44,15 @@ func initDb() *gorp.DbMap {
 		db.SetMaxIdleConns(2000)
 		db.SetMaxOpenConns(2000)
 	}
-	checkErr(err)
+	utils.CheckErr(err)
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
-	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "Id")
-	dbmap.AddTableWithName(Segment{}, "segments").SetKeys(true, "Id")
-	dbmap.AddTableWithName(CheckItem{}, "check_items").SetKeys(true, "Id")
-	dbmap.AddTableWithName(Category{}, "categories").SetKeys(true, "Id")
-	dbmap.AddTableWithName(FeedLastChecked{}, "feed_last_checked").SetKeys(true, "Id")
-	dbmap.AddTableWithName(FeedItem{}, "feed_items").SetKeys(true, "Id")
-	dbmap.AddTableWithName(FeedRequestLog{}, "feed_log").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.User{}, "users").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.Segment{}, "segments").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.CheckItem{}, "check_items").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.Category{}, "categories").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.FeedLastChecked{}, "feed_last_checked").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.FeedItem{}, "feed_items").SetKeys(true, "Id")
+	dbmap.AddTableWithName(models.FeedRequestLog{}, "feed_log").SetKeys(true, "Id")
 	return dbmap
 }
 
@@ -72,20 +72,6 @@ func (um *Umbrella) HTML(c *gin.Context, code int, name string, obj interface{})
 	if !c.Writer.Written() {
 		c.HTML(code, name, obj)
 	}
-}
-
-func checkErr(err error) {
-	if err != nil {
-		info := color.New(color.FgGreen).SprintFunc()
-		pc, fn, line, _ := runtime.Caller(1)
-		log.Printf(info(fmt.Sprintf("[error] in %s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, err)))
-	}
-}
-
-func redLog(toLog interface{}) {
-	info := color.New(color.FgRed).SprintFunc()
-	pc, fn, line, _ := runtime.Caller(1)
-	log.Printf(info(fmt.Sprintf("%s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, fmt.Sprint(toLog))))
 }
 
 func (um *Umbrella) checkErr(c *gin.Context, err error) {
@@ -123,9 +109,9 @@ func randString(n int) string {
 // Auth Middleware
 func (um *Umbrella) Auth(strict bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, err1 := um.checkUser(c)
-		if err1 != nil {
-			user = User{Id: 0}
+		user, err := um.checkUser(c)
+		if err != nil {
+			user = models.User{Id: 0}
 		}
 		c.Set("user", user)
 		if strict && user.Id == 0 {
@@ -155,7 +141,7 @@ func makeRequest(uri string, method string, requestBody io.Reader) (response []b
 	defer resp.Body.Close()
 	response, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		checkErr(err)
+		utils.CheckErr(err)
 	}
 	return response, err
 }
@@ -194,39 +180,4 @@ func (um *Umbrella) WebAuth() gin.HandlerFunc {
 			}
 		}
 	}
-}
-
-func (u *User) setCookie(c *gin.Context) {
-	expiration := time.Now().Add(time.Hour * 24 * 365)
-	cookie := http.Cookie{Name: "token", Value: u.Token, Expires: expiration}
-	http.SetCookie(c.Writer, &cookie)
-}
-
-func (u *User) removeCookie(c *gin.Context) {
-	expiration := time.Now().Add(time.Hour * -1)
-	cookie := http.Cookie{Name: "token", Value: "", Expires: expiration}
-	http.SetCookie(c.Writer, &cookie)
-}
-
-func buildFips() map[string]string {
-	const fileName = "fips.csv"
-
-	f, err := os.Open(fileName)
-	if err != nil {
-		log.Fatalf("Cannot open %s: %s", fileName, err)
-	}
-	var m = make(map[string]string, 265)
-	r := csv.NewReader(f)
-	r.Comma = '	'
-	for count := 0; ; count++ {
-		record, err := r.Read()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			log.Fatalf("Cannot red %s: %s", fileName, err)
-		}
-		m[record[0]] = record[1]
-	}
-	return m
 }

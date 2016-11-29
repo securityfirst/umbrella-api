@@ -1,10 +1,13 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"umbrella/models"
+	"github.com/gin-gonic/gin"
+)
 
 func (um *Umbrella) getLanguages(c *gin.Context) {
-	languages := []Language{
-		Language{
+	languages := []models.Language{
+		{
 			Name:  "English",
 			Label: "en-gb",
 		},

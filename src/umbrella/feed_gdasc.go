@@ -6,15 +6,13 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/pariz/gountries"
+	"umbrella/country"
+	"umbrella/models"
 )
-
-var query = gountries.New()
 
 type GdascFetcher struct{}
 
-func (g *GdascFetcher) Fetch() ([]FeedItem, error) {
+func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 	resp, err := http.Get("http://www.gdacs.org/xml/rss.xml")
 	if err != nil {
 		return nil, err
@@ -24,24 +22,26 @@ func (g *GdascFetcher) Fetch() ([]FeedItem, error) {
 	if err := xml.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
-	var feeds = make([]FeedItem, len(v.Title))
+	var feeds = make([]models.FeedItem, len(v.Title))
 	for i := range v.Title {
 		if v.Country[i] == "" {
 			continue
 		}
 		t, _ := time.Parse(time.RFC1123, v.PubDate[i])
-		c, err := query.FindCountryByName(v.Country[i])
-		if err != nil {
-			log.Printf("Cannot find country by name for %q: %s", v.Country[i], err)
-			continue
-		}
-		feeds[i] = FeedItem{
-			Title:       v.Title[i],
-			Description: v.Description[i],
-			URL:         v.Link[i],
-			Country:     strings.ToLower(c.Codes.Alpha2),
-			Source:      GDASC,
-			UpdatedAt:   t.Unix(),
+		for _, name := range strings.Split(v.Country[i], ", ") {
+			c, err := country.ByName(name)
+			if err != nil {
+				log.Printf("Country %q: %s", name, err)
+				continue
+			}
+			feeds = append(feeds, models.FeedItem{
+				Title:       v.Title[i],
+				Description: v.Description[i],
+				URL:         v.Link[i],
+				Country:     strings.ToLower(c.Codes.Alpha2),
+				Source:      GDASC,
+				UpdatedAt:   t.Unix(),
+			})
 		}
 	}
 	return feeds, nil

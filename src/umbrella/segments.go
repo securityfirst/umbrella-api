@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"umbrella/models"
+	"umbrella/utils"
 
 	"github.com/gosexy/to"
 
@@ -13,7 +15,7 @@ import (
 
 func (um *Umbrella) getSegments(c *gin.Context) {
 	segmentList, err := um.getAllPublishedSegments(c)
-	checkErr(err)
+	utils.CheckErr(err)
 	um.checkErr(c, err)
 	um.JSON(c, 200, segmentList)
 }
@@ -48,15 +50,15 @@ func (um *Umbrella) getSegments(c *gin.Context) {
 // }
 
 func (um *Umbrella) AddSegment(c *gin.Context) {
-	var json Segment
+	var json models.Segment
 	c.Bind(&json)
 	fmt.Printf("%+v", json)
 	if json.Title == "" || json.Category < 1 {
 		c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
 		return
 	}
-	user := c.MustGet("user").(User)
-	segment := Segment{Title: strings.TrimSpace(json.Title), Body: strings.TrimSpace(json.Body), Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+	user := c.MustGet("user").(models.User)
+	segment := models.Segment{Title: strings.TrimSpace(json.Title), Body: strings.TrimSpace(json.Body), Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
 	switch json.DifficultyString {
 	case "advanced":
 		segment.Difficulty = 2
@@ -76,7 +78,7 @@ func (um *Umbrella) AddSegment(c *gin.Context) {
 }
 
 func (um *Umbrella) EditSegment(c *gin.Context) {
-	var json Segment
+	var json models.Segment
 	c.Bind(&json)
 	segmentId := to.Int64(c.Params.ByName("id"))
 	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {

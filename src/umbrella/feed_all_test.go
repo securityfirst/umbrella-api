@@ -1,9 +1,12 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"umbrella/models"
+)
 
 type Fetcher interface {
-	Fetch() ([]FeedItem, error)
+	Fetch() ([]models.FeedItem, error)
 }
 
 func baseTest(t *testing.T, f Fetcher) {
@@ -15,7 +18,7 @@ func baseTest(t *testing.T, f Fetcher) {
 }
 
 func TestRefiweb(t *testing.T) {
-	baseTest(t, &RefiWebFetcher{&Country{ReliefWeb: 241, Iso2: "UA"}})
+	baseTest(t, &RefiWebFetcher{&models.Country{ReliefWeb: 241, Iso2: "UA"}})
 }
 
 func TestGdasc(t *testing.T) {

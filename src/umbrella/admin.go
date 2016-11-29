@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"umbrella/models"
+	"umbrella/utils"
 
 	"github.com/gosexy/to"
 
@@ -16,7 +18,7 @@ import (
 
 func (um *Umbrella) Index(c *gin.Context) {
 	menuStruct, err := um.getAllPublishedCategories(c)
-	checkErr(err)
+	utils.CheckErr(err)
 	obj := gin.H{
 		"title":  "Umbrella Dashboard",
 		"menu":   menuStruct,
@@ -33,7 +35,7 @@ func (um *Umbrella) Login(c *gin.Context) {
 
 func (um *Umbrella) Category(c *gin.Context) {
 	menuStruct, err := um.getAllPublishedCategories(c)
-	checkErr(err)
+	utils.CheckErr(err)
 	obj := gin.H{
 		"title":  "Category",
 		"menu":   menuStruct,
@@ -52,9 +54,9 @@ func (um *Umbrella) Category(c *gin.Context) {
 	}
 	if cat := to.Int64(catId); cat > 0 {
 		obj["segments"], err = um.getSegmentByCatIdAndDifficulty(cat, diff)
-		checkErr(err)
+		utils.CheckErr(err)
 		obj["check_items"], err = um.getCheckItemsByCatIdAndDifficulty(cat, diff)
-		checkErr(err)
+		utils.CheckErr(err)
 	}
 	c.HTML(http.StatusOK, "index.tmpl", obj)
 }
@@ -69,7 +71,7 @@ func (um *Umbrella) LoginPost(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "login.tmpl", obj)
 		return
 	}
-	var u User
+	var u models.User
 	err = um.Db.SelectOne(&u, "select id, name, email, password, token, role from users where email=?", login.Email)
 	if err != nil {
 		fmt.Println(err)
@@ -86,9 +88,9 @@ func (um *Umbrella) LoginPost(c *gin.Context) {
 	if err1 == nil {
 		u.Token = randString(50)
 		_, err := um.Db.Update(&u)
-		checkErr(err)
+		utils.CheckErr(err)
 		c.Set("user", u)
-		u.setCookie(c)
+		u.SetCookie(c)
 		c.Redirect(302, "/admin")
 		return
 
@@ -105,8 +107,8 @@ type LoginForm struct {
 }
 
 func (um *Umbrella) LogOut(c *gin.Context) {
-	u := c.MustGet("user").(User)
-	u.removeCookie(c)
+	u := c.MustGet("user").(models.User)
+	u.RemoveCookie(c)
 	c.Redirect(302, "/admin/login")
 	return
 }

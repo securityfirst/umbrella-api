@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"time"
+	"umbrella/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
@@ -11,11 +12,9 @@ import (
 
 var isProduction bool
 
-var fips = buildFips()
-
 func main() {
 	err := goenv.Load()
-	checkErr(err)
+	utils.CheckErr(err)
 	// envArg := flag.String("env", "production", "Environment")
 	envArg := flag.String("env", "development", "Environment")
 	flag.Parse()

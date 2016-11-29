@@ -1,24 +1,4 @@
-package main
-
-import "github.com/go-gorp/gorp"
-
-type Umbrella struct {
-	Db *gorp.DbMap
-}
-
-type LoginJSON struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type User struct {
-	Id       int64  `db:"id" json:"-"`
-	Name     string `db:"name" json:"name"`
-	Email    string `db:"email" json:"email"`
-	Password string `json:"-"`
-	Token    string `json:"-"`
-	Role     int    `db:"role" json:"-"`
-}
+package models
 
 type Country struct {
 	Id          int64    `db:"id"`
@@ -47,16 +27,6 @@ type CheckItem struct {
 	ApprovedAt  int64  `json:"-" db:"approved_at"`
 	ApprovedBy  int64  `json:"-" db:"approved_by"`
 	Author      int64  `json:"-" db:"author"`
-}
-
-type FeedItem struct {
-	Id          int64  `json:"-"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	URL         string `json:"url"`
-	Country     string `json:"-"`
-	Source      int64  `json:"-"`
-	UpdatedAt   int64  `json:"updated_at" db:"updated_at"`
 }
 
 type FeedLastChecked struct {

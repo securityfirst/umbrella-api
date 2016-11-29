@@ -1,5 +1,8 @@
+pkg
+bin
+
 sftp-config.json
-api
+api-umbrella
 gin-bin
 deploy.sh
 editor/.happypack
