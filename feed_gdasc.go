@@ -22,7 +22,7 @@ func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 	if err := xml.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
-	var feeds = make([]models.FeedItem, len(v.Title))
+	var feeds = make([]models.FeedItem, 0, len(v.Title))
 	for i := range v.Title {
 		if v.Country[i] == "" {
 			continue
