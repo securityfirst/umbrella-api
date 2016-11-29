@@ -1,0 +1,26 @@
+package: secfirst.org/api
+import:
+- package: github.com/PuerkitoBio/goquery
+  version: ^1.0.1
+- package: github.com/asaskevich/govalidator
+  version: ^5.0.0
+- package: github.com/fatih/color
+  version: ^1.1.0
+- package: github.com/gin-gonic/gin
+  version: 704d690ac0e25fcd060ff82f75f913e879e65a3c
+  subpackages:
+  - binding
+  - render
+- package: github.com/go-gorp/gorp
+  version: ^2.0.0
+- package: github.com/go-sql-driver/mysql
+  version: ^1.2.0
+- package: github.com/gosexy/to
+- package: github.com/itsjamie/gin-cors
+  version: ^1.0.0
+- package: github.com/pariz/gountries
+- package: github.com/tmilewski/goenv
+  version: ^1.0.0
+- package: golang.org/x/crypto
+  subpackages:
+  - bcrypt

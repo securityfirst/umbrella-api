@@ -43,6 +43,9 @@ func main() {
 		admin.GET("/category/:cat_id", um.Category)
 		admin.GET("/category/:cat_id/difficulty/:difficulty", um.Category)
 		admin.POST("/login", um.LoginPost)
+		admin.POST("/segment/edit/:id", um.WebAuth(), um.EditSegment)
+		admin.POST("/segment/delete/:id", um.WebAuth(), um.DeleteSegment)
+		admin.POST("/segment/add", um.WebAuth(), um.AddSegment)
 		admin.GET("/logout", um.WebAuth(), um.LogOut)
 	}
 	v1 := r.Group("/v1")

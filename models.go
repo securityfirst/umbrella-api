@@ -84,17 +84,18 @@ type FeedRequestLog struct {
 // }
 
 type Segment struct {
-	Id         int64  `json:"id" db:"id"`
-	Title      string `json:"title" db:"title"`
-	SubTitle   string `json:"subtitle" db:"subtitle"`
-	Body       string `json:"body" db:"body"`
-	Category   int64  `json:"category" db:"category"`
-	Difficulty int64  `json:"difficulty" db:"difficulty"`
-	Status     string `json:"-" db:"status"`
-	CreatedAt  int64  `json:"-" db:"created_at"`
-	ApprovedAt int64  `json:"-" db:"approved_at"`
-	ApprovedBy int64  `json:"-" db:"approved_by"`
-	Author     int64  `json:"-" db:"author"`
+	Id               int64  `json:"id" db:"id"`
+	Title            string `json:"title" db:"title"`
+	SubTitle         string `json:"subtitle" db:"subtitle"`
+	Body             string `json:"body" db:"body"`
+	Category         int64  `json:"category" db:"category"`
+	Difficulty       int64  `json:"difficulty" db:"difficulty"`
+	DifficultyString string `json:"difficulty_string,omitempty" db:"-"`
+	Status           string `json:"-" db:"status"`
+	CreatedAt        int64  `json:"-" db:"created_at"`
+	ApprovedAt       int64  `json:"-" db:"approved_at"`
+	ApprovedBy       int64  `json:"-" db:"approved_by"`
+	Author           int64  `json:"-" db:"author"`
 }
 
 // type JSONSegment struct {

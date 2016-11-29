@@ -1,6 +1,15 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/gosexy/to"
+
+	"github.com/gin-gonic/gin"
+)
 
 func (um *Umbrella) getSegments(c *gin.Context) {
 	segmentList, err := um.getAllPublishedSegments(c)
@@ -38,61 +47,60 @@ func (um *Umbrella) getSegments(c *gin.Context) {
 // 	}
 // }
 
-// func (um *Umbrella) addSegment(c *gin.Context) {
-// 	var json Segment
-// 	if c.EnsureBody(&json) {
-// 		user := c.MustGet("user").(User)
-// 		segment := Segment{Title: json.Title, SubTitle: json.SubTitle, Body: json.Body, Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
-// 		if user.Role == 1 {
-// 			segment.Status = "published"
-// 			segment.ApprovedBy = user.Id
-// 			segment.ApprovedAt = time.Now().Unix()
-// 		}
-// 		err := um.Db.Insert(&segment)
-// 		um.checkErr(c, err)
-// 		c.JSON(200, segment)
-// 		return
-// 	}
-// 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
-// }
+func (um *Umbrella) AddSegment(c *gin.Context) {
+	var json Segment
+	c.Bind(&json)
+	fmt.Printf("%+v", json)
+	if json.Title == "" || json.Category < 1 {
+		c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
+		return
+	}
+	user := c.MustGet("user").(User)
+	segment := Segment{Title: strings.TrimSpace(json.Title), Body: strings.TrimSpace(json.Body), Category: json.Category, Status: "submitted", CreatedAt: time.Now().Unix(), Author: user.Id}
+	switch json.DifficultyString {
+	case "advanced":
+		segment.Difficulty = 2
+	case "expert":
+		segment.Difficulty = 3
+	default:
+		segment.Difficulty = 1
+	}
+	if user.Role == 1 {
+		segment.Status = "published"
+		segment.ApprovedBy = user.Id
+		segment.ApprovedAt = time.Now().Unix()
+	}
+	err := um.Db.Insert(&segment)
+	um.checkErr(c, err)
+	c.JSON(200, segment)
+}
 
-// func (um *Umbrella) editSegment(c *gin.Context) {
-// 	var json Segment
-// 	c.Bind(&json)
-// 	segmentId := to.Int64(c.Params.ByName("id"))
-// 	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {
-// 		segment, err := um.getSegmentById(c, segmentId)
-// 		if err != nil {
-// 			if err == sql.ErrNoRows {
-// 				c.JSON(404, gin.H{"error": "Not found"})
-// 				return
-// 			}
-// 			um.checkErr(c, err)
-// 		}
-// 		if json.Title != "" {
-// 			segment.Title = json.Title
-// 		}
-// 		if json.SubTitle != "" {
-// 			segment.SubTitle = json.SubTitle
-// 		}
-// 		if json.Body != "" {
-// 			segment.Body = json.Body
-// 		}
-// 		if json.Category != 0 {
-// 			segment.Category = to.Int64(json.Category)
-// 		}
-// 		segment.Status = "submitted"
-// 		segment.CreatedAt = time.Now().Unix()
-// 		user := c.MustGet("user").(User)
-// 		segment.Author = user.Id
-
-// 		_, err = um.Db.Update(&segment)
-// 		um.checkErr(c, err)
-// 		c.JSON(200, segment)
-// 		return
-// 	}
-// 	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
-// }
+func (um *Umbrella) EditSegment(c *gin.Context) {
+	var json Segment
+	c.Bind(&json)
+	segmentId := to.Int64(c.Params.ByName("id"))
+	if segmentId != 0 && (json.Title != "" || json.SubTitle != "" || json.Body != "" || json.Category != 0) {
+		segment, err := um.getSegmentById(c, segmentId)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
+				return
+			}
+			um.checkErr(c, err)
+		}
+		if json.Title != "" {
+			segment.Title = strings.TrimSpace(json.Title)
+		}
+		if json.Body != "" {
+			segment.Body = strings.TrimSpace(json.Body)
+		}
+		_, err = um.Db.Update(&segment)
+		um.checkErr(c, err)
+		c.JSON(200, segment)
+		return
+	}
+	c.JSON(400, gin.H{"error": "One or several fields missing. Please check and try again"})
+}
 
 // func (um *Umbrella) editSegmentByCat(c *gin.Context) {
 // 	var json Segment
@@ -159,22 +167,22 @@ func (um *Umbrella) getSegments(c *gin.Context) {
 // 	c.JSON(400, gin.H{"error": "One or more parameters are missing"})
 // }
 
-// func (um *Umbrella) deleteSegment(c *gin.Context) {
-// 	segmentId := to.Int64(c.Params.ByName("id"))
-// 	if segmentId != 0 {
-// 		segment, err := um.getSegmentById(c, segmentId)
-// 		if err != nil {
-// 			if err == sql.ErrNoRows {
-// 				c.JSON(404, gin.H{"error": "Not found"})
-// 				return
-// 			}
-// 			um.checkErr(c, err)
-// 		}
-// 		_, err = um.Db.Delete(&segment)
-// 		um.checkErr(c, err)
-// 		c.Writer.WriteHeader(204)
-// 		return
-// 	} else {
-// 		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
-// 	}
-// }
+func (um *Umbrella) DeleteSegment(c *gin.Context) {
+	segmentId := to.Int64(c.Params.ByName("id"))
+	if segmentId != 0 {
+		segment, err := um.getSegmentById(c, segmentId)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(404, gin.H{"error": "Not found"})
+				return
+			}
+			um.checkErr(c, err)
+		}
+		_, err = um.Db.Delete(&segment)
+		um.checkErr(c, err)
+		c.JSON(200, gin.H{"response": "Success"})
+		return
+	} else {
+		c.JSON(404, gin.H{"error": "Requested resource could not be found"})
+	}
+}

@@ -130,16 +130,13 @@ func (f *FeedItem) updateOthers(um *Umbrella) {
 // 	return segments, err
 // }
 
-// func (um *Umbrella) getSegmentById(c *gin.Context, segmentId int64) (segment Segment, err error) {
-// 	err = um.Db.SelectOne(&segment, "select id, title, subtitle, body, category, status, created_at, author, approved_at, approved_by from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
-// 		"status":     "published",
-// 		"segment_id": segmentId,
-// 	})
-// 	if err != nil && err.Error() == "sql: no rows in result set" {
-// 		c.Fail(404, errors.New("The resource could not be found"))
-// 	}
-// 	return segment, err
-// }
+func (um *Umbrella) getSegmentById(c *gin.Context, segmentId int64) (segment Segment, err error) {
+	err = um.Db.SelectOne(&segment, "select id, title, subtitle, difficulty, body, category, status, created_at, author, approved_at, approved_by from segments WHERE id=:segment_id ORDER BY id ASC", map[string]interface{}{
+		"status":     "published",
+		"segment_id": segmentId,
+	})
+	return segment, err
+}
 
 func (um *Umbrella) getSegmentByCatIdAndDifficulty(categoryId int64, difficulty string) (segments []Segment, err error) {
 	var diffInt int = 1
