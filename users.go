@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/securityfirst/umbrella-api/models"
 
 	"regexp"
 
@@ -10,9 +11,12 @@ import (
 )
 
 func (um *Umbrella) loginEndpoint(c *gin.Context) {
-	var json LoginJSON
+	var json struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
 	if err := c.Bind(&json); err == nil {
-		var u User
+		var u models.User
 		err := um.Db.SelectOne(&u, "select id, name, email, password, token, role from users where email=?", json.Email)
 		if err != nil {
 			fmt.Println(err)
