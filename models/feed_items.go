@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+
 	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/go-gorp/gorp"
@@ -42,9 +43,10 @@ func (f *FeedItem) UpdateOthers(db *gorp.DbMap) {
 	trans, err := db.Begin()
 	utils.CheckErr(err)
 	err = trans.SelectOne(&alreadyExists, "select * from feed_items where country= ? and source = ? and url = ? order by updated_at desc", f.Country, f.Source, f.URL)
-	utils.CheckErr(err)
 	if err == sql.ErrNoRows {
 		utils.CheckErr(trans.Insert(f))
+	} else {
+		utils.CheckErr(err)
 	}
 	trans.Commit()
 }
