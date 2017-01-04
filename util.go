@@ -13,6 +13,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
 
@@ -40,10 +41,8 @@ func initDb() *gorp.DbMap {
 		connString = os.Getenv("DB_DEV")
 	}
 	db, err := sql.Open("mysql", connString)
-	if isProduction {
-		db.SetMaxIdleConns(2000)
-		db.SetMaxOpenConns(2000)
-	}
+	db.SetMaxIdleConns(32)
+	db.SetMaxOpenConns(32)
 	utils.CheckErr(err)
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(models.User{}, "users").SetKeys(true, "Id")
