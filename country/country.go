@@ -39,6 +39,9 @@ func ByFips(name string) (*gountries.Country, error) {
 
 func init() {
 	path := os.Getenv("FIPS")
+	if path == "" {
+		path = "fips.csv"
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Cannot open %s: %s", path, err)
