@@ -1,58 +1,175 @@
-hash: b05b7544afc30fb9c62a8439042db4acb1bde544bd93652c819ef0ac9d47deba
-updated: 2016-11-28T03:57:42.232837375Z
+hash: 2c5b8fec56192e56f572f7a712812a86a46cd73ffd1819119900ff6d95ea29b4
+updated: 2017-01-10T16:41:08.0583528+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
+  subpackages:
+  - github.com\andybalholm\cascadia
 - name: github.com/asaskevich/govalidator
   version: 7b3beb6df3c42abd3509abfc3bcacc0fbfb7c877
+  subpackages:
+  - github.com\asaskevich\govalidator
+- name: github.com/cenkalti/log
+  version: 958ee7afc008e65fe479a565819a25b30af0ec65
+  subpackages:
+  - github.com\cenkalti\log
 - name: github.com/fatih/color
-  version: dea9d3a26a087187530244679c1cfb3a42937794
+  version: 34e4ee095d12986a2cef5ddb9aeb3b8cfcfea17c
+  subpackages:
+  - github.com\fatih\color
 - name: github.com/gin-gonic/gin
   version: 704d690ac0e25fcd060ff82f75f913e879e65a3c
   subpackages:
   - binding
   - render
+  - github.com\gin-gonic\gin
+  - github.com\gin-gonic\gin\binding
+  - github.com\gin-gonic\gin\render
 - name: github.com/go-gorp/gorp
   version: 4deece61034873cb5b5416e81abe4cea7bd0da72
+  subpackages:
+  - github.com\go-gorp\gorp
 - name: github.com/go-sql-driver/mysql
-  version: a732e14c62dde3285440047bba97581bc472ae18
+  version: a0583e0143b1624142adab07e0e97fe106d99561
+  subpackages:
+  - github.com\go-sql-driver\mysql
 - name: github.com/golang/protobuf
   version: 2402d76f3d41f928c7902a765dfc872356dd3aad
   subpackages:
-  - proto
+  - github.com\golang\protobuf\proto
+- name: github.com/google/go-github
+  version: dcda0b96bd591fbeb40dcaddec3fb40a7fcaca34
+  subpackages:
+  - github.com\google\go-github\github
+- name: github.com/google/go-querystring
+  version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
+  subpackages:
+  - github.com\google\go-querystring\query
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+  subpackages:
+  - github.com\gorilla\context
+- name: github.com/gorilla/securecookie
+  version: fa5329f913702981df43dcb2a380bac429c810b5
+  subpackages:
+  - github.com\gorilla\securecookie
+- name: github.com/gorilla/sessions
+  version: 83c8db3bdc9be789e57e3756ffbcffd2d7d40176
+  subpackages:
+  - github.com\gorilla\sessions
 - name: github.com/gosexy/to
   version: 3962e3902237286c83772cfbe0fa68fc87c9b547
+  subpackages:
+  - github.com\gosexy\to
+- name: github.com/hashicorp/errwrap
+  version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
+  subpackages:
+  - github.com\hashicorp\errwrap
+- name: github.com/hashicorp/go-multierror
+  version: ed905158d87462226a13fe39ddf685ea65f1c11f
+  subpackages:
+  - github.com\hashicorp\go-multierror
 - name: github.com/itsjamie/gin-cors
   version: 97b4a9da79331dfa2b6d35f4cdd1e50f5148859c
+  subpackages:
+  - github.com\itsjamie\gin-cors
 - name: github.com/manucorporat/sse
-  version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+  version: c142f0f1baea5cef7f98a8a6c222f6134368c1f5
+  subpackages:
+  - github.com\manucorporat\sse
 - name: github.com/mattn/go-colorable
   version: 40e4aedc8fabf8c23e040057540867186712faa5
+  subpackages:
+  - github.com\mattn\go-colorable
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+  subpackages:
+  - github.com\mattn\go-isatty
 - name: github.com/pariz/gountries
   version: 01a8f4c7c6e404b6529ada4b5e25f00672670f6d
+  subpackages:
+  - github.com\pariz\gountries
 - name: github.com/PuerkitoBio/goquery
-  version: 56a198aba89cdf7a612e6c762eff9d788b9f2dae
+  version: 3cb3b8656883c2cc3deb9c643d93ea6e5157e425
+  subpackages:
+  - github.com\PuerkitoBio\goquery
+- name: github.com/securityfirst/tent
+  version: fcd0f01515e89e280842e99d980c10a7d93b3380
+  subpackages:
+  - github.com\securityfirst\tent
+  - github.com\securityfirst\tent\auth
+  - github.com\securityfirst\tent\repo
+  - github.com\securityfirst\tent\models
+  - github.com\securityfirst\tent\repo\component
+- name: github.com/sergi/go-diff
+  version: 83532ca1c1caa393179c677b6facf48e61f4ca5d
+  subpackages:
+  - github.com\sergi\go-diff\diffmatchpatch
 - name: github.com/tmilewski/goenv
   version: c7da341302c5a0c97a2ac2c2cce8d4bdc827ca16
+  subpackages:
+  - github.com\tmilewski\goenv
 - name: golang.org/x/crypto
   version: cc04154d65fb9296747569b107cfd05380b1ea3e
   subpackages:
   - bcrypt
-  - blowfish
+  - golang.org\x\crypto\bcrypt
+  - golang.org\x\crypto\blowfish
+  - golang.org\x\crypto\ssh
 - name: golang.org/x/net
-  version: f315505cf3349909cdf013ea56690da34e96a451
+  version: 621fff363a1d9ad7fdd0bfa9d80a42881267deb4
   subpackages:
-  - context
-  - html
-  - html/atom
+  - golang.org\x\net\html
+  - golang.org\x\net\context
+  - golang.org\x\net\html\atom
+- name: golang.org/x/oauth2
+  version: 314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd
+  subpackages:
+  - golang.org\x\oauth2
+  - golang.org\x\oauth2\github
+  - golang.org\x\oauth2\internal
 - name: golang.org/x/sys
   version: c8bc69bc2db9c57ccf979550bc69655df5039a8a
   subpackages:
-  - unix
-- name: gopkg.in/go-playground/validator.v8
-  version: c193cecd124b5cc722d7ee5538e945bdb3348435
+  - golang.org\x\sys\unix
+- name: google.golang.org/appengine
+  version: 8758a385849434ba5eac8aeedcf5192c5a0f5f10
+  subpackages:
+  - google.golang.org\appengine\urlfetch
+  - google.golang.org\appengine\internal
+  - google.golang.org\appengine\internal\urlfetch
+  - google.golang.org\appengine\internal\base
+  - google.golang.org\appengine\internal\datastore
+  - google.golang.org\appengine\internal\log
+  - google.golang.org\appengine\internal\remote_api
+- name: gopkg.in/bluesuncorp/validator.v5
+  version: 07cbdd2e6dfd947b002e83c13b775c7580fab2d5
+  subpackages:
+  - gopkg.in\bluesuncorp\validator.v5
+- name: gopkg.in/sourcegraph/go-vcsurl.v1
+  version: 6b12603ea6fd7f84b8c90118face09df39ea10c6
+  subpackages:
+  - gopkg.in\sourcegraph\go-vcsurl.v1
+- name: gopkg.in/src-d/go-git.v3
+  version: bb4a55d739ce1e75596f26ae2b21949e71af79aa
+  subpackages:
+  - gopkg.in\src-d\go-git.v3
+  - gopkg.in\src-d\go-git.v3\clients
+  - gopkg.in\src-d\go-git.v3\clients\common
+  - gopkg.in\src-d\go-git.v3\core
+  - gopkg.in\src-d\go-git.v3\diff
+  - gopkg.in\src-d\go-git.v3\formats\packfile
+  - gopkg.in\src-d\go-git.v3\storage\memory
+  - gopkg.in\src-d\go-git.v3\storage\seekable
+  - gopkg.in\src-d\go-git.v3\utils\fs
+  - gopkg.in\src-d\go-git.v3\clients\http
+  - gopkg.in\src-d\go-git.v3\clients\ssh
+  - gopkg.in\src-d\go-git.v3\formats\pktline
+  - gopkg.in\src-d\go-git.v3\storage\seekable\internal\gitdir
+  - gopkg.in\src-d\go-git.v3\storage\seekable\internal\index
+  - gopkg.in\src-d\go-git.v3\formats\idxfile
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
-testImports: []
+  subpackages:
+  - gopkg.in\yaml.v2
+devImports: []
