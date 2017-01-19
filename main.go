@@ -45,6 +45,7 @@ func init() {
 	if host := os.Getenv("APP_HOST"); host != "" {
 		conf.OAuthHost = host
 	}
+	conf.Secret = os.Getenv("APP_SECRET")
 	log.SetFlags(log.Ltime | log.Lshortfile)
 }
 
