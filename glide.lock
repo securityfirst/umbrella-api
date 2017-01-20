@@ -1,5 +1,5 @@
 hash: 2c5b8fec56192e56f572f7a712812a86a46cd73ffd1819119900ff6d95ea29b4
-updated: 2017-01-10T16:41:08.0583528+01:00
+updated: 2017-01-20T17:24:19.854407+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -38,11 +38,11 @@ imports:
   subpackages:
   - github.com\golang\protobuf\proto
 - name: github.com/google/go-github
-  version: dcda0b96bd591fbeb40dcaddec3fb40a7fcaca34
+  version: c9c37fd6ce0247943d1aa34fc3813c62c5cb0225
   subpackages:
   - github.com\google\go-github\github
 - name: github.com/google/go-querystring
-  version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
+  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
   subpackages:
   - github.com\google\go-querystring\query
 - name: github.com/gorilla/context
@@ -93,8 +93,12 @@ imports:
   version: 3cb3b8656883c2cc3deb9c643d93ea6e5157e425
   subpackages:
   - github.com\PuerkitoBio\goquery
+- name: github.com/russross/blackfriday
+  version: 5f33e7b7878355cd2b7e6b8eefc48a5472c69f70
+  subpackages:
+  - github.com\russross\blackfriday
 - name: github.com/securityfirst/tent
-  version: fcd0f01515e89e280842e99d980c10a7d93b3380
+  version: ea0f11878a7055d280febde680334c4bd2c7226f
   subpackages:
   - github.com\securityfirst\tent
   - github.com\securityfirst\tent\auth
@@ -102,9 +106,13 @@ imports:
   - github.com\securityfirst\tent\models
   - github.com\securityfirst\tent\repo\component
 - name: github.com/sergi/go-diff
-  version: 83532ca1c1caa393179c677b6facf48e61f4ca5d
+  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
   subpackages:
   - github.com\sergi\go-diff\diffmatchpatch
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 1dba4b3954bc059efc3991ec364f9f9a35f597d2
+  subpackages:
+  - github.com\shurcooL\sanitized_anchor_name
 - name: github.com/tmilewski/goenv
   version: c7da341302c5a0c97a2ac2c2cce8d4bdc827ca16
   subpackages:
@@ -133,7 +141,7 @@ imports:
   subpackages:
   - golang.org\x\sys\unix
 - name: google.golang.org/appengine
-  version: 8758a385849434ba5eac8aeedcf5192c5a0f5f10
+  version: 9e2ad0873f358c54296ccdc5116b0652c98226d1
   subpackages:
   - google.golang.org\appengine\urlfetch
   - google.golang.org\appengine\internal
