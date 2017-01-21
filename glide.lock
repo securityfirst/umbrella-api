@@ -1,5 +1,5 @@
 hash: 2c5b8fec56192e56f572f7a712812a86a46cd73ffd1819119900ff6d95ea29b4
-updated: 2017-01-21T18:24:40.7912036+01:00
+updated: 2017-01-21T18:39:06.3583562+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -98,7 +98,7 @@ imports:
   subpackages:
   - github.com\russross\blackfriday
 - name: github.com/securityfirst/tent
-  version: 25ef479415eaea9093890de9f5198a27fa45b216
+  version: 5947d902e713324295cc5abb6b9884eb3847dc23
   subpackages:
   - github.com\securityfirst\tent
   - github.com\securityfirst\tent\auth
