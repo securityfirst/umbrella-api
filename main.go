@@ -113,8 +113,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Repo error: %s", err)
 		}
-
 		o := tent.New(r)
+		// No authentication
+		v2.GET("/feed", um.getFeed)
+		// Autentication
 		o.Register(v2, conf)
 	}
 	r.Run(":8080")
