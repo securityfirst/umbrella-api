@@ -1,5 +1,5 @@
-hash: 2c5b8fec56192e56f572f7a712812a86a46cd73ffd1819119900ff6d95ea29b4
-updated: 2017-01-21T18:39:06.3583562+01:00
+hash: e55200626fdf73fbde0049c411bd0bf6f0516d8d6146a5d98ed792ee4bfd8668
+updated: 2017-01-24T12:45:31.615665+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -13,6 +13,10 @@ imports:
   version: 958ee7afc008e65fe479a565819a25b30af0ec65
   subpackages:
   - github.com\cenkalti\log
+- name: github.com/dgrijalva/jwt-go
+  version: a601269ab70c205d26370c16f7c81e9017c14e04
+  subpackages:
+  - github.com\dgrijalva\jwt-go
 - name: github.com/fatih/color
   version: 34e4ee095d12986a2cef5ddb9aeb3b8cfcfea17c
   subpackages:
@@ -34,7 +38,7 @@ imports:
   subpackages:
   - github.com\go-sql-driver\mysql
 - name: github.com/golang/protobuf
-  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
   - github.com\golang\protobuf\proto
 - name: github.com/google/go-github
@@ -98,7 +102,7 @@ imports:
   subpackages:
   - github.com\russross\blackfriday
 - name: github.com/securityfirst/tent
-  version: 5947d902e713324295cc5abb6b9884eb3847dc23
+  version: 765d42200f7d349c20d43628fd0d854dec7b2815
   subpackages:
   - github.com\securityfirst\tent
   - github.com\securityfirst\tent\auth
