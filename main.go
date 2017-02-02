@@ -80,31 +80,11 @@ func main() {
 	{
 		v1.GET("/account/login_check", um.Auth(true), um.loginCheck)
 		v1.POST("/account/login", um.loginEndpoint)
-
 		v1.GET("/feed", um.getFeed)
-
 		v1.GET("/segments", um.getSegments)
-		// v1.GET("/segments/:id", um.Auth(false), um.getSegment)
-		// v1.GET("/segments/:id/category", um.Auth(false), um.getSegmentsByCat)
-		// v1.POST("/segments", um.Auth(true), um.addSegment)
-		// v1.PUT("/segments/:id/category", um.Auth(true), um.editSegmentByCat)
-		// v1.POST("/segments/:id/status", um.Auth(true), um.approveSegment)
-		// v1.DELETE("/segments/:id", um.Auth(true), um.deleteSegment)
-
 		v1.GET("/check_items", um.Auth(false), um.getCheckItems)
-		// v1.GET("/check_items/:id", um.Auth(false), um.getCheckItem)
-		// v1.GET("/check_items/:id/category", um.Auth(false), um.getCheckItemsByCat)
-		// v1.POST("/check_items", um.Auth(true), um.addCheckItem)
-		// v1.DELETE("/check_items/:id", um.Auth(true), um.deleteCheckItem)
-		// v1.POST("/check_items/:id/status", um.Auth(true), um.approveCheckItem)
-
 		v1.GET("/categories", um.Auth(false), um.getCategories)
-		// v1.GET("/categories/:id/by_parent", um.Auth(false), um.getCategoryByParent)
 		v1.GET("/categories/:id", um.Auth(false), um.getCategory)
-		// v1.POST("/categories", um.Auth(true), um.addCategory)
-		// v1.PUT("/categories/:id", um.Auth(true), um.editCategory)
-		// v1.POST("/categories/:id/status", um.Auth(true), um.approveCategory)
-		// v1.DELETE("/categories/:id", um.Auth(true), um.deleteCategory)
 		v1.GET("/languages", um.Auth(false), um.getLanguages)
 	}
 	v2 := r.Group("/v2")
