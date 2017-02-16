@@ -1,5 +1,5 @@
-hash: e55200626fdf73fbde0049c411bd0bf6f0516d8d6146a5d98ed792ee4bfd8668
-updated: 2017-02-16T12:21:38.8708408+01:00
+hash: f46ae71df401eaae5097a172cbd1e125365a2f252ed4c552301877cfe471fd6e
+updated: 2017-02-16T18:58:18.8005665+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -12,7 +12,7 @@ imports:
 - name: github.com/fatih/color
   version: 5ec5d9d3c2cf82e9688b34e9bc27a94d616a7193
 - name: github.com/gin-gonic/gin
-  version: 704d690ac0e25fcd060ff82f75f913e879e65a3c
+  version: e2212d40c62a98b388a5eb48ecbdcf88534688ba
   subpackages:
   - binding
   - render
@@ -98,8 +98,8 @@ imports:
   - internal/remote_api
   - internal/urlfetch
   - urlfetch
-- name: gopkg.in/bluesuncorp/validator.v5
-  version: 07cbdd2e6dfd947b002e83c13b775c7580fab2d5
+- name: gopkg.in/go-playground/validator.v8
+  version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/sourcegraph/go-vcsurl.v1
   version: 6b12603ea6fd7f84b8c90118face09df39ea10c6
 - name: gopkg.in/src-d/go-git.v3

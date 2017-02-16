@@ -6,11 +6,6 @@ import:
   version: ^5.0.0
 - package: github.com/fatih/color
   version: ^1.1.0
-- package: github.com/gin-gonic/gin
-  version: 704d690ac0e25fcd060ff82f75f913e879e65a3c
-  subpackages:
-  - binding
-  - render
 - package: github.com/go-gorp/gorp
   version: ^2.0.0
 - package: github.com/go-sql-driver/mysql
@@ -25,3 +20,5 @@ import:
   subpackages:
   - bcrypt
 - package: github.com/securityfirst/tent
+- package: github.com/gin-gonic/gin
+  version: ^1.1.4
