@@ -6,7 +6,7 @@ import MenuWrap from './menuWrap';
 import MainNavBar from './mainNavBar';
 import axios from 'axios';
 import { Link } from 'react-router';
-import { getRepos } from '../actions';
+import { getRepos, getInfo } from '../actions';
 import { Button, Grid, Row, Col } from 'react-bootstrap';
 import '../public/stylesheets/metisMenu.css';
 require('font-awesome/css/font-awesome.css');
@@ -17,17 +17,18 @@ class App extends Component {
     super(props);
 
     this.props.getRepos();
+    this.props.getInfo();
   }
 
   render() {
     return (
       <Grid>
         <Row className="show-grid">
-          <MainNavBar/>
+          <MainNavBar loggedIn1={this.props.loggedIn} />
         </Row>
         <Row className="show-grid" id="menu">
           <Col xs={3} md={3} lg={3}>
-            <MenuWrap categories={this.props.categories}/>
+            { this.props.loggedIn && <MenuWrap/> }
           </Col>
           <Col xs={9} md={9} lg={9}>
             <AppContent children={this.props.children}/>
@@ -39,11 +40,16 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-  return { categories: state.categoryReducer.categories };
+  return {
+    loggedIn: state.auth.authenticated,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
+    getInfo: function () {
+      return dispatch(getInfo());
+    },
     getRepos: function () {
       return dispatch(getRepos());
     }
