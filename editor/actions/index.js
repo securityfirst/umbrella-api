@@ -5,7 +5,7 @@ import { CATEGORIES,
          SEGMENTS,
          CHECK_ITEMS } from './types';
 
-const API_URL = 'http://127.0.0.1:3000/v1';
+const API_URL = 'http://127.0.0.1:8080/v2';
 
 export function errorHandler(dispatch, error, type) {
   let errorMessage = '';
@@ -34,7 +34,7 @@ export function errorHandler(dispatch, error, type) {
 export function getRepos() {
   console.log("get repos");
   return function(dispatch) {
-    axios.get(`${API_URL}/categories`)
+    axios.get(`${API_URL}/api/tree`)
     .then(response => {
       dispatch({
         type: CATEGORIES,
