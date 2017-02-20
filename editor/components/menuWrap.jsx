@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import MetisMenu from 'react-metismenu';
+import { connect } from 'react-redux';
+import RouterLink from 'react-metismenu-router-link';
 
 class MenuWrap extends Component {
 
@@ -10,15 +12,15 @@ class MenuWrap extends Component {
 
     getCategoriesForMenu() {
       var content = [];
-      for (var i = this.props.categories.length - 1; i >= 0; i--) {
-        var c = this.props.categories[i];
+      for (var i = this.props.tree.length - 1; i >= 0; i--) {
+        var c = this.props.tree[i];
         c.slug = c.name.replace(/\s/g, "-").toLowerCase();
         content.push({"id":c.slug, "icon": "icon-class-name", "label":c.name, "to": "/category/"+c.slug});
         if (c.subcategories.length>1) { // 1 means there is only the basic category info
           for (var k = c.subcategories.length - 1; k >= 0; k--) {
             var sc = c.subcategories[k];
             sc.slug = sc.name.replace(/\s/g, "-").toLowerCase();
-            content.push({"id":sc.slug, "parentId": c.slug, "icon": "icon-class-name", "label":sc.name, "to": "/category/"+sc.slug});
+            content.push({"id":sc.slug, "parentId": c.slug, "icon": "icon-class-name", "label":sc.name, "to": "/category/"+c.slug+"/"+sc.slug});
           }
         }
       }
@@ -27,12 +29,18 @@ class MenuWrap extends Component {
 
     render() {
       var content = this.getCategoriesForMenu();
-        return (
-            <div>
-                <MetisMenu content={content} ref="menu" activeLinkFromLocation />
-            </div>
-        );
+      return (
+          <div>
+              <MetisMenu content={content} LinkComponent={RouterLink} />
+          </div>
+      );
     }
 }
 
-export default MenuWrap;
+function mapStateToProps(state) {
+  return {
+    tree: state.categories.tree,
+  };
+}
+
+export default connect(mapStateToProps)(MenuWrap);
