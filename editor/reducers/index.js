@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
-// import { reducer as formReducer } from 'redux-form';
 import categoryReducer from './categoryReducer'
+import authReducer from './authReducer'
+import { routerReducer } from 'react-router-redux'
 
 export default combineReducers({
-  // formReducer,
-  categoryReducer
+  routing: routerReducer,
+  categories: categoryReducer,
+  auth: authReducer,
 });
