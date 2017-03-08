@@ -1,5 +1,5 @@
 hash: f46ae71df401eaae5097a172cbd1e125365a2f252ed4c552301877cfe471fd6e
-updated: 2017-03-07T13:11:09.7898915+01:00
+updated: 2017-03-08T13:44:12.5183666+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -10,7 +10,7 @@ imports:
 - name: github.com/dgrijalva/jwt-go
   version: 2268707a8f0843315e2004ee4f1d021dc08baedf
 - name: github.com/fatih/color
-  version: 7824417a424b65227be8ac9b14d545a7f3e6c3f0
+  version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
 - name: github.com/gin-gonic/gin
   version: e2212d40c62a98b388a5eb48ecbdcf88534688ba
   subpackages:
@@ -46,7 +46,7 @@ imports:
   version: 5411d3eea5978e6cdc258b30de592b60df6aba96
   repo: https://github.com/mattn/go-colorable
 - name: github.com/mattn/go-isatty
-  version: dda3de49cbfcec471bd7a70e6cc01fcc3ff90109
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
 - name: github.com/pariz/gountries
   version: 01a8f4c7c6e404b6529ada4b5e25f00672670f6d
@@ -55,7 +55,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 5f33e7b7878355cd2b7e6b8eefc48a5472c69f70
 - name: github.com/securityfirst/tent
-  version: c7e88d3c15d7ee08c51d9f52c4727429efbd4d9e
+  version: a8ef700d790bc1c0634fbfb1dca9ee716644dff7
   subpackages:
   - auth
   - component
