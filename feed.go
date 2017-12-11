@@ -186,6 +186,14 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 		}
 	}
 	sort.Sort(SortFeedByDate(items))
+	if since > 0 {
+		for i := len(items) - 1; i >= 0; i-- {
+			if items[i].UpdatedAt <= since {
+				items = append(items[:i],
+					items[i+1:]...)
+			}
+		}
+	}
 	return items, err
 }
 
