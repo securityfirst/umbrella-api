@@ -1,5 +1,6 @@
 pkg
 bin
+vendor
 
 sftp-config.json
 api-umbrella
