@@ -134,7 +134,12 @@ imports:
   - models
   - repo
 - name: gopkg.in/securityfirst/tent.v2
-  version: d6ac20ad1ecd943ee3d965ca41fdc8b58d530781
+  version: d95f1000192cd18624ae1a6d81c68eba128e3575
+  subpackages:
+  - auth
+  - component
+  - models
+  - repo
 - name: gopkg.in/src-d/go-billy.v3
   version: c329b7bc7b9d24905d2bc1b85bfa29f7ae266314
   subpackages:
