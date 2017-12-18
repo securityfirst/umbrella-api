@@ -1,8 +1,0 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-             value: true
-});
-var CATEGORIES = exports.CATEGORIES = 'categories',
-    SEGMENTS = exports.SEGMENTS = 'segments',
-    CHECK_ITEMS = exports.CHECK_ITEMS = 'check_items';

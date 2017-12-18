@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
+
 	"github.com/securityfirst/umbrella-api/models"
 
 	"github.com/PuerkitoBio/goquery"
@@ -18,7 +19,7 @@ type RefiWebFetcher struct {
 }
 
 func (r *RefiWebFetcher) Fetch() ([]models.FeedItem, error) {
-	body, err := makeRequest(fmt.Sprintf("http://api.rwlabs.org/v0/country/%v", r.Country.ReliefWeb), "get", nil)
+	body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", r.Country.ReliefWeb), "get", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,10 +27,13 @@ func (r *RefiWebFetcher) Fetch() ([]models.FeedItem, error) {
 	if err = json.Unmarshal(body, &rwResp); err != nil {
 		return nil, err
 	}
-	if rwResp.Data.Item.DescriptionHTML == "" {
+	if len(rwResp.Data) < 1 {
+		return nil, errors.New("No data received")
+	}
+	if rwResp.Data[0].Fields.DescriptionHTML == "" {
 		return nil, nil
 	}
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data.Item.DescriptionHTML))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data[0].Fields.DescriptionHTML))
 	if err != nil {
 		return nil, err
 	}
@@ -70,63 +74,118 @@ func (r *RefiWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, erro
 	if err = json.Unmarshal(body, &rwReport); err != nil {
 		return nil, err
 	}
-	if rwReport.Data.Item.Headline.Summary != "" {
-		item.Description = rwReport.Data.Item.Headline.Summary
+	if rwReport.Data[0].Fields.Headline.Summary != "" {
+		item.Description = rwReport.Data[0].Fields.Headline.Summary
 	} else {
-		item.Description = rwReport.Data.Item.BodyHTML
+		item.Description = rwReport.Data[0].Fields.BodyHTML
 	}
-	item.UpdatedAt = rwReport.Data.Item.Date.Changed / 1000
+	item.UpdatedAt = rwReport.Data[0].Fields.Date.Changed.Unix()
 	return &item, nil
 }
 
+// type RWResponse struct {
+// 	Version string `json:"version"`
+// 	Status  int    `json:"status"`
+// 	Time    int    `json:"time"`
+// 	Data    struct {
+// 		Type string `json:"type"`
+// 		ID   int    `json:"id"`
+// 		Item struct {
+// 			ID              int    `json:"id"`
+// 			Name            string `json:"name"`
+// 			Description     string `json:"description"`
+// 			Status          string `json:"status"`
+// 			Iso3            string `json:"iso3"`
+// 			Featured        bool   `json:"featured"`
+// 			URL             string `json:"url"`
+// 			DescriptionHTML string `json:"description-html"`
+// 			Current         bool   `json:"current"`
+// 			Location        struct {
+// 				Lat  float64 `json:"lat"`
+// 				Long float64 `json:"long"`
+// 			} `json:"location"`
+// 		} `json:"item"`
+// 	} `json:"data"`
+// }
+
 type RWResponse struct {
-	Version string `json:"version"`
-	Status  int    `json:"status"`
-	Time    int    `json:"time"`
-	Data    struct {
-		Type string `json:"type"`
-		ID   int    `json:"id"`
-		Item struct {
+	Href  string `json:"href"`
+	Time  int    `json:"time"`
+	Links struct {
+		Self struct {
+			Href string `json:"href"`
+		} `json:"self"`
+		Collection struct {
+			Href string `json:"href"`
+		} `json:"collection"`
+	} `json:"links"`
+	TotalCount int `json:"totalCount"`
+	Count      int `json:"count"`
+	Data       []struct {
+		Fields struct {
 			ID              int    `json:"id"`
 			Name            string `json:"name"`
 			Description     string `json:"description"`
 			Status          string `json:"status"`
 			Iso3            string `json:"iso3"`
 			Featured        bool   `json:"featured"`
+			VideoPlaylist   string `json:"video_playlist"`
 			URL             string `json:"url"`
+			URLAlias        string `json:"url_alias"`
 			DescriptionHTML string `json:"description-html"`
 			Current         bool   `json:"current"`
 			Location        struct {
-				Lat  float64 `json:"lat"`
-				Long float64 `json:"long"`
+				Lat float64 `json:"lat"`
+				Lon float64 `json:"lon"`
 			} `json:"location"`
-		} `json:"item"`
+		} `json:"fields"`
+		ID string `json:"id"`
 	} `json:"data"`
 }
 
 type RWReport struct {
-	Version string `json:"version"`
-	Status  int    `json:"status"`
-	Time    int    `json:"time"`
-	Data    struct {
-		Type string `json:"type"`
-		ID   int    `json:"id"`
-		Item struct {
+	Href  string `json:"href"`
+	Time  int    `json:"time"`
+	Links struct {
+		Self struct {
+			Href string `json:"href"`
+		} `json:"self"`
+		Collection struct {
+			Href string `json:"href"`
+		} `json:"collection"`
+	} `json:"links"`
+	TotalCount int `json:"totalCount"`
+	Count      int `json:"count"`
+	Data       []struct {
+		Fields struct {
 			ID       int    `json:"id"`
 			Title    string `json:"title"`
 			Status   string `json:"status"`
 			Body     string `json:"body"`
 			Headline struct {
-				Title    string `json:"title"`
-				Summary  string `json:"summary"`
-				Featured bool   `json:"featured"`
+				Title   string `json:"title"`
+				Summary string `json:"summary"`
+				Image   struct {
+					ID        string `json:"id"`
+					Width     string `json:"width"`
+					Height    string `json:"height"`
+					URL       string `json:"url"`
+					Filename  string `json:"filename"`
+					Mimetype  string `json:"mimetype"`
+					Filesize  string `json:"filesize"`
+					Copyright string `json:"copyright"`
+					Caption   string `json:"caption"`
+					URLLarge  string `json:"url-large"`
+					URLSmall  string `json:"url-small"`
+					URLThumb  string `json:"url-thumb"`
+				} `json:"image"`
 			} `json:"headline"`
 			File []struct {
 				ID          string `json:"id"`
 				Description string `json:"description"`
 				URL         string `json:"url"`
 				Filename    string `json:"filename"`
-				Filemime    string `json:"filemime"`
+				Mimetype    string `json:"mimetype"`
 				Filesize    string `json:"filesize"`
 				Preview     struct {
 					URL      string `json:"url"`
@@ -136,25 +195,35 @@ type RWReport struct {
 				} `json:"preview"`
 			} `json:"file"`
 			PrimaryCountry struct {
-				ID       int       `json:"id"`
-				Name     string    `json:"name"`
-				Iso3     string    `json:"iso3"`
-				Location []float64 `json:"location"`
+				Href     string `json:"href"`
+				ID       int    `json:"id"`
+				Name     string `json:"name"`
+				Iso3     string `json:"iso3"`
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lon float64 `json:"lon"`
+				} `json:"location"`
 			} `json:"primary_country"`
 			Country []struct {
-				ID       int       `json:"id"`
-				Name     string    `json:"name"`
-				Iso3     string    `json:"iso3"`
-				Location []float64 `json:"location"`
-				Primary  bool      `json:"primary"`
+				Href     string `json:"href"`
+				ID       int    `json:"id"`
+				Name     string `json:"name"`
+				Iso3     string `json:"iso3"`
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lon float64 `json:"lon"`
+				} `json:"location"`
+				Primary bool `json:"primary"`
 			} `json:"country"`
 			Source []struct {
-				ID        int    `json:"id"`
-				Name      string `json:"name"`
-				Shortname string `json:"shortname"`
-				Longname  string `json:"longname"`
-				Homepage  string `json:"homepage"`
-				Type      struct {
+				Href        string `json:"href"`
+				ID          int    `json:"id"`
+				Name        string `json:"name"`
+				Shortname   string `json:"shortname"`
+				Longname    string `json:"longname,omitempty"`
+				SpanishName string `json:"spanish_name,omitempty"`
+				Homepage    string `json:"homepage"`
+				Type        struct {
 					ID   int    `json:"id"`
 					Name string `json:"name"`
 				} `json:"type"`
@@ -181,9 +250,10 @@ type RWReport struct {
 				Name  string `json:"name"`
 				Glide string `json:"glide"`
 				Type  []struct {
-					ID   int    `json:"id"`
-					Name string `json:"name"`
-					Code string `json:"code"`
+					ID      int    `json:"id"`
+					Name    string `json:"name"`
+					Code    string `json:"code"`
+					Primary bool   `json:"primary"`
 				} `json:"type"`
 			} `json:"disaster"`
 			DisasterType []struct {
@@ -191,17 +261,15 @@ type RWReport struct {
 				Name string `json:"name"`
 				Code string `json:"code"`
 			} `json:"disaster_type"`
-			VulnerableGroups []struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"vulnerable_groups"`
 			URL      string `json:"url"`
+			URLAlias string `json:"url_alias"`
 			BodyHTML string `json:"body-html"`
 			Date     struct {
-				Created  int64 `json:"created"`
-				Changed  int64 `json:"changed"`
-				Original int64 `json:"original"`
+				Original time.Time `json:"original"`
+				Changed  time.Time `json:"changed"`
+				Created  time.Time `json:"created"`
 			} `json:"date"`
-		} `json:"item"`
+		} `json:"fields"`
+		ID string `json:"id"`
 	} `json:"data"`
 }

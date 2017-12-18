@@ -20,18 +20,21 @@ import (
 )
 
 func (um *Umbrella) getFeed(c *gin.Context) {
+	feedItems := []models.FeedItem{}
 	since := to.Int64(c.Request.URL.Query().Get("since"))
 	country, err := um.getCountryInfo(c.Request.URL.Query().Get("country"))
 	um.checkErr(c, err)
 	if err != nil {
 		log.Println("country", err)
+		c.JSON(200, feedItems)
 		return
 	}
 	sources := strings.Split(c.Request.URL.Query().Get("sources"), ",")
-	feedItems, err := um.getFeedItems(sources, country, since)
+	feedItems, err = um.getFeedItems(sources, country, since)
 	um.checkErr(c, err)
 	if err != nil {
 		log.Println("sources", err)
+		c.JSON(200, feedItems)
 		return
 	}
 	feedLog := models.FeedRequestLog{
@@ -49,10 +52,11 @@ func (um *Umbrella) getFeed(c *gin.Context) {
 	feedLog.Status = 200
 	go utils.CheckErr(um.Db.Insert(&feedLog))
 	c.JSON(200, feedItems)
-	return
 }
 
-func (um *Umbrella) getFeedItems(sources []string, country models.Country, since int64) (items []models.FeedItem, err error) {
+func (um *Umbrella) getFeedItems(sources []string, country models.Country, since int64) ([]models.FeedItem, error) {
+	items := []models.FeedItem{}
+	var err error
 	getLastChecked := um.getLastChecked(country.Iso2)
 	var cleanSources, toRefresh, diff []int
 	for i := range sources {
@@ -80,7 +84,7 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 				// go um.updateLastChecked(country.Iso2, CDC, time.Now().Unix())
 			case ReliefWeb:
 				lenItems := len(items)
-				body, err := makeRequest(fmt.Sprintf("http://api.rwlabs.org/v0/country/%v", country.ReliefWeb), "get", nil)
+				body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", country.ReliefWeb), "get", nil)
 				var rwResp RWResponse
 				err = json.Unmarshal(body, &rwResp)
 				if err != nil {
@@ -89,8 +93,12 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 				} else {
 					go um.updateLastChecked(country.Iso2, ReliefWeb, time.Now().Unix())
 				}
-				if rwResp.Data.Item.DescriptionHTML != "" {
-					doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data.Item.DescriptionHTML))
+				if len(rwResp.Data) < 1 {
+					utils.CheckErr(errors.New("No data received"))
+					continue
+				}
+				if rwResp.Data[0].Fields.DescriptionHTML != "" {
+					doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data[0].Fields.DescriptionHTML))
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -107,7 +115,7 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 							}
 							segments := strings.Split(href, "/")
 							if len(segments) > 0 && to.Int64(segments[len(segments)-1]) != 0 {
-								nodeUrl := fmt.Sprintf("http://api.rwlabs.org/v0/report/%v", segments[len(segments)-1])
+								nodeUrl := fmt.Sprintf("https://api.reliefweb.int/v1/reports/%v", segments[len(segments)-1])
 								body, err := makeRequest(nodeUrl, "get", nil)
 								var rwReport RWReport
 								err = json.Unmarshal(body, &rwReport)
@@ -115,12 +123,12 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 									utils.CheckErr(err)
 									fmt.Println(string(body[:]))
 								} else {
-									if rwReport.Data.Item.Headline.Summary != "" {
-										item.Description = rwReport.Data.Item.Headline.Summary
+									if rwReport.Data[0].Fields.Headline.Summary != "" {
+										item.Description = rwReport.Data[0].Fields.Headline.Summary
 									} else {
-										item.Description = rwReport.Data.Item.BodyHTML
+										item.Description = rwReport.Data[0].Fields.BodyHTML
 									}
-									item.UpdatedAt = rwReport.Data.Item.Date.Changed / 1000
+									item.UpdatedAt = rwReport.Data[0].Fields.Date.Changed.Unix()
 								}
 
 							}
@@ -186,11 +194,11 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 		}
 	}
 	sort.Sort(SortFeedByDate(items))
-	if since != 0 {
-		for i := range items {
+	if since > 0 {
+		for i := len(items) - 1; i >= 0; i-- {
 			if items[i].UpdatedAt <= since {
-				items = items[:i]
-				break
+				items = append(items[:i],
+					items[i+1:]...)
 			}
 		}
 	}
