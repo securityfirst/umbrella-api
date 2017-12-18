@@ -41,8 +41,8 @@ func initDb() *gorp.DbMap {
 		connString = os.Getenv("DB_DEV")
 	}
 	db, err := sql.Open("mysql", connString)
-	db.SetMaxIdleConns(32)
-	db.SetMaxOpenConns(32)
+	db.SetMaxIdleConns(4)
+	db.SetMaxOpenConns(4)
 	utils.CheckErr(err)
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(models.User{}, "users").SetKeys(true, "Id")
