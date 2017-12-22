@@ -1,5 +1,5 @@
-hash: b36d8fd4e40f804c4d156ce6d1bb4bf5c9047b87665a73ee97ff298715c069b5
-updated: 2017-12-14T17:41:57.9494834Z
+hash: 48475b2afeaef3b6794c7ccda6c77d0ca07e76517036dee975c6dd6129320005
+updated: 2017-12-21T11:34:11.981573+01:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
@@ -134,7 +134,7 @@ imports:
   - models
   - repo
 - name: gopkg.in/securityfirst/tent.v2
-  version: 0c229a9e061dbe062cd029a7f0c23076a46b3e67
+  version: c640678069fd0baabd7f415f74570938d83ec014
   subpackages:
   - auth
   - component

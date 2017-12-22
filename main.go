@@ -115,14 +115,14 @@ func main() {
 		// Autentication
 
 		o.Register(v3, auth2.Config{
-			Id:           conf.Id,
-			Secret:       conf.Secret,
-			OAuthHost:    conf.OAuthHost,
-			Host:         conf.Host,
-			RandomString: conf.RandomString,
-			Login:        auth2.HandleConf{conf.Login.Endpoint, conf.Login.Redirect},
-			Logout:       auth2.HandleConf{conf.Logout.Endpoint, conf.Logout.Redirect},
-			Callback:     auth2.HandleConf{conf.Callback.Endpoint, conf.Callback.Redirect},
+			ID:        conf.Id,
+			Secret:    conf.Secret,
+			OAuthHost: conf.OAuthHost,
+			Host:      conf.Host,
+			State:     conf.RandomString,
+			Login:     auth2.HandleConf{conf.Login.Endpoint, conf.Login.Redirect},
+			Logout:    auth2.HandleConf{conf.Logout.Endpoint, conf.Logout.Redirect},
+			Callback:  auth2.HandleConf{conf.Callback.Endpoint, conf.Callback.Redirect},
 		})
 	}
 	r.Run(":8080")
