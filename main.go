@@ -105,7 +105,7 @@ func main() {
 	}
 	v3 := r.Group("/v3")
 	{
-		r, err := repo2.New("securityfirst", "tent-content", "difficulty")
+		r, err := repo2.New("securityfirst", "tent-content", "forms")
 		if err != nil {
 			log.Fatalf("Repo error: %s", err)
 		}
