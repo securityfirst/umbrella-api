@@ -134,7 +134,7 @@ imports:
   - models
   - repo
 - name: gopkg.in/securityfirst/tent.v2
-  version: 02b316eb1bf98d94dcecce07835cded588bd8f8c
+  version: b66675792ab4b8f95447db4e313e0d23cc637660
   subpackages:
   - auth
   - component
