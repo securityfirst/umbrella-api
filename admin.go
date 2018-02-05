@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
 
@@ -13,7 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 func (um *Umbrella) Index(c *gin.Context) {
@@ -64,7 +64,7 @@ func (um *Umbrella) Category(c *gin.Context) {
 func (um *Umbrella) LoginPost(c *gin.Context) {
 	var login LoginForm
 	var err error
-	c.BindWith(&login, binding.Form)
+	c.Bind(&login)
 	_, err = govalidator.ValidateStruct(login)
 	if err != nil {
 		obj := gin.H{"title": "Login", "error": err}
