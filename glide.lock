@@ -1,16 +1,16 @@
-hash: 48475b2afeaef3b6794c7ccda6c77d0ca07e76517036dee975c6dd6129320005
-updated: 2017-12-21T11:34:11.981573+01:00
+hash: ce368c6a2e3f887b20cb5c5a955bfe30c96d3e6fee972adf4284bdfd4731987c
+updated: 2018-02-04T23:34:12.185077-08:00
 imports:
 - name: github.com/andybalholm/cascadia
   version: 3ad29d1ad1c4f2023e355603324348cf1f4b2d48
 - name: github.com/asaskevich/govalidator
   version: 7b3beb6df3c42abd3509abfc3bcacc0fbfb7c877
-- name: github.com/cenkalti/log
-  version: 958ee7afc008e65fe479a565819a25b30af0ec65
 - name: github.com/dgrijalva/jwt-go
   version: a601269ab70c205d26370c16f7c81e9017c14e04
 - name: github.com/fatih/color
   version: 570b54cabe6b8eb0bc2dfce68d964677d63b5260
+- name: github.com/gin-contrib/cors
+  version: 567de191692713543513692ecba9f6ca08cd660a
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
 - name: github.com/gin-gonic/gin
@@ -36,63 +36,29 @@ imports:
   - query
 - name: github.com/gosexy/to
   version: 3962e3902237286c83772cfbe0fa68fc87c9b547
-- name: github.com/hashicorp/errwrap
-  version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
-- name: github.com/hashicorp/go-multierror
-  version: ed905158d87462226a13fe39ddf685ea65f1c11f
-- name: github.com/itsjamie/gin-cors
-  version: 97b4a9da79331dfa2b6d35f4cdd1e50f5148859c
-- name: github.com/jbenet/go-context
-  version: d14ea06fba99483203c19d92cfcd13ebe73135f4
-  subpackages:
-  - io
 - name: github.com/mattn/go-colorable
   version: 5411d3eea5978e6cdc258b30de592b60df6aba96
   repo: https://github.com/mattn/go-colorable
 - name: github.com/mattn/go-isatty
   version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
-- name: github.com/mitchellh/go-homedir
-  version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/pariz/gountries
   version: 01a8f4c7c6e404b6529ada4b5e25f00672670f6d
 - name: github.com/PuerkitoBio/goquery
-  version: e1271ee34c6a305e38566ecd27ae374944907ee9
-- name: github.com/russross/blackfriday
-  version: 5f33e7b7878355cd2b7e6b8eefc48a5472c69f70
+  version: 09540e565986583836b5fc792fe951ec5fd201dd
 - name: github.com/securityfirst/tent
   version: 765d42200f7d349c20d43628fd0d854dec7b2815
-- name: github.com/sergi/go-diff
-  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
-  subpackages:
-  - diffmatchpatch
-- name: github.com/shurcooL/sanitized_anchor_name
-  version: 1dba4b3954bc059efc3991ec364f9f9a35f597d2
-- name: github.com/src-d/gcfg
-  version: f187355171c936ac84a82793659ebb4936bc1c23
-  subpackages:
-  - scanner
-  - token
-  - types
 - name: github.com/tmilewski/goenv
   version: c7da341302c5a0c97a2ac2c2cce8d4bdc827ca16
 - name: github.com/ugorji/go
   version: 0e0d6e869525973a9b36093f6ddc9d91b9fc2d71
   subpackages:
   - codec
-- name: github.com/xanzy/ssh-agent
-  version: ba9c9e33906f58169366275e3450db66139a31a9
 - name: golang.org/x/crypto
   version: 94eea52f7b742c7cbe0b03b22f0c4c8631ece122
   subpackages:
   - bcrypt
   - blowfish
-  - curve25519
-  - ed25519
-  - ed25519/internal/edwards25519
-  - ssh
-  - ssh/agent
-  - ssh/knownhosts
 - name: golang.org/x/net
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:
@@ -109,11 +75,6 @@ imports:
   repo: https://go.googlesource.com/sys
   subpackages:
   - unix
-- name: golang.org/x/text
-  version: ece019dcfd29abcf65d0d1dfe145e8faad097640
-  subpackages:
-  - transform
-  - unicode/norm
 - name: google.golang.org/appengine
   version: a2c54d2174c17540446e0ced57d9d459af61bc1c
   subpackages:
@@ -130,67 +91,9 @@ imports:
   version: 0c44c0591ccf58949fda99e9030daeb4eecbdaf4
   subpackages:
   - auth
-  - component
   - models
-  - repo
 - name: gopkg.in/securityfirst/tent.v2
   version: b66675792ab4b8f95447db4e313e0d23cc637660
-  subpackages:
-  - auth
-  - component
-  - models
-  - repo
-- name: gopkg.in/src-d/go-billy.v3
-  version: c329b7bc7b9d24905d2bc1b85bfa29f7ae266314
-  subpackages:
-  - helper/chroot
-  - helper/polyfill
-  - osfs
-  - util
-- name: gopkg.in/src-d/go-git.v4
-  version: f9879dd043f84936a1f8acb8a53b74332a7ae135
-  subpackages:
-  - config
-  - internal/revision
-  - plumbing
-  - plumbing/cache
-  - plumbing/filemode
-  - plumbing/format/config
-  - plumbing/format/diff
-  - plumbing/format/gitignore
-  - plumbing/format/idxfile
-  - plumbing/format/index
-  - plumbing/format/objfile
-  - plumbing/format/packfile
-  - plumbing/format/pktline
-  - plumbing/object
-  - plumbing/protocol/packp
-  - plumbing/protocol/packp/capability
-  - plumbing/protocol/packp/sideband
-  - plumbing/revlist
-  - plumbing/storer
-  - plumbing/transport
-  - plumbing/transport/client
-  - plumbing/transport/file
-  - plumbing/transport/git
-  - plumbing/transport/http
-  - plumbing/transport/internal/common
-  - plumbing/transport/server
-  - plumbing/transport/ssh
-  - storage
-  - storage/filesystem
-  - storage/filesystem/internal/dotgit
-  - storage/memory
-  - utils/binary
-  - utils/diff
-  - utils/ioutil
-  - utils/merkletrie
-  - utils/merkletrie/filesystem
-  - utils/merkletrie/index
-  - utils/merkletrie/internal/frame
-  - utils/merkletrie/noder
-- name: gopkg.in/warnings.v0
-  version: ec4a0fea49c7b46c2aeb0b51aac55779c607e52b
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []

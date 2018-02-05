@@ -11,8 +11,7 @@ import:
 - package: github.com/go-sql-driver/mysql
   version: ^1.2.0
 - package: github.com/gosexy/to
-- package: github.com/itsjamie/gin-cors
-  version: ^1.0.0
+- package: github.com/gin-contrib/cors
 - package: github.com/pariz/gountries
 - package: github.com/tmilewski/goenv
   version: ^1.0.0
