@@ -7,8 +7,7 @@ import (
 	"os"
 	"time"
 
-	cors "github.com/itsjamie/gin-cors"
-
+	"github.com/gin-contrib/cors"
 	"github.com/securityfirst/umbrella-api/utils"
 	"gopkg.in/securityfirst/tent.v1"
 	"gopkg.in/securityfirst/tent.v1/auth"
@@ -58,23 +57,22 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*") // Make templates available
 	r.Static("/assets", "./assets")
-	r.Use(cors.Middleware(cors.Config{
-		Origins:         "http://localhost:8000, http://127.0.0.1:8000",
-		Methods:         "GET, PUT, POST, DELETE",
-		RequestHeaders:  "Origin, Authorization, Content-Type",
-		ExposedHeaders:  "Access-Control-Allow-Origin",
-		MaxAge:          50 * time.Second,
-		Credentials:     true,
-		ValidateHeaders: false,
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8080", "http://127.0.0.1:8080", "https://api.secfirst.org"},
+		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	admin := r.Group("/admin")
 	{
 		admin.GET("/", um.WebAuth(), um.Index)
 		admin.GET("/login", um.Login)
-		admin.GET("/category/:cat_id", um.Category)
-		admin.GET("/category/:cat_id/difficulty/:difficulty", um.Category)
 		admin.POST("/login", um.LoginPost)
+		admin.GET("/category/:cat_id", um.WebAuth(), um.Category)
+		admin.GET("/category/:cat_id/difficulty/:difficulty", um.WebAuth(), um.Category)
 		admin.POST("/segment/edit/:id", um.WebAuth(), um.EditSegment)
 		admin.POST("/segment/delete/:id", um.WebAuth(), um.DeleteSegment)
 		admin.POST("/segment/add", um.WebAuth(), um.AddSegment)
