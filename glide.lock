@@ -93,7 +93,7 @@ imports:
   - auth
   - models
 - name: gopkg.in/securityfirst/tent.v2
-  version: b66675792ab4b8f95447db4e313e0d23cc637660
+  version: 2712c34226c9961571cec4e3a817f1f13a34650b
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []
