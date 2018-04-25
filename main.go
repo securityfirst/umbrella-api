@@ -55,8 +55,6 @@ func init() {
 func main() {
 	um := getUmbrella()
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*") // Make templates available
-	r.Static("/assets", "./assets")
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:8080", "http://127.0.0.1:8080", "https://api.secfirst.org"},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
@@ -66,22 +64,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	admin := r.Group("/admin")
-	{
-		admin.GET("/", um.WebAuth(), um.Index)
-		admin.GET("/login", um.Login)
-		admin.POST("/login", um.LoginPost)
-		admin.GET("/category/:cat_id", um.WebAuth(), um.Category)
-		admin.GET("/category/:cat_id/difficulty/:difficulty", um.WebAuth(), um.Category)
-		admin.POST("/segment/edit/:id", um.WebAuth(), um.EditSegment)
-		admin.POST("/segment/delete/:id", um.WebAuth(), um.DeleteSegment)
-		admin.POST("/segment/add", um.WebAuth(), um.AddSegment)
-		admin.GET("/logout", um.WebAuth(), um.LogOut)
-	}
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/account/login_check", um.Auth(true), um.loginCheck)
-		v1.POST("/account/login", um.loginEndpoint)
 		v1.GET("/feed", um.getFeed)
 		v1.GET("/segments", um.getSegments)
 		v1.GET("/check_items", um.Auth(false), um.getCheckItems)
