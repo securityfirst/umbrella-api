@@ -56,7 +56,7 @@ func main() {
 	um := getUmbrella()
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080", "http://127.0.0.1:8080", "https://api.secfirst.org"},
+		AllowOrigins:     []string{"https://api.secfirst.org"},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin"},
