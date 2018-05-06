@@ -19,7 +19,4 @@ import:
   subpackages:
   - bcrypt
 - package: github.com/securityfirst/tent
-- package: gopkg.in/securityfirst/tent.v1
-  version: 0c44c0591ccf58949fda99e9030daeb4eecbdaf4
 - package: github.com/gin-gonic/gin
-- package: gopkg.in/securityfirst/tent.v2
