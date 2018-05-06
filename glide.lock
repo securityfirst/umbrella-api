@@ -88,7 +88,7 @@ imports:
 - name: gopkg.in/go-playground/validator.v8
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/securityfirst/tent.v1
-  version: 0c44c0591ccf58949fda99e9030daeb4eecbdaf4
+  version: 248a5292aed50a5c1497386cbab08ba0b2be5550
   subpackages:
   - auth
   - models
