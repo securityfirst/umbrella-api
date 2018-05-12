@@ -22,6 +22,10 @@ import (
 func (um *Umbrella) getFeed(c *gin.Context) {
 	feedItems := []models.FeedItem{}
 	since := to.Int64(c.Request.URL.Query().Get("since"))
+	twoMonthsAgo := time.Now().AddDate(0, -2, 0).Unix()
+	if since < twoMonthsAgo {
+		since = twoMonthsAgo
+	}
 	country, err := um.getCountryInfo(c.Request.URL.Query().Get("country"))
 	um.checkErr(c, err)
 	if err != nil {
