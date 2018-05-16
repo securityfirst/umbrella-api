@@ -18,5 +18,5 @@ import:
 - package: golang.org/x/crypto
   subpackages:
   - bcrypt
-- package: github.com/securityfirst/tent
-- package: github.com/gin-gonic/gin
+- package: github.com/gin-gonic/gin   
+- package: gopkg.in/securityfirst/tent.v2
