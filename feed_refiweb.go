@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -19,7 +20,7 @@ type RefiWebFetcher struct {
 }
 
 func (r *RefiWebFetcher) Fetch() ([]models.FeedItem, error) {
-	body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", r.Country.ReliefWeb), "get", nil)
+	body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", r.Country.ReliefWeb), http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +66,8 @@ func (r *RefiWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, erro
 	if len(segments) == 0 || to.Int64(segments[len(segments)-1]) == 0 {
 		return &item, nil
 	}
-	nodeUrl := fmt.Sprintf("http://api.rwlabs.org/v0/report/%v", segments[len(segments)-1])
-	body, err := makeRequest(nodeUrl, "get", nil)
+	nodeURL := fmt.Sprintf("http://api.rwlabs.org/v0/report/%v", segments[len(segments)-1])
+	body, err := makeRequest(nodeURL, "get", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -82,31 +83,6 @@ func (r *RefiWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, erro
 	item.UpdatedAt = rwReport.Data[0].Fields.Date.Changed.Unix()
 	return &item, nil
 }
-
-// type RWResponse struct {
-// 	Version string `json:"version"`
-// 	Status  int    `json:"status"`
-// 	Time    int    `json:"time"`
-// 	Data    struct {
-// 		Type string `json:"type"`
-// 		ID   int    `json:"id"`
-// 		Item struct {
-// 			ID              int    `json:"id"`
-// 			Name            string `json:"name"`
-// 			Description     string `json:"description"`
-// 			Status          string `json:"status"`
-// 			Iso3            string `json:"iso3"`
-// 			Featured        bool   `json:"featured"`
-// 			URL             string `json:"url"`
-// 			DescriptionHTML string `json:"description-html"`
-// 			Current         bool   `json:"current"`
-// 			Location        struct {
-// 				Lat  float64 `json:"lat"`
-// 				Long float64 `json:"long"`
-// 			} `json:"location"`
-// 		} `json:"item"`
-// 	} `json:"data"`
-// }
 
 type RWResponse struct {
 	Href  string `json:"href"`

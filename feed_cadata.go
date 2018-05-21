@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
 	"github.com/securityfirst/umbrella-api/country"
 	"github.com/securityfirst/umbrella-api/models"
 )
@@ -18,13 +19,12 @@ func (g *CadataFetcher) Fetch() ([]models.FeedItem, error) {
 		"https://cadatacatalog.state.gov/storage/f/2013-11-24T21%3A00%3A30.424Z/tas.xml",
 		"https://cadatacatalog.state.gov/storage/f/2013-11-24T21%3A00%3A58.223Z/tws.xml",
 	} {
-		resp, err := http.Get(src)
+		body, err := makeRequest(src, http.MethodGet, nil)
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
 		var v CadataResp
-		if err := xml.NewDecoder(resp.Body).Decode(&v); err != nil {
+		if err := xml.Unmarshal(body, &v); err != nil {
 			return nil, err
 		}
 		for i := range v.Title {

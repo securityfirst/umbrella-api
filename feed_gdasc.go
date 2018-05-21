@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
 	"github.com/securityfirst/umbrella-api/country"
 	"github.com/securityfirst/umbrella-api/models"
 )
@@ -13,13 +14,12 @@ import (
 type GdascFetcher struct{}
 
 func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
-	resp, err := http.Get("http://www.gdacs.org/xml/rss.xml")
+	body, err := makeRequest("http://www.gdacs.org/xml/rss.xml", http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 	var v GdascResp
-	if err := xml.NewDecoder(resp.Body).Decode(&v); err != nil {
+	if err := xml.Unmarshal(body, &v); err != nil {
 		return nil, err
 	}
 	var feeds = make([]models.FeedItem, 0, len(v.Title))
