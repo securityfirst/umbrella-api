@@ -46,6 +46,7 @@ func init() {
 	if err != nil {
 		log.Fatalf("Cannot open %s: %s", path, err)
 	}
+	defer f.Close()
 	fipsIndex = make(map[string]string, 265)
 	r := csv.NewReader(f)
 	r.Comma = '	'

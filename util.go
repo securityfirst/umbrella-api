@@ -13,6 +13,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
@@ -130,19 +131,26 @@ func colorLog(toLog interface{}, col ...color.Attribute) {
 	log.Printf(info(fmt.Sprintf("%s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, fmt.Sprint(toLog))))
 }
 
-func makeRequest(uri string, method string, requestBody io.Reader) (response []byte, err error) {
+var client = http.Client{Timeout: time.Second * 20}
+
+func makeRequest(uri string, method string, requestBody io.Reader) ([]byte, error) {
 	req, err := http.NewRequest(strings.ToUpper("GET"), uri, requestBody)
-	client := &http.Client{}
+	if err != nil {
+		utils.CheckErr(err)
+		return nil, err
+	}
+	req.Close = true
 	resp, err := client.Do(req)
 	if err != nil {
-		return response, err
+		utils.CheckErr(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
-	response, err = ioutil.ReadAll(resp.Body)
+	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		utils.CheckErr(err)
 	}
-	return response, err
+	return bytes, err
 }
 
 func difference(slice1 []int, slice2 []int) []int {
