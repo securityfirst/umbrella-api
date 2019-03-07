@@ -10,9 +10,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/securityfirst/umbrella-api/utils"
 
-	"gopkg.in/securityfirst/tent.v2"
-	"gopkg.in/securityfirst/tent.v2/auth"
-	"gopkg.in/securityfirst/tent.v2/repo"
+	"github.com/securityfirst/tent"
+	"github.com/securityfirst/tent/auth"
+	"github.com/securityfirst/tent/repo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tmilewski/goenv"
