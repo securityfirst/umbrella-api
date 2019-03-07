@@ -1,4 +1,4 @@
-package main
+package feed
 
 import (
 	"encoding/xml"
@@ -18,7 +18,7 @@ func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 	if err != nil {
 		return nil, err
 	}
-	var v GdascResp
+	var v gdascResp
 	if err := xml.Unmarshal(body, &v); err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 		for _, name := range strings.Split(v.Country[i], ", ") {
 			c, err := country.ByName(name)
 			if err != nil {
-				log.Printf("Country %q: %s", name, err)
+				log.Printf("GDASC - Country %q: %s", name, err)
 				continue
 			}
 			feeds = append(feeds, models.FeedItem{
@@ -47,7 +47,7 @@ func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 	return feeds, nil
 }
 
-type GdascResp struct {
+type gdascResp struct {
 	Title       []string `xml:"channel>item>title"`
 	Description []string `xml:"channel>item>description"`
 	Country     []string `xml:"channel>item>country"`
