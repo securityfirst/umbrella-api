@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -10,9 +9,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/securityfirst/umbrella-api/utils"
 
-	"gopkg.in/securityfirst/tent.v2"
-	"gopkg.in/securityfirst/tent.v2/auth"
-	"gopkg.in/securityfirst/tent.v2/repo"
+	"github.com/securityfirst/tent"
+	"github.com/securityfirst/tent/auth"
+	"github.com/securityfirst/tent/repo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tmilewski/goenv"
@@ -30,7 +29,6 @@ var conf = auth.Config{
 func init() {
 	err := goenv.Load()
 	utils.CheckErr(err)
-	// envArg := flag.String("env", "production", "Environment")
 	envArg := flag.String("env", "development", "Environment")
 	flag.Parse()
 	if *envArg == "production" {
@@ -39,7 +37,7 @@ func init() {
 	conf.ID = os.Getenv("GITHUB_ID")
 	conf.Secret = os.Getenv("GITHUB_SECRET")
 	if conf.ID == "" || conf.Secret == "" {
-		fmt.Println("GITHUB_ID/GITHUB_SECRET not found. Please check your environment")
+		log.Println("GITHUB_ID/GITHUB_SECRET not found. Please check your environment")
 		os.Exit(1)
 	}
 	if host := os.Getenv("APP_HOST"); host != "" {

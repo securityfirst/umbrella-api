@@ -3,10 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/securityfirst/umbrella-api/models"
-	"github.com/securityfirst/umbrella-api/utils"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/securityfirst/umbrella-api/feed"
+	"github.com/securityfirst/umbrella-api/models"
+	"github.com/securityfirst/umbrella-api/utils"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -58,8 +60,8 @@ func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
 	if err == nil {
 		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC, checked.GDASC, checked.CADATA}
 	}
-	if len(lastChecked) != SourceCount {
-		lastChecked = make([]int64, SourceCount)
+	if len(lastChecked) != feed.SourceCount {
+		lastChecked = make([]int64, feed.SourceCount)
 	}
 	return lastChecked
 }

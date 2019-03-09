@@ -1,4 +1,4 @@
-package main
+package feed
 
 import (
 	"encoding/json"
@@ -9,32 +9,31 @@ import (
 	"strings"
 	"time"
 
-	"github.com/securityfirst/umbrella-api/models"
-
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gosexy/to"
+	"github.com/securityfirst/umbrella-api/models"
 )
 
-type RefiWebFetcher struct {
+type ReliefWebFetcher struct {
 	Country *models.Country
 }
 
-func (r *RefiWebFetcher) Fetch() ([]models.FeedItem, error) {
+func (r *ReliefWebFetcher) Fetch() ([]models.FeedItem, error) {
 	body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", r.Country.ReliefWeb), http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
-	var rwResp RWResponse
-	if err = json.Unmarshal(body, &rwResp); err != nil {
+	var resp reliefWebResp
+	if err = json.Unmarshal(body, &resp); err != nil {
 		return nil, err
 	}
-	if len(rwResp.Data) < 1 {
+	if len(resp.Data) < 1 {
 		return nil, errors.New("No data received")
 	}
-	if rwResp.Data[0].Fields.DescriptionHTML == "" {
+	if resp.Data[0].Fields.DescriptionHTML == "" {
 		return nil, nil
 	}
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data[0].Fields.DescriptionHTML))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(resp.Data[0].Fields.DescriptionHTML))
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +49,7 @@ func (r *RefiWebFetcher) Fetch() ([]models.FeedItem, error) {
 	return items, nil
 }
 
-func (r *RefiWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, error) {
+func (r *ReliefWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, error) {
 	href, ok := t.Contents().Attr("href")
 	if !ok {
 		return nil, errors.New("no href")
@@ -66,25 +65,25 @@ func (r *RefiWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, erro
 	if len(segments) == 0 || to.Int64(segments[len(segments)-1]) == 0 {
 		return &item, nil
 	}
-	nodeURL := fmt.Sprintf("http://api.rwlabs.org/v0/report/%v", segments[len(segments)-1])
+	nodeURL := fmt.Sprintf("https://api.reliefweb.int/v1/reports/%v", segments[len(segments)-1])
 	body, err := makeRequest(nodeURL, "get", nil)
 	if err != nil {
 		return nil, err
 	}
-	var rwReport RWReport
-	if err = json.Unmarshal(body, &rwReport); err != nil {
+	var rep reliefWebReportResp
+	if err = json.Unmarshal(body, &rep); err != nil {
 		return nil, err
 	}
-	if rwReport.Data[0].Fields.Headline.Summary != "" {
-		item.Description = rwReport.Data[0].Fields.Headline.Summary
+	if rep.Data[0].Fields.Headline.Summary != "" {
+		item.Description = rep.Data[0].Fields.Headline.Summary
 	} else {
-		item.Description = rwReport.Data[0].Fields.BodyHTML
+		item.Description = rep.Data[0].Fields.BodyHTML
 	}
-	item.UpdatedAt = rwReport.Data[0].Fields.Date.Changed.Unix()
+	item.UpdatedAt = rep.Data[0].Fields.Date.Changed.Unix()
 	return &item, nil
 }
 
-type RWResponse struct {
+type reliefWebResp struct {
 	Href  string `json:"href"`
 	Time  int    `json:"time"`
 	Links struct {
@@ -119,7 +118,7 @@ type RWResponse struct {
 	} `json:"data"`
 }
 
-type RWReport struct {
+type reliefWebReportResp struct {
 	Href  string `json:"href"`
 	Time  int    `json:"time"`
 	Links struct {

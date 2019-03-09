@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"time"
+
+	"github.com/securityfirst/umbrella-api/feed"
 
 	"sort"
 	"strconv"
@@ -14,7 +14,6 @@ import (
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
 	"github.com/gosexy/to"
 )
@@ -65,7 +64,7 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 	var cleanSources, toRefresh, diff []int
 	for i := range sources {
 		inrange := to.Int64(strings.TrimSpace(sources[i]))
-		if inrange >= 0 && inrange < SourceCount {
+		if inrange >= 0 && inrange < feed.SourceCount {
 			cleanSources = append(cleanSources, int(inrange))
 			if getLastChecked[inrange] < time.Now().Add(-30*time.Minute).Unix() {
 				toRefresh = append(toRefresh, int(inrange))
@@ -76,113 +75,47 @@ func (um *Umbrella) getFeedItems(sources []string, country models.Country, since
 	if len(cleanSources) == 0 {
 		err = errors.New("No Valid sources selected")
 	} else if len(toRefresh) > 0 {
-		for k := range toRefresh {
-			switch src := toRefresh[k]; src {
-			case CDC:
-				lenItems := len(items)
-				fmt.Println("refresh cdc")
-				// refresh cdc
-				if len(items) == lenItems {
-					diff = append(diff, src)
-				}
-				// go um.updateLastChecked(country.Iso2, CDC, time.Now().Unix())
-			case ReliefWeb:
-				lenItems := len(items)
-				body, err := makeRequest(fmt.Sprintf("https://api.reliefweb.int/v1/countries/%v", country.ReliefWeb), "get", nil)
-				var rwResp RWResponse
-				err = json.Unmarshal(body, &rwResp)
-				if err != nil {
-					utils.CheckErr(err)
-					fmt.Println(string(body[:]))
-				} else {
-					go um.updateLastChecked(country.Iso2, ReliefWeb, time.Now().Unix())
-				}
-				if len(rwResp.Data) < 1 {
-					utils.CheckErr(errors.New("No data received"))
-					continue
-				}
-				if rwResp.Data[0].Fields.DescriptionHTML != "" {
-					doc, err := goquery.NewDocumentFromReader(strings.NewReader(rwResp.Data[0].Fields.DescriptionHTML))
-					if err != nil {
-						log.Fatal(err)
-					}
-					s := doc.Find("h3").First()
-					s.Next().Children().Each(func(i int, t *goquery.Selection) {
-						href, ok := t.Contents().Attr("href")
-						if ok {
-							item := models.FeedItem{
-								Title:     t.Contents().Text(),
-								URL:       href,
-								Country:   country.Iso2,
-								Source:    ReliefWeb,
-								UpdatedAt: time.Now().Unix(),
-							}
-							segments := strings.Split(href, "/")
-							if len(segments) > 0 && to.Int64(segments[len(segments)-1]) != 0 {
-								nodeUrl := fmt.Sprintf("https://api.reliefweb.int/v1/reports/%v", segments[len(segments)-1])
-								body, err := makeRequest(nodeUrl, "get", nil)
-								var rwReport RWReport
-								err = json.Unmarshal(body, &rwReport)
-								if err != nil {
-									utils.CheckErr(err)
-									fmt.Println(string(body[:]))
-								} else {
-									if rwReport.Data[0].Fields.Headline.Summary != "" {
-										item.Description = rwReport.Data[0].Fields.Headline.Summary
-									} else {
-										item.Description = rwReport.Data[0].Fields.BodyHTML
-									}
-									item.UpdatedAt = rwReport.Data[0].Fields.Date.Changed.Unix()
-								}
-
-							}
-							items = append(items, item)
-							go item.UpdateRelief(um.Db)
-						}
-					})
-				}
-				if len(items) == lenItems {
-					diff = append(diff, src)
-				}
-			case GDASC:
-				f := GdascFetcher{}
-				srcItems, err := f.Fetch()
-				if err != nil {
-					utils.CheckErr(err)
-					continue
-				}
-				var change bool
-				for i, item := range srcItems {
-					go srcItems[i].UpdateOthers(um.Db)
-					if item.Country == country.Iso2 {
-						items = append(items, item)
-						if change {
-							continue
-						}
-						change = true
-						diff = append(diff, src)
-					}
-				}
-			case CADATA:
-				f := CadataFetcher{}
-				srcItems, err := f.Fetch()
-				if err != nil {
-					utils.CheckErr(err)
-					continue
-				}
-				var change bool
-				for i, item := range srcItems {
-					go srcItems[i].UpdateOthers(um.Db)
-					if item.Country == country.Iso2 {
-						items = append(items, item)
-						if change {
-							continue
-						}
-						change = true
-						diff = append(diff, src)
-					}
-				}
+		for _, src := range toRefresh {
+			var fetcher interface {
+				Fetch() ([]models.FeedItem, error)
 			}
+			var updater = (*models.FeedItem).UpdateOthers
+			switch src {
+			case feed.CDC:
+				fetcher = &feed.CDCFetcher{}
+			case feed.ReliefWeb:
+				fetcher = &feed.ReliefWebFetcher{Country: &country}
+				updater = (*models.FeedItem).UpdateRelief
+			case feed.CADATA:
+				fetcher = &feed.CadataFetcher{}
+			case feed.GDASC:
+				fetcher = &feed.GdascFetcher{}
+			case feed.FCO:
+				fetcher = &feed.FCOFetcher{}
+			}
+			if fetcher == nil {
+				log.Printf("[%v] no match", src)
+				continue
+			}
+			items, err := fetcher.Fetch()
+			if err != nil {
+				utils.CheckErr(err)
+				continue
+			}
+			var change bool
+			for i, item := range items {
+				go updater(&items[i], um.Db)
+				if item.Country != country.Iso2 {
+					continue
+				}
+				items = append(items, item)
+				if change {
+					continue
+				}
+				change = true
+				diff = append(diff, src)
+			}
+			go um.updateLastChecked(country.Iso2, src, time.Now().Unix())
 		}
 	}
 	if len(diff) > 0 {
@@ -222,13 +155,3 @@ func (slice SortFeedByDate) Less(i, j int) bool {
 func (slice SortFeedByDate) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
-
-const (
-	ReliefWeb = iota
-	FCO
-	UN
-	CDC
-	GDASC
-	CADATA
-	SourceCount
-)
