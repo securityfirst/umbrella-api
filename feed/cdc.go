@@ -43,7 +43,7 @@ func (c *CDCFetcher) Fetch() ([]models.FeedItem, error) {
 			Description: v.Description,
 			URL:         v.Link,
 			Country:     strings.ToLower(c.Codes.Alpha2),
-			Source:      CDC,
+			Source:      models.CDC,
 			UpdatedAt:   t.Unix(),
 		})
 	}

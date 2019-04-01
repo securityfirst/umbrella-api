@@ -31,14 +31,3 @@ func makeRequest(uri string, method string, requestBody io.Reader) ([]byte, erro
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
 }
-
-// List of Sources
-const (
-	ReliefWeb = iota
-	FCO
-	UN
-	CDC
-	GDASC
-	CADATA
-	SourceCount
-)

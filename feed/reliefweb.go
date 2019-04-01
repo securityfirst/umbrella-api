@@ -58,7 +58,7 @@ func (r *ReliefWebFetcher) parseItem(t *goquery.Selection) (*models.FeedItem, er
 		Title:     t.Contents().Text(),
 		URL:       href,
 		Country:   r.Country.Iso2,
-		Source:    ReliefWeb,
+		Source:    models.ReliefWeb,
 		UpdatedAt: time.Now().Unix(),
 	}
 	segments := strings.Split(href, "/")

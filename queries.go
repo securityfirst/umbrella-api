@@ -6,7 +6,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/securityfirst/umbrella-api/feed"
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
 
@@ -60,10 +59,15 @@ func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
 	if err == nil {
 		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC, checked.GDASC, checked.CADATA}
 	}
-	if len(lastChecked) != feed.SourceCount {
-		lastChecked = make([]int64, feed.SourceCount)
+	if len(lastChecked) != models.SourceCount {
+		lastChecked = make([]int64, models.SourceCount)
 	}
 	return lastChecked
+}
+
+func (um *Umbrella) getCountries() (result []models.Country, err error) {
+	_, err = um.Db.Select(&result, "select id, name, iso3, iso2, reliefweb_int, search from countries_index")
+	return
 }
 
 func (um *Umbrella) getCountryInfo(urlCountry string) (country models.Country, err error) {

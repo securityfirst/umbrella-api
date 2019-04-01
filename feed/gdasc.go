@@ -39,7 +39,7 @@ func (g *GdascFetcher) Fetch() ([]models.FeedItem, error) {
 				Description: v.Description[i],
 				URL:         v.Link[i],
 				Country:     strings.ToLower(c.Codes.Alpha2),
-				Source:      GDASC,
+				Source:      models.GDASC,
 				UpdatedAt:   t.Unix(),
 			})
 		}

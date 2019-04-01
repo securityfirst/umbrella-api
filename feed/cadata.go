@@ -41,7 +41,7 @@ func (g *CadataFetcher) Fetch() ([]models.FeedItem, error) {
 				Description: v.Description[i],
 				URL:         v.Link[i],
 				Country:     strings.ToLower(c.Codes.Alpha2),
-				Source:      CADATA,
+				Source:      models.CADATA,
 				UpdatedAt:   t.Unix(),
 			})
 		}
