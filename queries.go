@@ -80,15 +80,22 @@ func (um *Umbrella) getCountryInfo(urlCountry string) (country models.Country, e
 
 func (um *Umbrella) getDbFeedItems(sources []string, country string, since int64) (feedItems []models.FeedItem, err error) {
 	if len(sources) < 1 {
-		err = errors.New("No valid sources selected")
-	} else if country == "" || len(country) != 2 {
-		err = errors.New("Selected country is not valid")
-	} else {
-		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where country=:country and updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
-			"country": country,
-			"since":   since,
-		})
+		return nil, errors.New("No valid sources selected")
 	}
+	if country == "" || len(country) != 2 {
+		return nil, errors.New("Selected country is not valid")
+	}
+	_, err = um.Db.Select(&feedItems, fmt.Sprintf(`
+SELECT * FROM (SELECT *, 
+	@source_rank := IF(@current_source = source, @source_rank + 1, 1) AS source_rank,
+	@current_source := source 
+FROM feed_items
+WHERE source in (%s) and country = :country and updated_at >= :since
+ORDER BY source, updated_at DESC) ranked
+order by source_rank <= 2 desc, updated_at desc`, strings.Join(sources, ",")), map[string]interface{}{
+		"country": country,
+		"since":   since,
+	})
 	return feedItems, err
 }
 
