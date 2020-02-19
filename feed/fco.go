@@ -30,16 +30,20 @@ func (g *FCOFetcher) Fetch() ([]models.FeedItem, error) {
 		name := strings.TrimSpace(strings.TrimSuffix(e.Title, " travel advice"))
 		c, err := country.ByName(name)
 		if err != nil {
-			log.Printf("GDASC - Country %q: %s", name, err)
+			log.Printf("FCO - Country %q: %s", name, err)
 			continue
 		}
-		t, _ := time.Parse(time.RFC1123, e.Updated)
+		t, err := time.Parse(time.RFC3339, e.Updated)
+		if err != nil {
+			log.Printf("FCO - Time %q: %s", e.Updated, err)
+			continue
+		}
 		feeds = append(feeds, models.FeedItem{
 			Title:       e.Title,
 			Description: e.Summary.Text,
 			URL:         e.Link.Href,
 			Country:     strings.ToLower(c.Codes.Alpha2),
-			Source:      FCO,
+			Source:      models.FCO,
 			UpdatedAt:   t.Unix(),
 		})
 	}

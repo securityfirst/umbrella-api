@@ -49,6 +49,18 @@ func init() {
 
 func main() {
 	um := getUmbrella()
+	go func() {
+		tick := time.Tick(time.Hour)
+		for {
+			log.Println("Feed update - Starting...")
+			if err := um.UpdateFeeds(); err != nil {
+				log.Println("Feed update - error:", err)
+				continue
+			}
+			log.Println("Feed update - complete")
+			<-tick
+		}
+	}()
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"https://api.secfirst.org"},

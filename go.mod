@@ -16,7 +16,7 @@ require (
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
 	github.com/pariz/gountries v0.0.0-20171019111738-adb00f6513a3
-	github.com/securityfirst/tent v0.0.0-20190212171846-3c47f68d81cc
+	github.com/securityfirst/tent v0.0.0-20190331145917-2b28c9f2f9c3
 	github.com/tmilewski/goenv v1.0.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/crypto v0.0.0-20190228161510-8dd112bcdc25

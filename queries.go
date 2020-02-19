@@ -6,7 +6,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/securityfirst/umbrella-api/feed"
 	"github.com/securityfirst/umbrella-api/models"
 	"github.com/securityfirst/umbrella-api/utils"
 
@@ -60,10 +59,15 @@ func (um *Umbrella) getLastChecked(urlCountry string) (lastChecked []int64) {
 	if err == nil {
 		lastChecked = []int64{checked.Relief, checked.FCO, checked.UN, checked.CDC, checked.GDASC, checked.CADATA}
 	}
-	if len(lastChecked) != feed.SourceCount {
-		lastChecked = make([]int64, feed.SourceCount)
+	if len(lastChecked) != models.SourceCount {
+		lastChecked = make([]int64, models.SourceCount)
 	}
 	return lastChecked
+}
+
+func (um *Umbrella) getCountries() (result []models.Country, err error) {
+	_, err = um.Db.Select(&result, "select id, name, iso3, iso2, reliefweb_int, search from countries_index")
+	return
 }
 
 func (um *Umbrella) getCountryInfo(urlCountry string) (country models.Country, err error) {
@@ -76,15 +80,22 @@ func (um *Umbrella) getCountryInfo(urlCountry string) (country models.Country, e
 
 func (um *Umbrella) getDbFeedItems(sources []string, country string, since int64) (feedItems []models.FeedItem, err error) {
 	if len(sources) < 1 {
-		err = errors.New("No valid sources selected")
-	} else if country == "" || len(country) != 2 {
-		err = errors.New("Selected country is not valid")
-	} else {
-		_, err = um.Db.Select(&feedItems, fmt.Sprintf("select * from feed_items where country=:country and updated_at>:since and source in (%v) order by updated_at desc", strings.Join(sources, ",")), map[string]interface{}{
-			"country": country,
-			"since":   since,
-		})
+		return nil, errors.New("No valid sources selected")
 	}
+	if country == "" || len(country) != 2 {
+		return nil, errors.New("Selected country is not valid")
+	}
+	_, err = um.Db.Select(&feedItems, fmt.Sprintf(`
+SELECT * FROM (SELECT *, 
+	@source_rank := IF(@current_source = source, @source_rank + 1, 1) AS source_rank,
+	@current_source := source 
+FROM feed_items
+WHERE source in (%s) and country = :country and updated_at >= :since
+ORDER BY source, updated_at DESC) ranked
+order by source_rank <= 2 desc, updated_at desc`, strings.Join(sources, ",")), map[string]interface{}{
+		"country": country,
+		"since":   since,
+	})
 	return feedItems, err
 }
 
